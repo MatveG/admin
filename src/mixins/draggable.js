@@ -1,5 +1,4 @@
-
-export const draggable = {
+export default {
   methods: {
     dragdrop (payload) {
       payload.event.target.closest('tr').classList.remove('is-selected');

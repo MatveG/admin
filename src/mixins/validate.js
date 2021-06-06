@@ -1,18 +1,16 @@
-
-import Vue from 'vue';
-
-Vue.mixin({
+export default {
   methods: {
     validate () {
       this.$v.$touch();
 
       if (this.$v.$invalid) {
-        this.toast('Заполните обязательные поля');
-
-        return false;
+        this.$buefy.toast.open({
+          message: 'Заполните обязательные поля',
+          type: 'is-warning'
+        });
       }
 
-      return true;
+      return !this.$v.$invalid;
     }
   }
-});
+}

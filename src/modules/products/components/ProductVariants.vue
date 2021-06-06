@@ -1,98 +1,97 @@
-
 <template>
-    <div>
-        <b-table :data="product.variants"
-                 :loading="loading"
-                 :hoverable="true"
-                 default-sort="code"
-                 icon-pack="fas"
-                 class="table-vertical-center">
-            <template slot-scope="props">
-                <b-table-column field="images" label="Фото" width="5%" sortable centered>
-                    <span v-if="props.row.images.length" class="icon has-text-dark">
-                        <i class="fas fa-check-square"></i>
-                    </span>
-                </b-table-column>
+  <card-component title="Варианты товара" icon="form-select" class="card-top-margin">
+    <b-table :data="product.variants"
+             :loading="loading"
+             :hoverable="true"
+             default-sort="code"
+             icon-pack="fas"
+             class="table-vertical-center">
+      <b-table-column field="images" label="Фото" width="5%" sortable centered v-slot="props">
+          <span v-if="props.row.images.length" class="icon has-text-dark">
+              <i class="fas fa-check-square"></i>
+          </span>
+      </b-table-column>
 
-                <b-table-column field="code" label="Артикул" width="10%" sortable class="has-text-left is-italic">
-                    <span :class="[!props.row.code ? 'has-text-grey-light' : '']">{{ (props.row.code) ? props.row.code : '[empty]' }}</span>
-                </b-table-column>
+      <b-table-column field="code" label="Артикул" width="10%" sortable class="has-text-left is-italic" v-slot="props">
+          <span :class="!props.row.code ? 'has-text-grey-light' : ''">
+            {{ (props.row.code) ? props.row.code : '[empty]' }}
+          </span>
+      </b-table-column>
 
-                <b-table-column field="parameters" label="Параметры" width="30%" centered>
-                    <div class="buttons is-centered">
-                        <div v-for="(parameter, idx) in product.category.parameters" :key="idx">
-                            <span v-if="props.row.parameters[parameter.id]" :title="parameter.title" class="tag ml-1">
-                                {{ props.row.parameters[parameter.id] }}
-                            </span>
-                        </div>
-                    </div>
-                </b-table-column>
-
-                <b-table-column field="stock" label="Остаток" width="15%" sortable centered>
-                    <b-field>
-                        <b-input v-model.number="props.row.stock" type="number"
-                                 @keypress.native="forceInteger($event)" @change.native="update(props.row)" />
-                        <div class="control"><div class="button is-static">шт</div></div>
-                    </b-field>
-                </b-table-column>
-
-                <b-table-column field="surcharge" label="Цена/наценка" width="20%" sortable centered>
-                    <b-field>
-                        <div class="control has-icons-right">
-                            <b-input v-model.number="props.row.price" disabled />
-                            <span class="icon is-small is-right">{{ settings('category', 'currency').sign }}</span>
-                        </div>
-                        <b-input v-model.number="props.row.surcharge" @input.native="calcPrice(props.row)"
-                                 @change.native="update(props.row)" type="number"/>
-                    </b-field>
-                </b-table-column>
-
-                <b-table-column field="is_sale" label="Скидка" width="10%" sortable centered>
-                    <b-checkbox v-model="props.row.is_sale" :disabled="!product.is_sale"
-                                @change.native="calcPriceAndUpdate(props.row)" />
-                </b-table-column>
-
-                <b-table-column field="id" label="Действия" width="10%" centered>
-                    <div class="is-grouped field">
-                        <button class="button fas fa-pen" type="button" @click="edit(props.row)" />
-                        <button class="button fas fa-trash-alt ml-1" type="button" @click="destroy(props.row)" />
-                    </div>
-                </b-table-column>
-            </template>
-        </b-table>
+      <b-table-column field="parameters" label="Параметры" width="30%" centered v-slot="props">
         <div class="buttons is-centered">
-            <button class="button is-primary" type="button" @click="create">Добавить</button>
+          <div v-for="(parameter, idx) in product.category.parameters" :key="idx">
+            <span v-if="props.row.parameters[parameter.id]" :title="parameter.title" class="tag ml-1">
+                {{ props.row.parameters[parameter.id] }}
+            </span>
+          </div>
         </div>
+      </b-table-column>
 
-        <b-modal :active.sync="modal" aria-modal class="modal-edit-variant">
-            <variant-edit :variant="variant" @close="modal=false" />
-        </b-modal>
+      <b-table-column field="stock" label="Остаток" width="15%" sortable centered v-slot="props">
+        <b-field>
+          <b-input v-model.number="props.row.stock" type="number"
+                   @keypress.native="forceInteger($event)" @change.native="update(props.row)" />
+          <div class="control"><div class="button is-static">шт</div></div>
+        </b-field>
+      </b-table-column>
+
+      <b-table-column field="surcharge" label="Цена/наценка" width="20%" sortable centered v-slot="props">
+        <b-field>
+          <div class="control has-icons-right">
+            <b-input v-model.number="props.row.price" disabled />
+            <span class="icon is-small is-right">{{ settings('currency', 'sign') }}</span>
+          </div>
+          <b-input v-model.number="props.row.surcharge" @input.native="calcPrice(props.row)"
+                   @change.native="update(props.row)" type="number"/>
+        </b-field>
+      </b-table-column>
+
+      <b-table-column field="is_sale" label="Скидка" width="10%" sortable centered v-slot="props">
+        <b-checkbox v-model="props.row.is_sale" :disabled="!product.is_sale"
+                    @change.native="calcPriceAndUpdate(props.row)" />
+      </b-table-column>
+
+      <b-table-column field="id" label="Действия" width="10%" centered v-slot="props">
+        <div class="is-grouped field">
+          <button class="button fas fa-pen" type="button" @click="edit(props.row)" />
+          <button class="button fas fa-trash-alt ml-1" type="button" @click="destroy(props.row)" />
+        </div>
+      </b-table-column>
+    </b-table>
+    <div class="buttons is-centered">
+      <button class="button is-primary" type="button" @click="create">Добавить</button>
     </div>
+
+    <b-modal :active.sync="modal" aria-modal class="modal-edit-variant">
+      <variant-edit :variant="variant" @close="modal=false" />
+    </b-modal>
+  </card-component>
 </template>
 
 <script>
-import VariantEdit from '@/modules/products/components/VariantEdit';
 import { mapGetters } from 'vuex';
-import { states } from '@/mixins/states';
-import { forceInteger } from '@/mixins/forceInteger';
+import { _forceInteger } from '@/mixins/_forceInteger';
+import CardComponent from '@/components/CardComponent'
+import VariantEdit from './VariantEdit';
+import states from '@/mixins/states';
 import Variant from '../classes/Variant';
+import settings from '@/mixins/settings'
 
 export default {
   name: 'ProductVariants',
-
+  mixins: [
+    settings,
+    states,
+    _forceInteger
+  ],
   components: {
+    CardComponent,
     VariantEdit
   },
-
-  mixins: [states, forceInteger],
-
   props: {
-    discount: {
-      type: Number,
-      default: 0
-    }
+    discount: Object
   },
-
   data () {
     return {
       modal: false,
@@ -100,29 +99,20 @@ export default {
       timer: {}
     }
   },
-
-  computed: mapGetters(['products']),
-
+  computed: mapGetters(['product']),
   watch: {
-    'discount': function () {
+    'discount.amount': function () {
       this.product.variants.forEach((el) => this.calcPrice(el));
     },
-
     'product.price': function () {
       this.product.variants.forEach((el) => this.calcPrice(el));
     },
-
     'product.is_sale': function () {
       this.product.variants.forEach((el) => {
         el.is_sale = this.product.is_sale;
       });
     }
   },
-
-  mounted () {
-    this.$store.dispatch('fetchVariants', this.product.id);
-  },
-
   methods: {
     create () {
       this.variant = Variant.fromProduct(this.product);
@@ -175,4 +165,6 @@ export default {
 }
 </script>
 
-<style/>
+<style scoped>
+
+</style>

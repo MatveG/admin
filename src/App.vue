@@ -1,3 +1,4 @@
+<script src="../../velohub/resources/admin/index.js"></script>
 <template>
   <div id="app">
     <nav-bar/>
@@ -70,6 +71,9 @@ export default {
       menuSecondaryLabel: null,
       menuSecondaryIcon: null
     }
+  },
+  beforeMount() {
+    this.$store.dispatch('fetchSettings');
   }
 }
 </script>

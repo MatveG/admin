@@ -62,8 +62,7 @@
 <script>
 import CardComponent from '@/components/CardComponent';
 import ImagesUpload from '@/components/ImagesUpload';
-import { states } from '@/mixins/states';
-import { validationsByType } from '@/mixins/validationsByType';
+import states from '@/mixins/states';
 import { mapGetters } from 'vuex';
 
 export default {
@@ -74,7 +73,7 @@ export default {
     ImagesUpload
   },
 
-  mixins: [states, validationsByType],
+  mixins: [states],
 
   props: {
     variant: {
@@ -95,13 +94,13 @@ export default {
   validations () {
     const res = {
       variant: {
-        code: this.validationsByType('string'),
+        // code: this.validationsByType('string'),
         parameters: {}
       }
     };
 
     this.product.category.parameters.forEach((parameter) => {
-      res.variant.parameters[parameter.id] = this.validationsByType(parameter.type);
+      // res.variant.parameters[parameter.id] = this.validationsByType(parameter.type);
     });
 
     return res;

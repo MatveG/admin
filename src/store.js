@@ -1,14 +1,16 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import products from '@/modules/products/store';
 import categories from '@/modules/categories/store';
+import products from '@/modules/products/store';
+import settings from '@/modules/settings/store';
 
 Vue.use(Vuex)
 
 export default new Vuex.Store({
   modules: {
+    categories,
     products,
-    categories
+    settings
   },
   state: {
     /* User */

@@ -4,7 +4,7 @@
       <div class="level-left">
         <div class="level-item">
           <slot name="left"/>
-          CardToolbar </div>
+        </div>
       </div>
       <div class="level-right">
         <div class="level-item">

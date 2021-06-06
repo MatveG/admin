@@ -7,7 +7,7 @@ import router from './router'
 import store from './store'
 import App from './App.vue'
 import AsideMenuList from '@/components/AsideMenuList'
-import './mixins/'
+import './mixins/settings'
 
 /* These components are used in recursion algorithm */
 Vue.component('AsideMenuList', AsideMenuList)

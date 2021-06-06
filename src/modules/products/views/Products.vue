@@ -1,24 +1,21 @@
 <template>
   <section class="section is-main-section">
-    <div class="buttons is-right">
-      <b-button type="is-primary" icon-right="plus-circle" @click="addItem"/>
-    </div>
-
     <card-component class="has-table has-mobile-sort-spaced" title="Товары" icon="basket">
+      <products-toolbar :toggled="toggled" :toggle="toggle" :go-create="goCreate"/>
+
       <b-table ref="table"
                :data="products"
                :per-page="perPage"
-               :paginated="paginated"
                :loading="loading"
                :checked-rows="checked"
                custom-row-key="id"
                default-sort="['id', 'desc']"
+               paginated
                striped
                checkable
                hoverable
                icon-pack="fa"
                class="valign-center">
-
         <b-table-column label="Фото" field="thumb" width="15%" centered v-slot="props">
             <div class="image">
                 <img :src="props.row.thumb" class="is-rounded" alt="">
@@ -42,7 +39,7 @@
         </b-table-column>
 
         <b-table-column label="Категория" field="category.title" width="15%" searchable v-slot="props">
-          {{props.row.category.title}}
+          {{ (props.row.category || {}).title }}
         </b-table-column>
 
         <b-table-column field="is_active" label="Активен" width="10%" sortable centered v-slot="props">
@@ -50,17 +47,12 @@
         </b-table-column>
 
         <b-table-column custom-key="actions" width="10%" centered v-slot="props">
-          <b-dropdown hoverable :expanded="false" aria-role="list" class="dropdown-buttons">
-            <b-button type="is-primary" icon-right="circle-edit-outline" slot="trigger" @click="editItem(props.row.id)"/>
-
-            <b-dropdown-item @click="createChild(props.row)">
-              <b-icon pack="fas" icon="plus" />
-            </b-dropdown-item>
-
-            <b-dropdown-item @click="confirmDestroy(props.row)">
-              <b-icon pack="fas" icon="trash" />
-            </b-dropdown-item>
-          </b-dropdown>
+          <div class="buttons is-flex-wrap-nowrap">
+            <b-button type="is-primary" icon-right="square-edit-outline" slot="trigger"
+                      @click="goEdit(props.row.id)"/>
+            <b-button type="is-danger" icon-right="delete" slot="trigger"
+                      @click="confirmDelete(props.row.id)"/>
+          </div>
         </b-table-column>
       </b-table>
     </card-component>
@@ -69,81 +61,85 @@
 
 <script>
 import { mapGetters } from 'vuex';
-import { states } from '@/mixins/states';
+import settings from '@/mixins/settings'
+import states from '@/mixins/states'
 import CardComponent from '@/components/CardComponent';
+import ProductsToolbar from '@/modules/products/components/ProductsToolbar'
 
 export default {
-  name: 'ProductIndex',
-
-  mixins: [states],
-
+  name: 'Products',
+  mixins: [
+    settings,
+    states
+  ],
   components: {
-    CardComponent
+    CardComponent,
+    ProductsToolbar
   },
-
   data () {
     return {
+      perPage: 20,
       checked: [],
-      perPage: null
+      toggled: {
+        is_active: false,
+        is_stock: false
+      }
     }
   },
-
-  computed: {
-    ...mapGetters(['settings', 'products']),
-
-    paginated () {
-      return this.perPage < this.products.length;
-    }
-  },
-
-  watch: {
-    'checked': function () {
-      console.log(this.checked.length);
-    }
-  },
-
+  computed: mapGetters(['products']),
   mounted () {
-    this.perPage = 10; // this.settings('categories', 'items_per_page');
-    this.$store.dispatch('fetchCategories');
-    this.$store.dispatch('fetchProducts');
-
-    // setTimeout(() => console.log(this.products[0]), 1000);
+    if (!this.products.length) {
+      this.$store.dispatch('fetchProducts');
+    }
   },
-
   methods: {
-    addItem () {
+    toggle (name) {
+      this.toggled[name] = !this.toggled[name];
+      this.$refs.table.filters = {
+        ...this.$refs.table.filters,
+        [name]: this.$refs.table.filters[name] ? null : 'true'
+      };
+    },
+
+    goCreate () {
       window.open(
-        this.$router.resolve({ name: 'products-create' }).href,
+        this.$router.resolve({ name: 'products.create' }).href,
         '_blank'
       );
     },
 
-    editItem (propId) {
+    goEdit (propId) {
       window.open(
-        this.$router.resolve({ name: 'products-edit', params: { propId } }),
+        this.$router.resolve({ name: 'products.edit', params: { propId } }).href,
         '_blank'
       );
+    },
+
+    confirmDelete (id) {
+      this.$buefy.dialog.confirm({
+        type: 'is-danger',
+        hasIcon: true,
+        icon: 'delete',
+        message: 'Удалить?',
+        onConfirm: () => this.delete(id)
+      })
     },
 
     async update (row) {
       this.stateLoading();
-      await this.$store.dispatch('patchProduct', row);
+      await this.$store.dispatch('updateProduct', row);
       this.stateSaved();
     },
 
-    async destroy (row) {
+    async delete (id) {
       this.stateLoading();
-      await this.$store.dispatch('destroyProduct', row);
+      await this.$store.dispatch('deleteProduct', id);
       this.stateSaved();
-    },
-
-    confirmDestroy (row) {
-      this.confirm('Удалить?', this.destroy.bind(null, row));
-    },
-
-    getCategoryTitle (id) {
-      return (this.$store.getters.getCategoryById(id) || {}).title;
     }
   }
 }
 </script>
+
+<style scoped>
+
+</style>

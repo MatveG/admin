@@ -1,4 +1,4 @@
-export const forceInteger = {
+export const _forceInteger = {
   methods: {
     forceInteger (event) {
       event = (event) || window.event;

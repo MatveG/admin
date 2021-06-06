@@ -1,36 +1,37 @@
-
 <template>
-    <div>
-        <button role="button" class="hidden" />
-        <ul @change.stop>
-            <draggable v-model="images" @end="emitUpdate" ghost-class="opacity-30">
-                <li v-for="(image, idx) in images" :key="idx" :style="{ width: propWidth }">
-                    <img :src="image" alt="" class="rounded">
-                    <button @click="deleteImage(idx)" role="button" class="delete"/>
-                </li>
-            </draggable>
+  <card-component title="Фотографии" icon="image" class="card-top-margin">
+    <button role="button" class="hidden" />
+    <ul @change.stop>
+      <draggable v-model="images" @end="emitUpdate" ghost-class="opacity-30">
+        <li v-for="(image, idx) in images" :key="idx" :style="{ width: propWidth }">
+          <img :src="image" alt="" class="rounded">
+          <button @click="deleteImage(idx)" role="button" class="delete"/>
+        </li>
+      </draggable>
 
-            <li v-if="images.length < propMax" :style="{ width: (images && images.length) ? propWidth : '100%', height: height + 'px' }"
-                ref="upload" class="upload-new-image">
-                <b-field class="file">
-                    <b-upload v-model="upload" multiple drag-drop>
-                        <div class="flex-centered"><span class="fa fa-upload is-size-3 has-text-primary"></span></div>
-                    </b-upload>
-                </b-field>
-            </li>
-        </ul>
-    </div>
+      <li v-if="images.length < propMax" :style="{ width: (images && images.length) ? propWidth : '100%', height: height + 'px' }"
+          ref="upload" class="upload-new-image">
+        <b-field class="file">
+          <b-upload v-model="upload" multiple drag-drop>
+            <div class="flex-centered"><span class="fa fa-upload is-size-3 has-text-primary"></span></div>
+          </b-upload>
+        </b-field>
+      </li>
+    </ul>
+  </card-component>
 </template>
 
 <script>
 import axios from 'axios';
 import draggable from 'vuedraggable'
+import CardComponent from '@/components/CardComponent'
 
 export default {
   name: 'ImagesUpload',
 
   components: {
-    draggable
+    draggable,
+    CardComponent
   },
 
   props: {
