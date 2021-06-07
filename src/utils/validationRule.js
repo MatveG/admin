@@ -2,7 +2,7 @@ import { maxLength, minLength, required } from 'vuelidate/lib/validators'
 import numeric from 'vuelidate/lib/validators/numeric'
 import integer from 'vuelidate/lib/validators/integer'
 
-export default (type) => {
+export default (type = null) => {
   switch (type) {
     case 'number':
       return {

@@ -1,7 +1,7 @@
 <template>
   <card-component title="Основная информация" icon="image-text">
     <b-tabs v-model="tab" type="is-boxed">
-      <b-tab-item label="Название">
+      <b-tab-item label="Название" icon="subtitles-outline">
         <b-field label="Название" message="Пример: Конфеты" horizontal>
           <b-input v-model="product.title" required />
         </b-field>
@@ -9,12 +9,12 @@
           <b-input v-model="product.brand" required />
         </b-field>
         <b-field label="Модель" message="Пример: Milk Chocolate" horizontal
-                 :type="{ 'is-danger': $v.product.model.$error }">
+                 :type="{ 'is-danger': v.model.$error }">
           <b-input v-model="product.model" required />
         </b-field>
       </b-tab-item>
 
-      <b-tab-item label="Описание">
+      <b-tab-item label="Описание" icon="text">
         <b-field label="Короткое описание" horizontal>
           <b-input v-model="product.summary" type="textarea" />
         </b-field>
@@ -23,12 +23,11 @@
         </b-field>
       </b-tab-item>
 
-      <b-tab-item label="Характеристики">
-<!--        <product-features v-if="product.category" :prop-features="product.category.features" ref="features" />-->
-        <product-features v-if="false" :prop-features="product.category.features" ref="features" />
+      <b-tab-item label="Характеристики" icon="star-circle-outline">
+        <slot/>
       </b-tab-item>
 
-      <b-tab-item label="SEO">
+      <b-tab-item label="SEO" icon="google">
         <b-field label="URL товара" horizontal>
           <b-input v-model="product.slug" custom-class="is-static" readonly />
         </b-field>
@@ -47,27 +46,28 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
 import CardComponent from '@/components/CardComponent'
-import ProductFeatures from './ProductFeatures'
 
 export default {
-  name: 'ProductMain',
+  name: 'ProductGeneral',
   components: {
-    CardComponent,
-    ProductFeatures
+    CardComponent
   },
   props: {
-    $v: Object
+    product: {
+      type: Object,
+      required: true
+    },
+    v: {
+      type: Object,
+      default: () => {}
+    }
   },
   data () {
     return {
-      tab: 0
+      tab: 2
     }
-  },
-  computed: mapGetters([
-    'product'
-  ])
+  }
 }
 </script>
 

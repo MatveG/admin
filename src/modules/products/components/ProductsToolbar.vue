@@ -1,16 +1,16 @@
 <template>
   <card-toolbar slot="toolbar" class="is-upper">
     <div slot="left" class="buttons has-addons">
-      <b-button :type="{'is-info is-light' : toggled.is_active}" @click="toggle('is_active')">
+      <b-button :type="{'is-info is-light' : !!toggled.is_active}" @click="toggle('is_active')">
         Активные
       </b-button>
-
-      <b-button :type="{'is-info is-light' : toggled.is_stock}" @click="toggle('is_stock')">
+      <b-button :type="{'is-info is-light' : !!toggled.is_stock}" @click="toggle('is_stock')">
         В наличии
       </b-button>
     </div>
     <div slot="right">
-      <b-button type="is-primary" icon-right="plus-circle" @click="goCreate"/>
+      <b-button type="is-primary" icon-right="plus-circle"
+                tag="router-link" :to="{ name: 'products.create' }" target="_blank"/>
     </div>
   </card-toolbar>
 </template>
@@ -23,10 +23,19 @@ export default {
   components: {
     CardToolbar
   },
-  props: {
-    toggled: Object,
-    toggle: Function,
-    goCreate: Function
+  data () {
+    return {
+      toggled: {
+        is_active: false,
+        is_stock: false
+      }
+    }
+  },
+  methods: {
+    toggle (name) {
+      this.toggled[name] = !this.toggled[name];
+      this.$emit('toggle', name);
+    }
   }
 }
 </script>

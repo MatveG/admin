@@ -1,5 +1,5 @@
 <template>
-  <card-component v-if="!product.variants.length" title="Наличие" icon="warehouse" class="card-top-margin">
+  <card-component v-if="product.variants && !product.variants.length" title="Наличие" icon="warehouse" class="card-top-margin">
     <b-field label="Артикул" label-position="on-border">
       <b-input v-model="product.code" />
     </b-field>
@@ -27,7 +27,6 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
 import CardComponent from '@/components/CardComponent'
 
 export default {
@@ -35,9 +34,12 @@ export default {
   components: {
     CardComponent
   },
-  computed: mapGetters([
-    'product'
-  ])
+  props: {
+    product: {
+      type: Object,
+      default: () => {}
+    }
+  }
 }
 </script>
 

@@ -1,18 +1,28 @@
 <template>
-  <card-component title="Варианты товара" icon="form-select" class="card-top-margin">
-    <b-table :data="product.variants"
-             :loading="loading"
-             :hoverable="true"
+  <card-component icon="form-select" class="card-top-margin mt-0">
+    <card-toolbar slot="toolbar" class="is-upper px-2 py-0">
+      <p slot="left" class="card-header-title">
+        <b-icon icon="form-select" size="is-small"/>
+        <span class="ml-2">Варианты товара</span>
+      </p>
+      <div slot="right" class="buttons">
+        <b-button type="is-primary" size="is-small" icon-right="plus-circle" @click="create"/>
+      </div>
+    </card-toolbar>
+
+    <b-table class="table-vertical-center"
              default-sort="code"
-             icon-pack="fas"
-             class="table-vertical-center">
+             v-if="product.variants && product.variants.length"
+             :data="product.variants"
+             :loading="loading"
+             hoverable>
       <b-table-column field="images" label="Фото" width="5%" sortable centered v-slot="props">
           <span v-if="props.row.images.length" class="icon has-text-dark">
               <i class="fas fa-check-square"></i>
           </span>
       </b-table-column>
 
-      <b-table-column field="code" label="Артикул" width="10%" sortable class="has-text-left is-italic" v-slot="props">
+      <b-table-column field="code" label="Артикул" width="10%" sortable centered class="is-italic" v-slot="props">
           <span :class="!props.row.code ? 'has-text-grey-light' : ''">
             {{ (props.row.code) ? props.row.code : '[empty]' }}
           </span>
@@ -59,9 +69,6 @@
         </div>
       </b-table-column>
     </b-table>
-    <div class="buttons is-centered">
-      <button class="button is-primary" type="button" @click="create">Добавить</button>
-    </div>
 
     <b-modal :active.sync="modal" aria-modal class="modal-edit-variant">
       <variant-edit :variant="variant" @close="modal=false" />
@@ -71,22 +78,21 @@
 
 <script>
 import { mapGetters } from 'vuex';
-import { _forceInteger } from '@/mixins/_forceInteger';
+import { forceInteger } from '@/mixins/forceInteger';
 import CardComponent from '@/components/CardComponent'
 import VariantEdit from './VariantEdit';
-import states from '@/mixins/states';
 import Variant from '../classes/Variant';
-import settings from '@/mixins/settings'
+import CardToolbar from '@/components/CardToolbar'
 
 export default {
   name: 'ProductVariants',
   mixins: [
-    settings,
     states,
-    _forceInteger
+    forceInteger
   ],
   components: {
     CardComponent,
+    CardToolbar,
     VariantEdit
   },
   props: {

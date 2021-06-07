@@ -3,12 +3,14 @@
     <b-field label="Цена" label-position="on-border">
       <b-input v-model.number="product.price" type="number" step="any" placeholder="0.0" expanded/>
       <div class="control">
-        <div class="button is-static">{{ setting('currency', 'sign') }}</div>
+        <div class="button is-static">{{ currencySign }}</div>
       </div>
     </b-field>
 
     <b-field class="has-text-centered">
-      <b-switch v-model="product.is_sale" @change.native="toggleDiscount">Скидка</b-switch>
+      <b-switch v-model="product.is_sale" @change.native="$emit('toggleDiscount')">
+        Скидка
+      </b-switch>
     </b-field>
 
     <div v-if="product.is_sale">
@@ -16,7 +18,7 @@
         <div class="column">
           <b-field label="Скидка" label-position="on-border">
             <b-input type="number" step="any" placeholder="0"
-                     v-model="discount.percent" @change.native="updateSalePrice"/>
+                     v-model="discount.percent" @change.native="$emit('updateSalePrice')"/>
             <div class="control">
               <button class="button is-primary">%</button>
             </div>
@@ -40,32 +42,23 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
-import settings from '@/mixins/settings'
 import CardComponent from '@/components/CardComponent'
 
 export default {
   name: 'ProductPrice',
-  mixins: [
-    settings
-  ],
   components: {
     CardComponent
   },
   props: {
-    $v: Object,
+    product: Object,
     discount: Object,
-    toggleDiscount: Function,
-    updateSalePrice: Function
+    currencySign: String
   },
   data () {
     return {
       tab: 0
     }
-  },
-  computed: mapGetters([
-    'product'
-  ])
+  }
 }
 </script>
 

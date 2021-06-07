@@ -10,10 +10,18 @@ const fetchSettingsQuery = `{
 
 export default {
   state: {
-    settings: {}
+    settings: {
+      currency: {
+        sign: '$'
+      }
+    }
   },
   getters: {
-    settings: (state) => state.settings
+    settings: (state) => state.settings,
+    getSetting: (state) => (key, prop) => {
+      const setting = prop && state.settings[key] ? state.settings[key][prop] : state.settings[key];
+      return setting || null;
+    }
   },
   mutations: {
     SETTINGS_MAP (state, payload) {

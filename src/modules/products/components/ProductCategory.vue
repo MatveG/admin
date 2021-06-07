@@ -13,8 +13,8 @@
       </p>
     </div>
     <b-field label="Категория" label-position="on-border" class="mt-5"
-             :type="{ 'is-danger': $v.product.category_id.$error }">
-      <b-select v-model="product.category_id" @select="changed" expanded>
+             :type="{ 'is-danger': v.category_id.$error }">
+      <b-select v-model="product.category_id" @select="$emit('changed')" expanded>
         <div v-for="(category, idx) in categories" :key="idx">
           <optgroup v-if="category.is_parent" :label="category.title">
             <option v-for="(child, idx) in category.child" :key="idx" :value="child.id">{{ child.title }}</option>
@@ -27,7 +27,6 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
 import CardComponent from '@/components/CardComponent'
 
 export default {
@@ -36,13 +35,19 @@ export default {
     CardComponent
   },
   props: {
-    $v: Object,
-    changed: Function
-  },
-  computed: mapGetters([
-    'product',
-    'categories'
-  ])
+    product: {
+      type: Object,
+      required: true
+    },
+    categories: {
+      type: Array,
+      required: true
+    },
+    v: {
+      type: Object,
+      default: () => {}
+    }
+  }
 }
 </script>
 

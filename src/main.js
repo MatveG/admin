@@ -7,11 +7,10 @@ import router from './router'
 import store from './store'
 import App from './App.vue'
 import AsideMenuList from '@/components/AsideMenuList'
-import './mixins/settings'
 
 /* These components are used in recursion algorithm */
-Vue.component('AsideMenuList', AsideMenuList)
-Vue.use(Buefy)
+Vue.component('AsideMenuList', AsideMenuList);
+Vue.use(Buefy);
 Vue.use(Vuelidate);
 
 /* Collapse mobile aside menu on route change */

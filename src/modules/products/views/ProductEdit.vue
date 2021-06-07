@@ -1,132 +1,134 @@
 <template>
   <section class="section is-main-section">
-    <div class="is-right buttons">
-      <b-button type="is-primary" icon-right="content-save" :loading="loading" :disabled="saved" @click="save"/>
-      <b-button icon-right="arrow-left-circle" @click="goBack"/>
-    </div>
+    <buttons-toolbar>
+      <b-button type="is-primary" icon-right="content-save" :loading="loading" :disabled="saved" @click="saveProduct"/>
+      <b-button icon-right="arrow-left-circle" tag="router-link" :to="{ name: 'products' }"/>
+    </buttons-toolbar>
 
-    <form @submit.prevent="save" @change="changed" @keyup="stateDraft">
-      <div class="columns">
-        <div class="column is-two-thirds">
-          <product-main :$v="$v"/>
-          <images-upload v-if="mounted && product.id"
-               :prop-images="product.images"
-               :prop-max="10"
-               :prop-api="`/admin/products/${product.id}`"
-               prop-width="20%"
-               @update="assign('images', $event)"/>
-        </div>
-        <div class="column">
-          <product-category
-              :$v="$v"
-              :changed="changed"/>
-          <product-price
-              :discount="discount"
-              :toggleDiscount="toggleDiscount"
-              :updateSalePrice="updateSalePrice"/>
-          <product-presence/>
-        </div>
+    <form class="columns" @submit.prevent="saveProduct" @change="changed" @keyup="setDraftState">
+      <div class="column is-two-thirds">
+        <product-general
+            :product="product"
+            :v="$v.product">
+          <product-features
+              v-if="product.category"
+              :product="product"
+              :features="product.category.features"
+              :v="$v.product.features"/>
+        </product-general>
+        <images-upload
+            prop-width="20%"
+            v-if="mounted && product.id"
+            :prop-images="product.images"
+            :prop-max="10"
+            :prop-api="`/admin/products/${product.id}`"
+            @update="setProperty('images', $event)"/>
+      </div>
+
+      <div class="column">
+        <product-category
+            :product="product"
+            :categories="categories"
+            :v="$v.product"
+            @changed="changed"/>
+        <product-price
+            :product="product"
+            :discount="discount"
+            :currency-sign="setting('currency', 'sign')"
+            @toggleDiscount="toggleDiscount"
+            @updateSalePrice="updateSalePrice"/>
+        <product-presence :product="product"/>
       </div>
     </form>
-    <product-variants v-if="mounted && product.id" :discount="discount" />
+<!--    <product-variants v-if="product.id" :discount="discount" />-->
   </section>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
-import { required, minLength, maxLength } from 'vuelidate/lib/validators'
-import settings from '@/mixins/settings'
-import states from '@/mixins/states'
-import validInput from '@/mixins/validate'
+import EditView from '@/commons/EditView'
+import ButtonsToolbar from '@/components/ButtonsToolbar'
 import ImagesUpload from '@/components/ImagesUpload'
 import ProductCategory from '../components/ProductCategory'
-import ProductMain from '../components/ProductMain'
+import ProductFeatures from '../components/ProductFeatures'
+import ProductGeneral from '../components/ProductGeneral'
 import ProductPresence from '../components/ProductPresence'
 import ProductPrice from '../components/ProductPrice'
-import ProductVariants from '../components/ProductVariants'
+import validations from '../validations/ProductEdit'
 
 export default {
   name: 'ProductEdit',
-  mixins: [
-    settings,
-    states,
-    validInput
-  ],
+  extends: EditView,
   components: {
+    ButtonsToolbar,
     ImagesUpload,
     ProductCategory,
-    ProductMain,
+    ProductFeatures,
+    ProductGeneral,
     ProductPresence,
-    ProductPrice,
-    ProductVariants
+    ProductPrice
   },
   props: {
     propId: {
       type: [String, Number],
-      default: null
+      required: true
     }
   },
   data () {
     return {
-      mounted: false,
-      timers: {},
       discount: {
         amount: 0,
         percent: null
       }
     }
   },
-  computed: mapGetters(['product']),
-  validations: {
-    product: {
-      category_id: {
-        required
-      },
-      model: {
-        required,
-        minLength: minLength(2),
-        maxLength: maxLength(255)
-      }
-    }
+  computed: mapGetters({
+    setting: 'getSetting',
+    product: 'getProduct',
+    categories: 'getCategories'
+  }),
+  validations () {
+    return validations(this);
   },
   mounted () {
+    this.$store.dispatch('fetchCategories');
     this.$store.dispatch(this.propId ? 'fetchProduct' : 'resetProduct', this.propId);
-    this.mounted = true;
   },
   watch: {
-    'product.price_sale': function () {
-      this.discount.amount = this.product.price - this.product.price_sale;
-    },
-    'product.is_stock': function () {
-      this.product.stock = !this.product.is_stock ? 0
-        : this.product.stock === 0 ? 1 : this.product.stock;
-    }
+    // 'product.price_sale': function () {
+    //   this.discount.amount = this.product.price - this.product.price_sale;
+    // },
+    // 'product.is_stock': function () {
+    //   this.product.stock = !this.product.is_stock ? 0 : this.product.stock === 0 ? 1 : this.product.stock;
+    // }
   },
   methods: {
-    goBack () {
-      this.$router.push({ name: 'product' });
-    },
-
-    assign (property, value) {
-      this.product[property] = value;
-      this.stateDraft();
-      this.save();
-    },
-
     changed () {
-      this.stateDraft();
-
-      if (this.propId) {
-        clearTimeout(this.timers.save);
-        this.timers.save = setTimeout(() => this.save(), 2000);
-      }
+      this.dataChanged(this.saveProduct);
     },
 
-    async save () {
-      if (this.validate()) {
-        this.stateLoading();
-        clearTimeout(this.timers.save);
+    setProperty (property, value) {
+      this.product[property] = value;
+      this.setDraftState().saveProduct();
+    },
 
+    toggleDiscount () {
+      this.discount.amount = 0;
+      this.product.sale_text = null;
+      // this.product.price_sale = (this.product.is_sale) ? this.product.price : 0;
+    },
+
+    updateSalePrice () {
+      clearTimeout(this.timers.discount);
+      this.discount.amount = Math.round(this.product.price * this.discount.percent / 100);
+      // this.product.price_sale = this.product.price - this.discount.amount;
+      this.timers.discount = setTimeout(() => {
+        this.discount.percent = null;
+      }, 2000);
+    },
+
+    saveProduct () {
+      this.saveData(async () => {
         if (this.propId) {
           await this.$store.dispatch('updateProduct', this.product);
         } else {
@@ -136,23 +138,7 @@ export default {
             params: { propId: this.product.id }
           });
         }
-        this.stateSaved();
-      }
-    },
-
-    toggleDiscount () {
-      this.discount.amount = 0;
-      this.product.sale_text = null;
-      this.product.price_sale = (this.product.is_sale) ? this.product.price : 0;
-    },
-
-    updateSalePrice () {
-      clearTimeout(this.timers.discount);
-      this.discount.amount = Math.round(this.product.price * this.discount.percent / 100);
-      this.product.price_sale = this.product.price - this.discount.amount;
-      this.timers.discount = setTimeout(() => {
-        this.discount.percent = null;
-      }, 2000);
+      });
     }
   }
 }

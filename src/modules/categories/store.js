@@ -1,5 +1,22 @@
 import axios from 'axios';
 
+const fetchAllQuery = () => `{
+  categories {
+    id
+    parent_id
+    is_active
+    is_parent
+    title
+    title_short
+    slug
+    seo_title
+    seo_description
+    seo_keywords
+    description
+    images
+    settings
+  }
+}`;
 const CATEGORY_BLANK = {
   parent_id: 0,
   images: [],
@@ -14,14 +31,13 @@ export default {
   },
 
   getters: {
-    category: (state) => state.category,
-
-    categories: (state) => state.categories,
+    getCategory: (state) => state.category,
+    getCategories: (state) => state.categories,
 
     getCategoryById: (state) => (id) => state.categories.find((el) => el.id === id) || {},
 
     getParentCategories: (state) => [
-      { id: 0, title: '[rootReducer]' },
+      { id: 0, title: '[root]' },
       ...state.categories.filter((el) => el.is_parent)
     ]
   },
@@ -39,16 +55,18 @@ export default {
       Object.assign(state.category, payload);
     },
 
-    assignCategories (state, payload) {
+    CATEGORIES_SET (state, payload) {
       state.categories = payload;
     }
   },
 
   actions: {
     async fetchCategories (context) {
-      if (!context.state.categories.length) {
-        const res = await axios.get('/categories.json');
-        context.commit('assignCategories', res.data);
+      try {
+        const { data } = await axios.post('http://velohub.lndo.site/admin/api', { query: fetchAllQuery() });
+        context.commit('CATEGORIES_SET', data.data.categories);
+      } catch (err) {
+        console.error('Axios api error', err);
       }
     },
 

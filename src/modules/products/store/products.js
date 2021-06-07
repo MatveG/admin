@@ -1,89 +1,13 @@
 import axios from 'axios';
 
-const fetchAllQuery = () => `{
-  products {
-    category {
-      title
-    }
-    id
-    is_active
-    is_stock
-    code
-    title
-    brand
-    model
-    slug
-    thumb
-    features
-  }
-}`;
-const fetchOneQuery = (id) => `{
-  product(id: ${id}) {
-    category {
-      id
-      title
-    }
-    variants {
-      id
-      product_id
-      category_id
-      is_active
-      is_stock
-      is_sale
-      price
-      surcharge
-      weight
-      code
-      barcode
-      images
-      parameters
-      stocks
-    }
-    id
-    category_id
-    is_active
-    is_stock
-    is_sale
-    warranty
-    price
-    price_old
-    weight
-    code
-    barcode
-    slug
-    title
-    brand
-    model
-    seo_title
-    seo_description
-    seo_keywords
-    sale_text
-    summary
-    description
-    link
-    thumb
-    created_at
-    updated_at
-    stocks
-    features
-    settings
-  }
-}`;
-const BLANK_PRODUCT = {
-  category: {},
-  variants: [],
-  features: {},
-  images: []
-};
-
 export default {
   state: {
-    product: BLANK_PRODUCT,
+    product: {},
     products: []
   },
   getters: {
-    product: (state) => state.product,
-    products: (state) => state.products
+    getProduct: (state) => state.product,
+    getProducts: (state) => state.products
   },
   mutations: {
     PRODUCTS_SET (state, payload) {
@@ -102,8 +26,8 @@ export default {
   actions: {
     async fetchProducts (context) {
       try {
-        const { data } = await axios.post('http://velohub.lndo.site/admin/api', { query: fetchAllQuery() });
-        context.commit('PRODUCTS_SET', data.data.products);
+        const { data } = await axios.get('http://velohub.lndo.site/api/products');
+        context.commit('PRODUCTS_SET', data);
       } catch (err) {
         console.error('Axios api error', err);
       }
@@ -111,8 +35,8 @@ export default {
 
     async fetchProduct (context, id) {
       try {
-        const { data } = await axios.post('http://velohub.lndo.site/admin/api', { query: fetchOneQuery(id) });
-        context.commit('PRODUCT_SET', data.data.product);
+        const { data } = await axios.get(`/products/${id}`);
+        context.commit('PRODUCT_SET', data);
       } catch (err) {
         console.error('Axios api error', err);
       }
@@ -120,7 +44,7 @@ export default {
 
     async storeProduct (context, payload) {
       try {
-        const { data } = await axios.post('http://velohub.lndo.site/api/products', payload);
+        const { data } = await axios.post('/products', payload);
         context.commit('PRODUCT_ASSIGN', data);
       } catch (err) {
         console.error('Axios api error', err);
@@ -129,7 +53,7 @@ export default {
 
     async updateProduct (context, payload) {
       try {
-        const { data } = await axios.patch(`http://velohub.lndo.site/api/products/${payload.id}`, payload);
+        const { data } = await axios.patch(`/products/${payload.id}`, payload);
         context.commit('PRODUCT_ASSIGN', data);
       } catch (err) {
         console.error('Axios api error', err);
@@ -138,7 +62,7 @@ export default {
 
     async deleteProduct (context, id) {
       try {
-        await axios.delete(`http://velohub.lndo.site/api/products/${id}`);
+        await axios.delete(`/products/${id}`);
         context.commit('PRODUCT_DELETE', id);
       } catch (err) {
         console.error('Axios api error', err);
@@ -146,7 +70,7 @@ export default {
     },
 
     async resetProduct (context) {
-      context.commit('PRODUCT_SET', { ...BLANK_PRODUCT });
+      context.commit('PRODUCT_SET', {});
     }
   }
 };
