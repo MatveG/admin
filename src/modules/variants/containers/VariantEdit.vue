@@ -61,7 +61,7 @@
 
 <script>
 import CardComponent from '@/components/CardComponent';
-import ImagesUpload from '@/components/ImagesUpload';
+import ImagesUpload from '@/containers/ImagesUploader';
 import states from '@/mixins/states';
 import { mapGetters } from 'vuex';
 

@@ -1,26 +1,40 @@
 <template>
   <card-component :title="`ID товара: ${product.id || ''}`" icon="shape" class="tile is-child">
     <b-field class="has-text-centered">
-      <b-switch v-model="product.is_active">
-        Активен
-      </b-switch>
+      <b-switch v-model="product.is_active">Активен</b-switch>
     </b-field>
-    <div class="has-text-centered">
-      <p>
-        <a href="" class="button" target="_blank">
-          Посмотреть на сайте
-        </a>
-      </p>
+    <div class="has-text-centered buttons is-centered">
+      <b-button label="Посмотреть на сайте" tag="a" to="/"/>
     </div>
-    <b-field label="Категория" label-position="on-border" class="mt-5"
-             :type="{ 'is-danger': v.category_id.$error }">
-      <b-select v-model="product.category_id" @select="$emit('changed')" expanded>
-        <div v-for="(category, idx) in categories" :key="idx">
-          <optgroup v-if="category.is_parent" :label="category.title">
-            <option v-for="(child, idx) in category.child" :key="idx" :value="child.id">{{ child.title }}</option>
+
+    <b-field
+        label="Категория"
+        label-position="on-border"
+        :type="{ 'is-danger': v.category_id.$error }">
+      <b-select
+          expanded
+          v-model="product.category_id"
+          @select="$emit('changed')">
+        <template v-for="(category, idx) in categories">
+          <optgroup
+              v-if="category.is_parent"
+              :label="category.title"
+              :key="idx">
+            <option
+                v-for="(child, idx2) in category.children"
+                :value="child.id"
+                :key="idx2">
+              {{ child.title }}
+            </option>
           </optgroup>
-          <option v-else :value="category.id">{{ category.title }}</option>
-        </div>
+
+          <option
+              v-else
+              :value="category.id"
+              :key="idx">
+            {{ category.title }}
+          </option>
+        </template>
       </b-select>
     </b-field>
   </card-component>

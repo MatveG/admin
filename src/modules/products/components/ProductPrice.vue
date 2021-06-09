@@ -1,7 +1,15 @@
 <template>
   <card-component title="Цена" icon="currency-usd" class="card-top-margin">
-    <b-field label="Цена" label-position="on-border">
-      <b-input v-model.number="product.price" type="number" step="any" placeholder="0.0" expanded/>
+    <b-field :label="product.is_sale ? 'Старая цена' : 'Цена'" label-position="on-border">
+      <b-input
+          v-if="product.is_sale"
+          v-model.number="product.price_old"
+          type="number" step="any" placeholder="0.0" expanded/>
+      <b-input
+          v-else
+          v-model.number="product.price"
+          type="number" step="any" placeholder="0.0" expanded/>
+
       <div class="control">
         <div class="button is-static">{{ currencySign }}</div>
       </div>
@@ -17,8 +25,10 @@
       <div class="columns">
         <div class="column">
           <b-field label="Скидка" label-position="on-border">
-            <b-input type="number" step="any" placeholder="0"
-                     v-model="discount.percent" @change.native="$emit('updateSalePrice')"/>
+            <b-input
+                v-model.number="discount.percent"
+                @change.native="$emit('updateSalePrice')"
+                placeholder="0"/>
             <div class="control">
               <button class="button is-primary">%</button>
             </div>
@@ -26,10 +36,12 @@
         </div>
         <div class="column">
           <b-field label="Цена со скидкой" label-position="on-border">
-            <b-input type="number" step="any" placeholder="0.0" expanded
-                     v-model.number="product.price_sale" :disabled="!product.is_sale"/>
+            <b-input
+                v-model.number="product.price"
+                :disabled="!product.is_sale"
+                type="number" step="any" placeholder="0.0" expanded/>
             <div class="control">
-              <div class="button is-static">{{ setting('currency', 'sign') }}</div>
+              <div class="button is-static">{{ currencySign }}</div>
             </div>
           </b-field>
         </div>
@@ -50,9 +62,18 @@ export default {
     CardComponent
   },
   props: {
-    product: Object,
-    discount: Object,
-    currencySign: String
+    product: {
+      type: Object,
+      required: true
+    },
+    discount: {
+      type: Object,
+      required: true
+    },
+    currencySign: {
+      type: String,
+      default: ''
+    }
   },
   data () {
     return {

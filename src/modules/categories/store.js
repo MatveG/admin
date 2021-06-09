@@ -1,94 +1,76 @@
 import axios from 'axios';
 
-const fetchAllQuery = () => `{
-  categories {
-    id
-    parent_id
-    is_active
-    is_parent
-    title
-    title_short
-    slug
-    seo_title
-    seo_description
-    seo_keywords
-    description
-    images
-    settings
-  }
-}`;
-const CATEGORY_BLANK = {
-  parent_id: 0,
-  images: [],
-  features: [],
-  parameters: []
-};
-
 export default {
   state: {
-    category: CATEGORY_BLANK,
+    category: {},
     categories: []
   },
-
   getters: {
     getCategory: (state) => state.category,
-    getCategories: (state) => state.categories,
-
-    getCategoryById: (state) => (id) => state.categories.find((el) => el.id === id) || {},
-
-    getParentCategories: (state) => [
-      { id: 0, title: '[root]' },
-      ...state.categories.filter((el) => el.is_parent)
-    ]
+    getCategories: (state) => state.categories
   },
-
   mutations: {
-    resetCategory (state) {
-      state.category = { ...CATEGORY_BLANK };
-    },
-
-    assignCategory (state, payload) {
-      state.category = payload;
-    },
-
-    updateCategory (state, payload) {
-      Object.assign(state.category, payload);
-    },
-
     CATEGORIES_SET (state, payload) {
       state.categories = payload;
+    },
+    CATEGORY_SET (state, payload) {
+      state.category = payload;
+    },
+    CATEGORY_ASSIGN (state, payload) {
+      Object.assign(state.category, payload);
+    },
+    CATEGORY_DELETE (state, id) {
+      state.categories = state.categories.filter((el) => el.id !== id);
     }
   },
-
   actions: {
     async fetchCategories (context) {
       try {
-        const { data } = await axios.post('http://velohub.lndo.site/admin/api', { query: fetchAllQuery() });
-        context.commit('CATEGORIES_SET', data.data.categories);
+        const { data } = await axios.get('/categories');
+        context.commit('CATEGORIES_SET', data);
       } catch (err) {
         console.error('Axios api error', err);
       }
     },
 
     async fetchCategory (context, id) {
-      const res = await axios.get(`/admin/categories/${id}`);
-      context.commit('assignCategory', res.data);
+      try {
+        const { data } = await axios.get(`/categories/${id}`);
+        context.commit('CATEGORY_SET', data);
+      } catch (err) {
+        console.error('Axios api error', err);
+      }
     },
 
     async storeCategory (context, payload) {
-      const res = await axios.post(`/admin/categories`, payload);
-      context.commit('updateCategory', res.data);
+      try {
+        const { data } = await axios.post('/categories', payload);
+        context.commit('CATEGORY_ASSIGN', data);
+      } catch (err) {
+        console.error('Axios api error', err);
+      }
     },
 
-    async patchCategory (context, payload) {
-      const res = await axios.patch(`/admin/categories/${payload.id}`, payload);
-      context.commit('updateCategory', res.data);
+    async updateCategory (context, payload) {
+      try {
+        const { data } = await axios.patch(`/categories/${payload.id}`, payload);
+        context.commit('CATEGORY_ASSIGN', data);
+      } catch (err) {
+        console.error('Axios api error', err);
+      }
     },
 
-    async destroyCategory (context, payload) {
-      await axios.delete(`/admin/categories/${payload.id}`);
-      const res = await axios.get(`/admin/categories`);
-      context.commit('assignCategories', res.data);
+    async deleteCategory (context, id) {
+      try {
+        await axios.delete(`/categories/${id}`);
+        context.commit('CATEGORY_DELETE', id);
+      } catch (err) {
+        console.error('Axios api error', err);
+      }
+    },
+
+    async resetCategory (context) {
+      context.commit('CATEGORY_SET', {});
     }
   }
 };

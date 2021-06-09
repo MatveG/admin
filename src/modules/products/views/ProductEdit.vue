@@ -10,19 +10,20 @@
         <product-general
             :product="product"
             :v="$v.product">
-          <product-features
-              v-if="product.category"
-              :product="product"
-              :features="product.category.features"
-              :v="$v.product.features"/>
+            <product-features
+                v-if="product.category"
+                :product="product"
+                :features="product.category.features"
+                :v="$v.product.features"/>
         </product-general>
-        <images-upload
-            prop-width="20%"
-            v-if="mounted && product.id"
-            :prop-images="product.images"
-            :prop-max="10"
-            :prop-api="`/admin/products/${product.id}`"
-            @update="setProperty('images', $event)"/>
+        <card-component title="Фотографии" icon="image" class="card-top-margin">
+          <images-uploader
+              v-if="product.id"
+              :prop-images="product.images"
+              :max-amount="10"
+              @upload="uploadImages($event)"
+              @update="updateImages($event)"/>
+        </card-component>
       </div>
 
       <div class="column">
@@ -34,38 +35,41 @@
         <product-price
             :product="product"
             :discount="discount"
-            :currency-sign="setting('currency', 'sign')"
+            :currency-sign="$settings('currency', 'sign')"
             @toggleDiscount="toggleDiscount"
             @updateSalePrice="updateSalePrice"/>
-        <product-presence :product="product"/>
+        <product-availability :product="product"/>
       </div>
     </form>
-<!--    <product-variants v-if="product.id" :discount="discount" />-->
+    <!--<product-variants v-if="product.id" :discount="discount" />-->
   </section>
 </template>
 
 <script>
+import axios from 'axios'
 import { mapGetters } from 'vuex'
 import EditView from '@/commons/EditView'
 import ButtonsToolbar from '@/components/ButtonsToolbar'
-import ImagesUpload from '@/components/ImagesUpload'
+import CardComponent from '@/components/CardComponent'
+import ImagesUploader from '@/containers/ImagesUploader'
+import ProductAvailability from '../components/ProductAvailability'
 import ProductCategory from '../components/ProductCategory'
 import ProductFeatures from '../components/ProductFeatures'
 import ProductGeneral from '../components/ProductGeneral'
-import ProductPresence from '../components/ProductPresence'
 import ProductPrice from '../components/ProductPrice'
-import validations from '../validations/ProductEdit'
+import validations from '../validations/product'
 
 export default {
   name: 'ProductEdit',
   extends: EditView,
   components: {
     ButtonsToolbar,
-    ImagesUpload,
+    CardComponent,
+    ImagesUploader,
+    ProductAvailability,
     ProductCategory,
     ProductFeatures,
     ProductGeneral,
-    ProductPresence,
     ProductPrice
   },
   props: {
@@ -83,7 +87,6 @@ export default {
     }
   },
   computed: mapGetters({
-    setting: 'getSetting',
     product: 'getProduct',
     categories: 'getCategories'
   }),
@@ -95,12 +98,14 @@ export default {
     this.$store.dispatch(this.propId ? 'fetchProduct' : 'resetProduct', this.propId);
   },
   watch: {
-    // 'product.price_sale': function () {
-    //   this.discount.amount = this.product.price - this.product.price_sale;
-    // },
-    // 'product.is_stock': function () {
-    //   this.product.stock = !this.product.is_stock ? 0 : this.product.stock === 0 ? 1 : this.product.stock;
-    // }
+    'product.price': function () {
+      if (this.product.is_sale) {
+        this.discount.amount = this.product.price_old - this.product.price;
+      }
+    },
+    'product.is_stock': function () {
+      this.product.stock = !this.product.is_stock ? 0 : this.product.stock === 0 ? 1 : this.product.stock;
+    }
   },
   methods: {
     changed () {
@@ -115,16 +120,15 @@ export default {
     toggleDiscount () {
       this.discount.amount = 0;
       this.product.sale_text = null;
-      // this.product.price_sale = (this.product.is_sale) ? this.product.price : 0;
+      this.product.is_sale
+        ? this.product.price_old = this.product.price
+        : this.product.price = this.product.price_old;
     },
 
     updateSalePrice () {
-      clearTimeout(this.timers.discount);
-      this.discount.amount = Math.round(this.product.price * this.discount.percent / 100);
-      // this.product.price_sale = this.product.price - this.discount.amount;
-      this.timers.discount = setTimeout(() => {
-        this.discount.percent = null;
-      }, 2000);
+      this.discount.amount = Math.round(this.product.price_old * this.discount.percent / 100);
+      this.product.price = this.product.price_old - this.discount.amount;
+      this.discount.percent = null;
     },
 
     saveProduct () {
@@ -139,6 +143,36 @@ export default {
           });
         }
       });
+    },
+
+    async uploadImages (images) {
+      const request = new FormData();
+      const settings = { headers: { 'content-type': 'multipart/form-data' } };
+
+      images.forEach((image) => request.append('images[]', image));
+
+      try {
+        const { data } = await axios.post(`products/${this.product.id}/upload-images`, request, settings);
+
+        console.log('uploadImages', data);
+        // this.product.images = data;
+        this.product['images'] = data;
+      } catch (error) {
+        console.error('Error uploading images', error);
+      }
+    },
+
+    async updateImages (images) {
+      console.log('updateImages', { images });
+      try {
+        const { data } = await axios.post(`products/${this.product.id}/update-images`, { images });
+
+        console.log('updateImages', data);
+        // this.product.images = data;
+        this.product['images'] = data;
+      } catch (error) {
+        console.error('Error updating images', error);
+      }
     }
   }
 }

@@ -1,33 +1,46 @@
-import '@/scss/main.scss'
-import '@mdi/font/css/materialdesignicons.css'
+import axios from 'axios'
 import Vue from 'vue'
 import Vuelidate from 'vuelidate'
 import Buefy from 'buefy'
+import '@/scss/main.scss'
+import '@mdi/font/css/materialdesignicons.css'
+import App from './App.vue'
 import router from './router'
 import store from './store'
-import App from './App.vue'
 import AsideMenuList from '@/components/AsideMenuList'
 
-/* These components are used in recursion algorithm */
-Vue.component('AsideMenuList', AsideMenuList);
 Vue.use(Buefy);
 Vue.use(Vuelidate);
+Vue.component('AsideMenuList', AsideMenuList);
 
-/* Collapse mobile aside menu on route change */
 router.afterEach(() => {
-  store.commit('asideMobileStateToggle', false)
   store.commit('overlayToggle', false)
+  store.commit('asideMobileStateToggle', false)
   store.commit('asideActiveForcedKeyToggle', null)
 })
 
-new Vue({
-  router,
-  store,
-  render: (h) => h(App),
-  // beforeMount () {
-  //   this.$store.dispatch('setSettings', this.$el.getAttribute('settings'));
-  // },
-  mounted () {
-    document.documentElement.classList.remove('has-spinner-active')
-  }
-}).$mount('#app')
+axios.defaults.baseURL = 'http://velohub.lndo.site/api';
+axios.get('/settings')
+  .then(({ data }) => {
+    const settings = data.reduce((acc, el) => {
+      acc[el.key] = el.value;
+      return acc;
+    }, {});
+
+    Vue.prototype.$settings = (key, prop) => {
+      const value = prop && settings[key] ? settings[key][prop] : settings[key];
+      return value || null;
+    }
+
+    new Vue({
+      router,
+      store,
+      mounted () {
+        document.documentElement.classList.remove('has-spinner-active')
+      },
+      render: (h) => h(App)
+    }).$mount('#app')
+  })
+  .catch((error) => {
+    console.error('Failed to load app config', error);
+  });

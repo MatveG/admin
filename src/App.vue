@@ -70,9 +70,6 @@ export default {
       menuSecondaryLabel: null,
       menuSecondaryIcon: null
     }
-  },
-  beforeMount () {
-    this.$store.dispatch('fetchSettings');
   }
 }
 </script>

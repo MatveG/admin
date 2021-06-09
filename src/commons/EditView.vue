@@ -23,19 +23,30 @@ export default {
     },
 
     async saveData (saveHandler) {
-      this.$v.$touch();
+      if (this.$v) {
+        this.$v.$touch();
 
-      if (this.$v.$invalid) {
-        this.$buefy.toast.open({
-          message: 'Заполните обязательные поля',
-          type: 'is-warning',
-          queue: true
-        });
-      } else {
-        this.resetSaveTimer().setLoadingState();
-        await saveHandler();
-        this.setSavedState();
+        if (this.$v.$invalid) {
+          this.$buefy.toast.open({
+            message: 'Заполните обязательные поля',
+            type: 'is-warning',
+            queue: true
+          });
+
+          return this;
+        }
       }
+
+      this.resetSaveTimer().setLoadingState();
+      await saveHandler();
+      this.setSavedState();
+
+      return this;
+    },
+
+    resetSaveTimer (timeoutHandler) {
+      clearTimeout(this.timers.save);
+      this.timers.save = setTimeout(timeoutHandler, 2000);
       return this;
     },
 
@@ -53,17 +64,6 @@ export default {
     setSavedState () {
       this.saved = true;
       this.loading = false;
-      return this;
-    },
-
-    resetSaveTimer (timeoutHandler) {
-      this.clearSaveTimer();
-      this.timers.save = setTimeout(timeoutHandler, 2000);
-      return this;
-    },
-
-    clearSaveTimer () {
-      clearTimeout(this.timers.save);
       return this;
     }
   }
