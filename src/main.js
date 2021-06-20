@@ -19,28 +19,32 @@ router.afterEach(() => {
   store.commit('asideActiveForcedKeyToggle', null)
 })
 
-axios.defaults.baseURL = 'http://velohub.lndo.site/api';
-axios.get('/settings')
-  .then(({ data }) => {
-    const settings = data.reduce((acc, el) => {
-      acc[el.key] = el.value;
-      return acc;
-    }, {});
+axios.defaults.baseURL = 'http://velohub.lndo.site/api/admin';
+axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+axios.defaults.withCredentials = true;
 
-    Vue.prototype.$settings = (key, prop) => {
-      const value = prop && settings[key] ? settings[key][prop] : settings[key];
-      return value || null;
-    }
+// axios.get('/settings')
+//   .then(({ data }) => {
+//     const settings = data.reduce((acc, el) => {
+//       acc[el.key] = el.value;
+//       return acc;
+//     }, {});
+//
+//     Vue.prototype.$settings = (key, prop) => {
+//       const value = prop && settings[key] ? settings[key][prop] : settings[key];
+//       return value || null;
+//     }
 
-    new Vue({
-      router,
-      store,
-      mounted () {
-        document.documentElement.classList.remove('has-spinner-active')
-      },
-      render: (h) => h(App)
-    }).$mount('#app')
-  })
-  .catch((error) => {
-    console.error('Failed to load app config', error);
-  });
+new Vue({
+  router,
+  store,
+  mounted () {
+    document.documentElement.classList.remove('has-spinner-active')
+  },
+  render: (h) => h(App)
+}).$mount('#app');
+//
+// })
+// .catch((error) => {
+//   console.error('Failed to load app config', error);
+// });

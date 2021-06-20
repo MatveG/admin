@@ -4,14 +4,14 @@
       <products-toolbar :toggled="filters" @toggle="toggleFilter"/>
 
       <b-table ref="table"
-               class="valign-center"
-               custom-row-key="id"
-               default-sort="['id', 'desc']"
                :data="products"
                :checked-rows="checked"
                :per-page="perPage"
                :loading="loading"
-               paginated striped checkable hoverable>
+               paginated checkable hoverable
+               class="valign-center"
+               default-sort="id"
+               default-sort-direction="desc">
         <b-table-column label="Фото" field="thumb" width="12%" centered v-slot="props">
           <img :src="props.row.thumb" alt="">
         </b-table-column>

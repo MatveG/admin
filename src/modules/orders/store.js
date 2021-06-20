@@ -1,76 +1,76 @@
-// import axios from 'axios';
-//
-// export default {
-//   state: {
-//     product: {},
-//     products: []
-//   },
-//   getters: {
-//     getProduct: (state) => state.product,
-//     getProducts: (state) => state.products
-//   },
-//   mutations: {
-//     PRODUCTS_SET (state, payload) {
-//       state.products = payload;
-//     },
-//     PRODUCT_SET (state, payload) {
-//       state.product = payload;
-//     },
-//     PRODUCT_ASSIGN (state, payload) {
-//       Object.assign(state.product, payload);
-//     },
-//     PRODUCT_DELETE (state, id) {
-//       state.products = state.products.filter((el) => el.id !== id);
-//     }
-//   },
-//   actions: {
-//     async fetchProducts (context) {
-//       try {
-//         const { data } = await axios.get('http://velohub.lndo.site/api/products');
-//         context.commit('PRODUCTS_SET', data);
-//       } catch (err) {
-//         console.error('Axios api error', err);
-//       }
-//     },
-//
-//     async fetchProduct (context, id) {
-//       try {
-//         const { data } = await axios.get(`/products/${id}`);
-//         context.commit('PRODUCT_SET', data);
-//       } catch (err) {
-//         console.error('Axios api error', err);
-//       }
-//     },
-//
-//     async storeProduct (context, payload) {
-//       try {
-//         const { data } = await axios.post('/products', payload);
-//         context.commit('PRODUCT_ASSIGN', data);
-//       } catch (err) {
-//         console.error('Axios api error', err);
-//       }
-//     },
-//
-//     async updateProduct (context, payload) {
-//       try {
-//         const { data } = await axios.patch(`/products/${payload.id}`, payload);
-//         context.commit('PRODUCT_ASSIGN', data);
-//       } catch (err) {
-//         console.error('Axios api error', err);
-//       }
-//     },
-//
-//     async deleteProduct (context, id) {
-//       try {
-//         await axios.delete(`/products/${id}`);
-//         context.commit('PRODUCT_DELETE', id);
-//       } catch (err) {
-//         console.error('Axios api error', err);
-//       }
-//     },
-//
-//     async resetProduct (context) {
-//       context.commit('PRODUCT_SET', {});
-//     }
-//   }
-// };
+import axios from 'axios';
+
+export default {
+  state: {
+    order: {},
+    orders: []
+  },
+  getters: {
+    getOrder: (state) => state.order,
+    getOrders: (state) => state.orders
+  },
+  mutations: {
+    ORDERS_SET (state, payload) {
+      state.orders = payload;
+    },
+    ORDER_SET (state, payload) {
+      state.order = payload;
+    },
+    ORDER_ASSIGN (state, payload) {
+      Object.assign(state.order, payload);
+    },
+    ORDER_DELETE (state, id) {
+      state.orders = state.orders.filter((el) => el.id !== id);
+    }
+  },
+  actions: {
+    async fetchOrders (context) {
+      try {
+        const { data } = await axios.get('/orders');
+        context.commit('ORDERS_SET', data);
+      } catch (err) {
+        console.error('Axios api error', err);
+      }
+    },
+
+    async fetchOrder (context, id) {
+      try {
+        const { data } = await axios.get(`/orders/${id}`);
+        context.commit('ORDER_SET', data);
+      } catch (err) {
+        console.error('Axios api error', err);
+      }
+    },
+
+    async storeOrder (context, payload) {
+      try {
+        const { data } = await axios.post('/orders', payload);
+        context.commit('ORDER_ASSIGN', data);
+      } catch (err) {
+        console.error('Axios api error', err);
+      }
+    },
+
+    async updateOrder (context, payload) {
+      try {
+        const { data } = await axios.patch(`/orders/${payload.id}`, payload);
+        context.commit('ORDER_ASSIGN', data);
+      } catch (err) {
+        console.error('Axios api error', err);
+      }
+    },
+
+    async deleteOrder (context, id) {
+      try {
+        await axios.delete(`/orders/${id}`);
+        context.commit('ORDER_DELETE', id);
+      } catch (err) {
+        console.error('Axios api error', err);
+      }
+    },
+
+    async resetOrder (context) {
+      context.commit('ORDER_SET', {});
+    }
+  }
+};

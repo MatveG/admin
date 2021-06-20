@@ -29,13 +29,21 @@ const menu = [
     {
       to: '/products',
       label: 'Товары',
-      icon: 'basket'
+      icon: 'shopping-outline'
     },
     {
       to: '/categories',
       label: 'Категории',
-      icon: 'shape-outline'
+      icon: 'file-tree'
     },
+    {
+      to: '/orders',
+      label: 'Заказы',
+      icon: 'basket-outline'
+    }
+  ],
+  'Misc',
+  [
     {
       to: '/tables',
       label: 'Tables',

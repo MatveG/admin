@@ -1,6 +1,6 @@
 <template>
     <section class="section is-main-section">
-       <card-component class="has-table has-mobile-sort-spaced" title="Категории" icon="basket">
+       <card-component class="has-table has-mobile-sort-spaced" title="Категории" icon="file-tree">
         <!--<categories-toolbar :toggled="filters" @toggle="toggleFilter"/>-->
             <category-table :categories="categories"/>
         </card-component>

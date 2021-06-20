@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import categories from '@/modules/categories/store';
+import orders from '@/modules/orders/store';
 import products from '@/modules/products/store';
 
 Vue.use(Vuex)
@@ -8,6 +9,7 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   modules: {
     categories,
+    orders,
     products
   },
   state: {

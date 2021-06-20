@@ -19,18 +19,17 @@
 <!--               class="valign-center">-->
         <b-table ref="table"
                  :data="categories"
-                 :per-page="20"
+                 :per-page="perPage"
                  :loading="loading"
-                 custom-row-key="id"
-                 default-sort="ord"
-                 hoverable
-                 detailed
-                 detail-key="id"
-                 :show-detail-icon="false"
                  :opened-detailed="opened"
-                 class="detail-paddingless">
+                 :show-detail-icon="false"
+                 hoverable detailed
+                 custom-row-key="id"
+                 detail-key="id"
+                 class="detail-paddingless"
+                 default-sort="id">
 
-                <b-table-column field="ord" label="" width="10%" sortable centered v-slot="props">
+                <b-table-column field="ord" label="↑↓" width="10%" sortable centered v-slot="props">
                     {{ props.row.ord }}
                 </b-table-column>
 
@@ -43,7 +42,7 @@
                 </b-table-column>
 
                 <b-table-column field="is_active" label="Активна" width="15%" sortable centered v-slot="props">
-                    <b-checkbox v-model="props.row.is_active" @change.native="update(props.row)" class="is-small" />
+                    <b-checkbox v-model="props.row.is_active" class="is-small" disabled />
                 </b-table-column>
 
                 <b-table-column custom-key="actions" width="15%" centered v-slot="props">
@@ -103,11 +102,6 @@ export default {
     }
   },
   methods: {
-    update (row) {
-      // this.stateLoading();
-      // this.$store.dispatch('patchCategory', row).then(() => this.stateSaved());
-    },
-
     drop (payload) {
       const [rowOne, rowTwo] = [payload.row, this.draggingRow];
 
@@ -125,11 +119,22 @@ export default {
 </script>
 
 <style>
-.detail-paddingless .detail td {
-  padding: 0;
+.detail-paddingless tr.detail > td {
+  padding: 0.3rem;
 }
-.detail-paddingless .detail-container {
+.detail-paddingless div.detail-container {
   padding: 0 !important;
   margin: 0 !important;
+}
+.detail-paddingless tr.detail table {
+  background-color: transparent;
+}
+.detail-paddingless tr.detail table th {
+  visibility: hidden;
+  font-size: 0;
+}
+.detail-paddingless tr.detail table td {
+  padding-top: 0;
+  padding-bottom: 0;
 }
 </style>

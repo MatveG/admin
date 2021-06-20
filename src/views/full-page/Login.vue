@@ -1,20 +1,16 @@
 <template>
-  <card-component title="Login" icon="lock" :has-card-header-background="true" :has-button-slot="true">
-    <router-link slot="button" to="/" class="button is-small">
-      Dashboard
-    </router-link>
-
+  <card-component title="Login" icon="lock">
     <form @submit.prevent="submit" method="POST">
       <b-field label="E-mail Address">
-        <b-input name="email" type="email" required autofocus/>
+        <b-input v-model="formData.email" name="email" type="email" required autofocus/>
       </b-field>
 
       <b-field label="Password">
-        <b-input type="password" name="password" required/>
+        <b-input v-model="formData.password" type="password" name="password" required/>
       </b-field>
 
       <b-field>
-        <b-checkbox type="is-link" class="is-thin">
+        <b-checkbox v-model="formData.remember" class="is-thin">
           Remember me
         </b-checkbox>
       </b-field>
@@ -23,12 +19,12 @@
 
       <b-field grouped>
         <div class="control">
-          <button type="submit" class="button is-black" :class="{'is-loading':isLoading}">
+          <button type="submit" class="button is-primary" :class="{'is-loading':isLoading}">
             Login
           </button>
         </div>
         <div class="control">
-          <router-link to="/password-recovery" class="button is-outlined is-black">
+          <router-link to="/password-recovery" class="button is-outlined is-primary">
             Forgot Password?
           </router-link>
         </div>
@@ -38,6 +34,7 @@
 </template>
 
 <script>
+import axios from 'axios'
 import CardComponent from '@/components/CardComponent'
 
 export default {
@@ -46,20 +43,29 @@ export default {
   data () {
     return {
       isLoading: false,
-      form: {
-        email: null,
-        password: null,
-        remember: false
-      }
+      formData: {}
     }
   },
   methods: {
-    submit () {
-      this.isLoading = true
-      setTimeout(() => {
-        this.isLoading = false
-        this.$router.push('/')
-      }, 750)
+    async submit () {
+      this.isLoading = true;
+
+      await axios.get('/csrf-cookie');
+      const response = await axios.post('/login', this.formData);
+
+      if (response.status === 200) {
+        const token = `${response.data.type} ${response.data.token}`;
+
+        if (this.formData.remember) {
+          localStorage.setItem('_utoken', token);
+        }
+        axios.defaults.headers.common = { 'Authorization': token };
+        await this.$router.push({ name: 'home' });
+      } else {
+        alert('Wrong credentials!');
+      }
+
+      this.isLoading = false;
     }
   }
 }
