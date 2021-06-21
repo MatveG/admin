@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Home from './views/Home.vue'
 import categories from '@/modules/categories/router'
 import orders from '@/modules/orders/router'
 import products from '@/modules/products/router'
@@ -16,14 +15,11 @@ export default new Router({
     {
       path: '/',
       name: 'home',
-      component: Home
+      component: () => import('./views/Home.vue')
     },
     {
       path: '/tables',
       name: 'tables',
-      // route level code-splitting
-      // this generates a separate chunk (about.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
       component: () => import('./views/Tables.vue')
     },
     {
@@ -41,50 +37,45 @@ export default new Router({
       name: 'client.new',
       component: () => import('./views/ClientForm.vue')
     },
+
     {
-      path: '/client/:id',
-      name: 'client.edit',
-      component: () => import('./views/ClientForm.vue'),
-      props: true
+      path: '/login',
+      name: 'login',
+      component: () => import('./views/Login.vue')
     },
     {
-      path: '/full-page',
-      component: () => import('./views/FullPage.vue'),
-      children: [
-        {
-          path: '/login',
-          name: 'login',
-          component: () => import('./views/full-page/Login.vue')
-        },
-        {
-          path: '/password-recovery',
-          name: 'password-recovery',
-          component: () => import('./views/full-page/PasswordRecovery.vue')
-        },
-        {
-          path: '/error-in-card',
-          name: 'error-in-card',
-          component: () => import('./views/full-page/Error.vue')
-        },
-        {
-          path: '/error-simple',
-          name: 'error-simple',
-          component: () => import('./views/full-page/Error.vue'),
-          props: { isInCard: false }
-        },
-        {
-          path: '/lock-screen',
-          name: 'lock-screen',
-          component: () => import('./views/full-page/LockScreen.vue')
-        }
-      ]
+      path: '/login/recovery',
+      name: 'login-recovery',
+      component: () => import('./views/Recovery.vue')
     }
+
+    // {
+    //   path: '/page',
+    //   component: () => import('./views/Wrapper.vue'),
+    //   children: [
+    //     {
+    //       path: '/login-recovery',
+    //       name: 'login-recovery',
+    //       component: () => import('./views/Recovery.vue')
+    //     },
+    //     {
+    //       path: '/error-in-card',
+    //       name: 'error-in-card',
+    //       component: () => import('./views/Error.vue')
+    //     },
+    //     {
+    //       path: '/error-simple',
+    //       name: 'error-simple',
+    //       component: () => import('./views/Error.vue'),
+    //       props: { isInCard: false }
+    //     },
+    //     {
+    //       path: '/lock-screen',
+    //       name: 'lock-screen',
+    //       component: () => import('./views/LockScreen.vue')
+    //     }
+    //   ]
+    // }
   ],
-  scrollBehavior (to, from, savedPosition) {
-    if (savedPosition) {
-      return savedPosition
-    } else {
-      return { x: 0, y: 0 }
-    }
-  }
+  scrollBehavior: (to, from, savedPosition) => savedPosition || { x: 0, y: 0 }
 })

@@ -1,7 +1,7 @@
 <template>
   <card-component title="Основная информация" icon="image-text">
     <b-tabs v-model="tab" type="is-boxed">
-      <b-tab-item label="Название" icon="subtitles-outline">
+      <b-tab-item label="Название" icon="form-textbox">
         <b-field label="Название" message="Пример: Конфеты" horizontal>
           <b-input v-model="product.title" required />
         </b-field>
@@ -23,11 +23,11 @@
         </b-field>
       </b-tab-item>
 
-      <b-tab-item label="Характеристики" icon="star-circle-outline">
+      <b-tab-item label="Характеристики" icon="subtitles-outline">
         <slot/>
       </b-tab-item>
 
-      <b-tab-item label="SEO" icon="google">
+      <b-tab-item label="Мета" icon="search-web">
         <b-field label="URL товара" horizontal>
           <b-input v-model="product.slug" custom-class="is-static" readonly />
         </b-field>

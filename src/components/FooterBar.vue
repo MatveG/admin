@@ -1,20 +1,12 @@
 <template>
-  <footer v-show="isFooterBarVisible" class="footer">
+  <footer v-show="isVisible" class="footer">
     <div class="container-fluid">
       <div class="level">
         <div class="level-left">
-          <div class="level-item">
-            &copy; {{ year }}
-          </div>
+          &nbsp;
         </div>
         <div class="level-right">
-          <div class="level-item">
-            <div class="logo">
-              <a href="/">
-                Home
-              </a>
-            </div>
-          </div>
+          <div class="level-item">&copy;</div>
         </div>
       </div>
     </div>
@@ -22,17 +14,10 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
-
 export default {
   name: 'FooterBar',
-  computed: {
-    year () {
-      return '2021'
-    },
-    ...mapState([
-      'isFooterBarVisible'
-    ])
+  props: {
+    isVisible: Boolean
   }
 }
 </script>

@@ -19,14 +19,16 @@
         <card-component title="Фотографии" icon="image" class="card-top-margin">
           <images-uploader
               v-if="product.id"
+              :id="product.id"
               :prop-images="product.images"
               :max-amount="10"
-              @upload="uploadImages($event)"
-              @update="updateImages($event)"/>
+              @update="product.images = $event"
+              model="product"/>
         </card-component>
       </div>
 
       <div class="column">
+
         <product-category
             :product="product"
             :categories="categories"
@@ -38,7 +40,9 @@
             :currency-sign="$settings('currency', 'sign')"
             @toggleDiscount="toggleDiscount"
             @updateSalePrice="updateSalePrice"/>
-        <product-availability :product="product"/>
+        <product-availability
+            :product="product"
+            :stocks="$settings('shop', 'stocks')"/>
       </div>
     </form>
     <!--<product-variants v-if="product.id" :discount="discount" />-->
@@ -46,7 +50,6 @@
 </template>
 
 <script>
-import axios from 'axios'
 import { mapGetters } from 'vuex'
 import EditView from '@/commons/EditView'
 import ButtonsToolbar from '@/components/ButtonsToolbar'
@@ -96,6 +99,8 @@ export default {
   mounted () {
     this.$store.dispatch('fetchCategories');
     this.$store.dispatch(this.propId ? 'fetchProduct' : 'resetProduct', this.propId);
+
+    setTimeout(() => console.log('product', this.product), 1000);
   },
   watch: {
     'product.price': function () {
@@ -104,7 +109,12 @@ export default {
       }
     },
     'product.is_stock': function () {
-      this.product.stock = !this.product.is_stock ? 0 : this.product.stock === 0 ? 1 : this.product.stock;
+      if (!this.product.is_stock) {
+        // eslint-disable-next-line guard-for-in
+        for (const stock in this.product.stocks) {
+          this.product.stocks[stock] = 0
+        }
+      }
     }
   },
   methods: {
@@ -134,6 +144,7 @@ export default {
     saveProduct () {
       this.saveData(async () => {
         if (this.propId) {
+          console.log('this.product', this.product);
           await this.$store.dispatch('updateProduct', this.product);
         } else {
           await this.$store.dispatch('storeProduct', this.product);
@@ -143,36 +154,6 @@ export default {
           });
         }
       });
-    },
-
-    async uploadImages (images) {
-      const request = new FormData();
-      const settings = { headers: { 'content-type': 'multipart/form-data' } };
-
-      images.forEach((image) => request.append('images[]', image));
-
-      try {
-        const { data } = await axios.post(`products/${this.product.id}/upload-images`, request, settings);
-
-        console.log('uploadImages', data);
-        // this.product.images = data;
-        this.product['images'] = data;
-      } catch (error) {
-        console.error('Error uploading images', error);
-      }
-    },
-
-    async updateImages (images) {
-      console.log('updateImages', { images });
-      try {
-        const { data } = await axios.post(`products/${this.product.id}/update-images`, { images });
-
-        console.log('updateImages', data);
-        // this.product.images = data;
-        this.product['images'] = data;
-      } catch (error) {
-        console.error('Error updating images', error);
-      }
     }
   }
 }

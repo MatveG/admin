@@ -1,82 +1,54 @@
 <template>
-  <div id="app">
-    <nav-bar/>
-    <aside-menu :menu="menu"/>
-    <router-view/>
+  <div>
+    <header-bar/>
+    <aside-left
+        :menu="menu"
+        :is-visible="isAsideVisible"
+        :is-expanded="isAsideExpanded"
+        :is-mobile-expanded="isAsideMobileExpanded"
+        icon="gamepad-circle-up"/>
+    <div>
+      <router-view/>
+    </div>
     <aside-right/>
-    <footer-bar/>
-    <overlay/>
+    <footer-bar :is-visible="isFooterBarVisible"/>
+    <page-overlay :is-visible="isOverlayVisible" @click="overlayClick"/>
   </div>
 </template>
 
 <script>
-import NavBar from '@/components/NavBar'
-import AsideMenu from '@/components/AsideMenu'
-import FooterBar from '@/components/FooterBar'
-import Overlay from '@/components/Overlay'
+import { mapState } from 'vuex'
+import menu from '@/menu'
+import AsideLeft from '@/components/AsideLeft'
 import AsideRight from '@/components/AsideRight'
-
-const menu = [
-  [
-    {
-      to: '/',
-      icon: 'desktop-mac',
-      label: 'Dashboard'
-    }
-  ],
-  'Магазин',
-  [
-    {
-      to: '/products',
-      label: 'Товары',
-      icon: 'shopping-outline'
-    },
-    {
-      to: '/categories',
-      label: 'Категории',
-      icon: 'file-tree'
-    },
-    {
-      to: '/orders',
-      label: 'Заказы',
-      icon: 'basket-outline'
-    }
-  ],
-  'Misc',
-  [
-    {
-      to: '/tables',
-      label: 'Tables',
-      icon: 'table'
-    },
-    {
-      to: '/forms',
-      label: 'Forms',
-      icon: 'square-edit-outline'
-    },
-    {
-      to: '/profile',
-      label: 'Profile',
-      icon: 'account-circle'
-    }
-  ]
-]
+import FooterBar from '@/components/FooterBar'
+import HeaderBar from '@/containers/HeaderBar'
+import PageOverlay from '@/components/PageOverlay'
 
 export default {
   name: 'App',
   components: {
+    AsideLeft,
     AsideRight,
-    Overlay,
     FooterBar,
-    AsideMenu,
-    NavBar
+    HeaderBar,
+    PageOverlay
   },
+  computed: mapState([
+    'isAsideVisible',
+    'isAsideExpanded',
+    'isAsideMobileExpanded',
+    'isFooterBarVisible',
+    'isOverlayVisible'
+  ]),
   data () {
     return {
-      menu,
-      menuSecondary: null,
-      menuSecondaryLabel: null,
-      menuSecondaryIcon: null
+      menu
+    }
+  },
+  methods: {
+    overlayClick () {
+      this.$store.commit('overlayToggle', false);
     }
   }
 }

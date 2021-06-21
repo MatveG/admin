@@ -1,9 +1,9 @@
 <template>
   <div>
-    <draggable ghost-class="opacity-30" v-model="images" @start="dragStart" @end="dragEnd">
+    <draggable ghost-class="opacity-30" v-model="propImages" @start="dragStart" @end="dragEnd">
       <transition-group class="images-grid">
-        <div v-for="(image, idx) in images" :key="idx" class="image-cont">
-          <img :src="'http://velohub.lndo.site' + image" alt="">
+        <div v-for="(image, idx) in propImages" :key="idx" class="image-cont">
+          <img :src="image" alt="">
           <button @click.prevent="deleteImage(idx)" type="button" class="delete is-danger"/>
         </div>
       </transition-group>
@@ -24,13 +24,22 @@
 
 <script>
 import draggable from 'vuedraggable'
+import axios from '@/api/axios'
 
 export default {
-  name: 'propImagesUploader',
+  name: 'ImagesUploader',
   components: {
     draggable
   },
   props: {
+    id: {
+      type: Number,
+      required: true
+    },
+    model: {
+      type: String,
+      required: true
+    },
     propImages: {
       type: Array,
       default: () => []
@@ -42,46 +51,45 @@ export default {
   },
   data () {
     return {
-      images: [...this.propImages],
-      uploadFiles: [],
-      height: 0
+      // images: [...this.propImages],
+      uploadFiles: []
     }
   },
   watch: {
-    'propImages': function () {
-      this.images = [...this.propImages];
-    },
+    // 'propImages': function () {
+    //   this.images = [...this.propImages];
+    // },
     'uploadFiles': function () {
       if (this.uploadFiles.length) {
-        this.uploadImages(this.uploadFiles);
-        this.uploadFiles = [];
+        this.uploadImages();
+        // this.uploadFiles = [];
       }
     }
   },
   methods: {
     dragStart () {
-      this.temp = this.images;
+      this.temp = this.propImages;
     },
 
     dragEnd () {
-      if (this.images !== this.temp) {
-        this.$emit('update', this.images);
+      if (this.propImages !== this.temp) {
+        this.$emit('update', this.propImages);
       }
     },
 
     deleteImage (idx) {
-      this.images.splice(idx, 1);
-      this.$emit('update', this.images);
+      this.propImages.splice(idx, 1);
+      this.$emit('update', this.propImages);
     },
 
-    uploadImages (files) {
-      if (this.validateImages(files)) {
-        this.$emit('upload', files)
+    uploadImages () {
+      if (this.validateImages(this.uploadFiles)) {
+        this.handleUpload();
       }
     },
 
-    validateImages (files) {
-      files.forEach((file) => {
+    validateImages () {
+      this.uploadFiles.forEach((file) => {
         if (!file.name.match(/\.(jpg|jpeg|gif|png)$/i)) {
           this.$buefy.toast.open({
             message: 'Allowed file formats: jpg, jpeg, gif, png',
@@ -98,6 +106,33 @@ export default {
         }
       });
       return true;
+    },
+
+    async handleUpload () {
+      const request = new FormData();
+      const settings = { headers: { 'content-type': 'multipart/form-data' } };
+
+      this.uploadFiles.forEach((image) => request.append('images[]', image));
+
+      try {
+        const { data } = await axios.post(`images/upload/${this.model}/${this.id}/`, request, settings);
+        console.error('data', data);
+      } catch (error) {
+        console.error('Error uploading images', error);
+      }
+    },
+
+    async handleUpdate (images) {
+      console.log('updateImages', { images });
+      try {
+        const { data } = await axios.post(`products/${this.product.id}/update-images`, { images });
+
+        console.log('updateImages', data);
+        // this.product.images = data;
+        this.product['images'] = data;
+      } catch (error) {
+        console.error('Error updating images', error);
+      }
     }
   }
 }

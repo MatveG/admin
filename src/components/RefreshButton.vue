@@ -1,5 +1,9 @@
 <template>
-  <button type="button" class="button is-small" :class="{'is-loading':isLoading}" @click.prevent="click">
+  <button
+      @click.prevent="$emit('click')"
+      :class="{'is-loading':isLoading}"
+      class="button is-small"
+      type="button">
     <b-icon :icon="icon" custom-size="default"/>
     <span>{{ label }}</span>
   </button>
@@ -15,16 +19,11 @@ export default {
     },
     label: {
       type: String,
-      default: 'Refresh'
+      default: 'Обновить'
     },
     isLoading: {
       type: Boolean,
       default: false
-    }
-  },
-  methods: {
-    click (e) {
-      this.$emit('button-click', e)
     }
   }
 }

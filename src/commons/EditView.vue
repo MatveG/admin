@@ -51,6 +51,7 @@ export default {
     },
 
     setDraftState () {
+      clearTimeout(this.timers.save);
       this.saved = false;
       return this;
     },

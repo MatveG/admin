@@ -25,6 +25,7 @@ export default new Vuex.Store({
     isFooterBarVisible: true,
 
     /* Aside */
+    isNavbarVisible: true,
     isAsideVisible: true,
     isAsideExpanded: false,
     isAsideMobileExpanded: false,
@@ -63,6 +64,7 @@ export default new Vuex.Store({
     fullPage (state, payload) {
       state.isNavBarVisible = !payload;
       state.isAsideVisible = !payload;
+      state.isNavbarVisible = !payload;
       state.isFooterBarVisible = !payload;
 
       ['has-aside-left', 'has-navbar-fixed-top'].forEach((htmlClass) => {
@@ -162,7 +164,5 @@ export default new Vuex.Store({
       }
     }
   },
-  actions: {
-
-  }
+  actions: {}
 })

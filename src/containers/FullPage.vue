@@ -4,21 +4,18 @@
       <div class="container">
         <div class="columns is-centered">
           <div class="column is-two-fifths">
-            <router-view/>
+            <slot/>
           </div>
         </div>
       </div>
-    </div>
-    <div class="hero-foot has-text-centered">
-      <div class="logo"></div>
     </div>
   </section>
 </template>
 
 <script>
 export default {
-  name: 'FullPage',
-  created () {
+  name: 'Page',
+  mounted () {
     this.$store.commit('fullPage', true)
     this.$store.commit('asideRightToggle', false)
   },

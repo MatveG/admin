@@ -1,33 +1,22 @@
 <template>
-  <aside  class="aside is-placed-right">
-    <div ref="container" class="aside-container" @mouseenter="psUpdate">
-      <aside-updates @data-updated="psInit"/>
+  <aside class="aside is-placed-right">
+    <div ref="container" @mouseenter="scrollUpdate" class="aside-container">
+      <aside-updates @data-updated="scrollInit($refs.container)"/>
     </div>
   </aside>
 </template>
 
 <script>
-import { mapState } from 'vuex'
-import PerfectScrollbar from 'perfect-scrollbar'
 import AsideUpdates from '@/components/AsideUpdates'
+import scrollHandle from '@/mixins/scrollHandle'
 
 export default {
   name: 'AsideRight',
-  components: { AsideUpdates },
-  computed: {
-    ...mapState([
-      'isAsideRightVisible'
-    ])
-  },
-  methods: {
-    psInit () {
-      this.ps = new PerfectScrollbar(this.$refs.container)
-    },
-    psUpdate () {
-      if (this.ps) {
-        this.ps.update()
-      }
-    }
+  mixins: [
+    scrollHandle
+  ],
+  components: {
+    AsideUpdates
   }
 }
 </script>
