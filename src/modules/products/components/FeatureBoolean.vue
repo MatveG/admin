@@ -1,5 +1,5 @@
 <template>
-  <b-select v-model="product.features[feature.key]" expanded>
+  <b-select v-model="model.features[feature.key]" expanded>
     <option :value="null">выберите</option>
     <option :value="1">есть</option>
     <option :value="0">нет</option>
@@ -7,10 +7,12 @@
 </template>
 
 <script>
+import useModelBinding from '@/hooks/useModelBinding'
+
 export default {
   name: 'FeatureBoolean',
   props: {
-    product: {
+    value: {
       type: Object,
       required: true
     },
@@ -18,6 +20,10 @@ export default {
       type: Object,
       required: true
     }
+  },
+  setup (props, context) {
+    const { model } = useModelBinding(props, context);
+    return { model };
   }
 }
 </script>

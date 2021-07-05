@@ -3,23 +3,23 @@
     <b-tabs v-model="tab" type="is-boxed">
       <b-tab-item label="Название" icon="form-textbox">
         <b-field label="Название" message="Пример: Конфеты" horizontal>
-          <b-input v-model="product.title" required />
+          <b-input v-model="model.title" required />
         </b-field>
         <b-field label="Бренд" message="Пример: M&M's" horizontal>
-          <b-input v-model="product.brand" required />
+          <b-input v-model="model.brand" required />
         </b-field>
         <b-field label="Модель" message="Пример: Milk Chocolate" horizontal
                  :type="{ 'is-danger': v.model.$error }">
-          <b-input v-model="product.model" required />
+          <b-input v-model="model.model" required />
         </b-field>
       </b-tab-item>
 
       <b-tab-item label="Описание" icon="text">
         <b-field label="Короткое описание" horizontal>
-          <b-input v-model="product.summary" type="textarea" />
+          <b-input v-model="model.summary" type="textarea" />
         </b-field>
         <b-field label="Полное описание" horizontal>
-          <b-input v-model="product.description" type="textarea" />
+          <b-input v-model="model.description" type="textarea" />
         </b-field>
       </b-tab-item>
 
@@ -29,16 +29,16 @@
 
       <b-tab-item label="Мета" icon="search-web">
         <b-field label="URL товара" horizontal>
-          <b-input v-model="product.slug" custom-class="is-static" readonly />
+          <b-input v-model="model.slug" custom-class="is-static" readonly />
         </b-field>
         <b-field label="Заголовок" message="Тег title" horizontal>
-          <b-input v-model="product.seo_title" />
+          <b-input v-model="model.seo_title" />
         </b-field>
         <b-field label="Описание" message="Тег description" horizontal>
-          <b-input v-model="product.seo_description" />
+          <b-input v-model="model.seo_description" />
         </b-field>
         <b-field label="Ключевые слова" message="Тег keywords" horizontal>
-          <b-input v-model="product.seo_keywords" />
+          <b-input v-model="model.seo_keywords" />
         </b-field>
       </b-tab-item>
     </b-tabs>
@@ -46,6 +46,7 @@
 </template>
 
 <script>
+import useModelBinding from '@/hooks/useModelBinding'
 import CardComponent from '@/components/CardComponent'
 
 export default {
@@ -54,7 +55,7 @@ export default {
     CardComponent
   },
   props: {
-    product: {
+    value: {
       type: Object,
       required: true
     },
@@ -67,6 +68,10 @@ export default {
     return {
       tab: 0
     }
+  },
+  setup (props, context) {
+    const { model } = useModelBinding(props, context);
+    return { model };
   }
 }
 </script>

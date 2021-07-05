@@ -1,5 +1,5 @@
-import Products from './views/Products';
-import ProductEdit from './views/ProductEdit';
+import Products from './views/ProductsMain';
+import ProductEdit from './views/ProductsEdit';
 
 export default [
   {

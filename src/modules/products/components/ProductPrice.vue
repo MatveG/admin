@@ -1,13 +1,13 @@
 <template>
   <card-component title="Цена" icon="currency-usd" class="card-top-margin">
-    <b-field :label="product.is_sale ? 'Старая цена' : 'Цена'" label-position="on-border">
+    <b-field :label="model.is_sale ? 'Старая цена' : 'Цена'" label-position="on-border">
       <b-input
-          v-if="product.is_sale"
-          v-model.number="product.price_old"
+          v-if="model.is_sale"
+          v-model.number="model.price_old"
           type="number" step="any" placeholder="0.0" expanded/>
       <b-input
           v-else
-          v-model.number="product.price"
+          v-model.number="model.price"
           type="number" step="any" placeholder="0.0" expanded/>
 
       <div class="control">
@@ -16,12 +16,12 @@
     </b-field>
 
     <b-field class="has-text-centered">
-      <b-switch v-model="product.is_sale" @change.native="$emit('toggleDiscount')">
+      <b-switch v-model="model.is_sale" @change.native="$emit('toggleDiscount')">
         Скидка
       </b-switch>
     </b-field>
 
-    <div v-if="product.is_sale">
+    <div v-if="model.is_sale">
       <div class="columns">
         <div class="column">
           <b-field label="Скидка" label-position="on-border">
@@ -37,8 +37,8 @@
         <div class="column">
           <b-field label="Цена со скидкой" label-position="on-border">
             <b-input
-                v-model.number="product.price"
-                :disabled="!product.is_sale"
+                v-model.number="model.price"
+                :disabled="!model.is_sale"
                 type="number" step="any" placeholder="0.0" expanded/>
             <div class="control">
               <div class="button is-static">{{ currencySign }}</div>
@@ -47,7 +47,7 @@
         </div>
       </div>
       <b-field label="Детали акции" label-position="on-border">
-        <b-input v-model="product.sale_text" type="textarea" rows="1" />
+        <b-input v-model="model.sale_text" type="textarea" rows="1" />
       </b-field>
     </div>
   </card-component>
@@ -55,6 +55,7 @@
 
 <script>
 import CardComponent from '@/components/CardComponent'
+import useModelBinding from '@/hooks/useModelBinding'
 
 export default {
   name: 'ProductPrice',
@@ -62,7 +63,7 @@ export default {
     CardComponent
   },
   props: {
-    product: {
+    value: {
       type: Object,
       required: true
     },
@@ -79,6 +80,10 @@ export default {
     return {
       tab: 0
     }
+  },
+  setup (props, context) {
+    const { model } = useModelBinding(props, context);
+    return { model };
   }
 }
 </script>

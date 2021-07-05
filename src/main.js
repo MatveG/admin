@@ -1,6 +1,7 @@
 import '@/scss/main.scss'
 import '@mdi/font/css/materialdesignicons.css'
 import Vue from 'vue'
+import VueCompositionAPI from '@vue/composition-api'
 import Vuelidate from 'vuelidate'
 import Buefy from 'buefy'
 import App from './App.vue'
@@ -9,6 +10,7 @@ import store from './store'
 import axios from '@/api/axios'
 import AsideMenuList from '@/components/AsideMenuList'
 
+Vue.use(VueCompositionAPI)
 Vue.use(Buefy);
 Vue.use(Vuelidate);
 Vue.component('AsideMenuList', AsideMenuList);

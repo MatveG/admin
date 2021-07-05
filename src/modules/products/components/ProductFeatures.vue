@@ -5,7 +5,7 @@
         <label class="label is-5 has-text-centered">{{ feature.title }}</label>
         <product-features :prop-features="feature.children" />
         <product-features
-            :product="product"
+            v-model="model"
             :features="feature.children"
             :v="v"/>
         </div>
@@ -17,7 +17,7 @@
           :type="{ 'is-danger': v[feature.key] && v[feature.key].$error }">
         <component
             :is="`feature-${feature.type}`"
-            :product="product"
+            v-model="model"
             :feature="feature"/>
       </b-field>
     </div>
@@ -25,6 +25,7 @@
 </template>
 
 <script>
+import useModelBinding from '@/hooks/useModelBinding'
 import FeatureBoolean from './FeatureBoolean'
 import FeatureMultiple from './FeatureMultiple'
 import FeatureNumber from './FeatureNumber'
@@ -45,7 +46,7 @@ export default {
     ProductFeatures
   },
   props: {
-    product: {
+    value: {
       type: Object,
       required: true
     },
@@ -57,6 +58,10 @@ export default {
       type: Object,
       default: () => {}
     }
+  },
+  setup (props, context) {
+    const { model } = useModelBinding(props, context);
+    return { model };
   }
 }
 </script>

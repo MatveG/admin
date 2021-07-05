@@ -1,4 +1,4 @@
-import Categories from './views/Categories';
+import Categories from './views/CategoriesMain';
 // import CategoryEdit from './views/CategoryEdit';
 
 export default [

@@ -27,13 +27,7 @@ export default {
         this.$v.$touch();
 
         if (this.$v.$invalid) {
-          this.$buefy.toast.open({
-            message: 'Заполните обязательные поля',
-            type: 'is-warning',
-            queue: true
-          });
-
-          return this;
+          return this.validationErrorMessage();
         }
       }
 
@@ -41,6 +35,15 @@ export default {
       await saveHandler();
       this.setSavedState();
 
+      return this;
+    },
+
+    validationErrorMessage () {
+      this.$buefy.toast.open({
+        message: 'Заполните обязательные поля',
+        type: 'is-warning',
+        queue: true
+      });
       return this;
     },
 

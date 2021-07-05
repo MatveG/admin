@@ -1,8 +1,8 @@
 <template>
   <b-select
       multiple expanded
-      v-model="product.features[feature.key]"
-      :init="!product.features[feature.key] ? product.features[feature.key] = [] : true"
+      v-model="model.features[feature.key]"
+      :init="!model.features[feature.key] ? model.features[feature.key] = [] : true"
       :native-size="feature.values.length > 5 ? 5 : feature.values.length">
     <option v-for="(value, idx) in feature.values" :key="idx">
       {{ value }}
@@ -11,10 +11,12 @@
 </template>
 
 <script>
+import useModelBinding from '@/hooks/useModelBinding'
+
 export default {
   name: 'FeatureMultiple',
   props: {
-    product: {
+    value: {
       type: Object,
       required: true
     },
@@ -22,6 +24,10 @@ export default {
       type: Object,
       required: true
     }
+  },
+  setup (props, context) {
+    const { model } = useModelBinding(props, context);
+    return { model };
   }
 }
 </script>

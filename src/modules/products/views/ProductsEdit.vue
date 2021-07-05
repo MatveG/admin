@@ -8,14 +8,15 @@
     <form class="columns" @submit.prevent="saveProduct" @change="changed" @keyup="setDraftState">
       <div class="column is-two-thirds">
         <product-general
-            :product="product"
+            v-model="product"
             :v="$v.product">
             <product-features
                 v-if="product.category"
-                :product="product"
+                v-model="product"
                 :features="product.category.features"
                 :v="$v.product.features"/>
         </product-general>
+
         <card-component title="Фотографии" icon="image" class="card-top-margin">
           <images-uploader
               v-if="product.id"
@@ -28,20 +29,19 @@
       </div>
 
       <div class="column">
-
         <product-category
-            :product="product"
+            v-model="product"
             :categories="categories"
             :v="$v.product"
             @changed="changed"/>
         <product-price
-            :product="product"
+            v-model="product"
             :discount="discount"
             :currency-sign="$settings('currency', 'sign')"
             @toggleDiscount="toggleDiscount"
             @updateSalePrice="updateSalePrice"/>
         <product-availability
-            :product="product"
+            v-model="product"
             :stocks="$settings('shop', 'stocks')"/>
       </div>
     </form>
@@ -99,8 +99,6 @@ export default {
   mounted () {
     this.$store.dispatch('fetchCategories');
     this.$store.dispatch(this.propId ? 'fetchProduct' : 'resetProduct', this.propId);
-
-    setTimeout(() => console.log('product', this.product), 1000);
   },
   watch: {
     'product.price': function () {
@@ -110,21 +108,15 @@ export default {
     },
     'product.is_stock': function () {
       if (!this.product.is_stock) {
-        // eslint-disable-next-line guard-for-in
-        for (const stock in this.product.stocks) {
-          this.product.stocks[stock] = 0
-        }
+        Object.keys(this.product.stocks).forEach((el) => {
+          this.product.stocks[el[0]] = 0
+        })
       }
     }
   },
   methods: {
     changed () {
       this.dataChanged(this.saveProduct);
-    },
-
-    setProperty (property, value) {
-      this.product[property] = value;
-      this.setDraftState().saveProduct();
     },
 
     toggleDiscount () {
@@ -144,7 +136,6 @@ export default {
     saveProduct () {
       this.saveData(async () => {
         if (this.propId) {
-          console.log('this.product', this.product);
           await this.$store.dispatch('updateProduct', this.product);
         } else {
           await this.$store.dispatch('storeProduct', this.product);

@@ -1,4 +1,4 @@
-import Orders from './views/Orders';
+import Orders from './views/OrdersMain';
 // import OrderEdit from './views/OrderEdit';
 
 export default [

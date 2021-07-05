@@ -46,7 +46,7 @@
 
         <b-table-column label="*" cell-class="buttons is-flex-wrap-nowrap" custom-key="actions" width="13%" centered v-slot="props">
             <b-button type="is-primary" icon-right="square-edit-outline" slot="trigger" tag="router-link"
-                      :to="{ name: 'products.edit', params: { propId: props.row.id } }" target="_blank"/>
+                      :to="{ name: 'products.edit', params: { propId: props.row.id } }"/>
             <b-button type="is-danger" icon-right="delete" slot="trigger"
                       @click="confirmDelete(() => deleteProduct(props.row.id))"/>
         </b-table-column>

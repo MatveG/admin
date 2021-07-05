@@ -19,7 +19,7 @@ axios.interceptors.request.use(
 );
 
 axios.interceptors.response.use((response) => response, (error) => {
-  if (error.response.status === 401 && router.currentRoute.name !== 'login') {
+  if (error.response && error.response.status === 401 && router.currentRoute.name !== 'login') {
     return router.push({ name: 'login' });
   }
   return error;

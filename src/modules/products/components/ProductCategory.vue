@@ -1,11 +1,16 @@
 <template>
-  <card-component :title="`ID товара: ${product.id || ''}`" icon="shape" class="tile is-child">
+  <card-component
+      :title="`ID товара: ${model.id || ''}`"
+      :hasButtonSlot="true"
+      icon="shape"
+      class="tile is-child">
+    <template v-slot:button>
+      <b-button icon-left="open-in-new" size="is-small" tag="a" to="/"/>
+    </template>
+
     <b-field class="has-text-centered">
-      <b-switch v-model="product.is_active">Активен</b-switch>
+      <b-switch v-model="model.is_active">Активен</b-switch>
     </b-field>
-    <div class="has-text-centered buttons is-centered">
-      <b-button label="Посмотреть на сайте" tag="a" to="/"/>
-    </div>
 
     <b-field
         label="Категория"
@@ -13,7 +18,7 @@
         :type="{ 'is-danger': v.category_id.$error }">
       <b-select
           expanded
-          v-model="product.category_id"
+          v-model="model.category_id"
           @select="$emit('changed')">
         <template v-for="(category, idx) in categories">
           <optgroup
@@ -41,6 +46,7 @@
 </template>
 
 <script>
+import useModelBinding from '@/hooks/useModelBinding'
 import CardComponent from '@/components/CardComponent'
 
 export default {
@@ -49,7 +55,7 @@ export default {
     CardComponent
   },
   props: {
-    product: {
+    value: {
       type: Object,
       required: true
     },
@@ -61,6 +67,10 @@ export default {
       type: Object,
       default: () => {}
     }
+  },
+  setup (props, context) {
+    const { model } = useModelBinding(props, context);
+    return { model };
   }
 }
 </script>
