@@ -69,6 +69,15 @@ export default {
       required: true
     }
   },
+  watch: {
+    'model.is_stock': function () {
+      if (!this.model.is_stock) {
+        Object.keys(this.model.stocks).forEach((el) => {
+          this.model.stocks[el] = 0
+        })
+      }
+    }
+  },
   setup (props, context) {
     const { model } = useModelBinding(props, context);
     return { model };

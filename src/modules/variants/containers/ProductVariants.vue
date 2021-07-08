@@ -1,5 +1,5 @@
 <template>
-  <card-component icon="form-select" class="card-top-margin mt-0">
+  <card-component icon="form-select" class="mt-5">
     <card-toolbar slot="toolbar" class="is-upper px-2 py-0">
       <p slot="left" class="card-header-title">
         <b-icon icon="form-select" size="is-small"/>

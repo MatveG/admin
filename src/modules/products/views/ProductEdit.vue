@@ -1,11 +1,12 @@
 <template>
   <section class="section is-main-section">
     <buttons-toolbar>
-      <b-button type="is-primary" icon-right="content-save" :loading="loading" :disabled="saved" @click="saveProduct"/>
-      <b-button icon-right="arrow-left-circle" tag="router-link" :to="{ name: 'products' }"/>
+      <b-button :loading="loading" :disabled="saved" @click="saveProduct"
+                type="is-primary" icon-right="content-save"/>
+      <b-button :to="{ name: 'products' }" tag="router-link" icon-right="arrow-left-circle"/>
     </buttons-toolbar>
 
-    <form class="columns" @submit.prevent="saveProduct" @change="changed" @keyup="setDraftState">
+    <form @submit.prevent="saveProduct" @change="changed" @keyup="setDraftState" class="columns">
       <div class="column is-two-thirds">
         <product-general
             v-model="product"
@@ -17,7 +18,7 @@
                 :v="$v.product.features"/>
         </product-general>
 
-        <card-component title="Фотографии" icon="image" class="card-top-margin">
+        <card-component title="Фотографии" icon="image" class="mt-5">
           <images-uploader
               v-if="product.id"
               :id="product.id"
@@ -36,21 +37,18 @@
             @changed="changed"/>
         <product-price
             v-model="product"
-            :discount="discount"
-            :currency-sign="$settings('currency', 'sign')"
-            @toggleDiscount="toggleDiscount"
-            @updateSalePrice="updateSalePrice"/>
+            :currency-sign="$settings('currency', 'sign')"/>
         <product-availability
             v-model="product"
             :stocks="$settings('shop', 'stocks')"/>
       </div>
     </form>
-    <!--<product-variants v-if="product.id" :discount="discount" />-->
+<!--    <product-variants v-if="product.id" :discount="discount" />-->
   </section>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
 import EditView from '@/commons/EditView'
 import ButtonsToolbar from '@/components/ButtonsToolbar'
 import CardComponent from '@/components/CardComponent'
@@ -81,71 +79,60 @@ export default {
       required: true
     }
   },
-  data () {
-    return {
-      discount: {
-        amount: 0,
-        percent: null
-      }
+  computed: {
+    ...mapGetters({
+      product: 'getProduct',
+      categories: 'getCategories'
+    }),
+    discount: function () {
+      return this.product.price_old - this.product.price;
     }
   },
-  computed: mapGetters({
-    product: 'getProduct',
-    categories: 'getCategories'
-  }),
   validations () {
     return validations(this);
   },
   mounted () {
-    this.$store.dispatch('fetchCategories');
-    this.$store.dispatch(this.propId ? 'fetchProduct' : 'resetProduct', this.propId);
-  },
-  watch: {
-    'product.price': function () {
-      if (this.product.is_sale) {
-        this.discount.amount = this.product.price_old - this.product.price;
-      }
-    },
-    'product.is_stock': function () {
-      if (!this.product.is_stock) {
-        Object.keys(this.product.stocks).forEach((el) => {
-          this.product.stocks[el[0]] = 0
-        })
-      }
+    this.fetchCategories();
+
+    if (this.propId) {
+      this.setProduct({});
+      this.fetchProduct(this.propId);
+    } else {
+      this.setProduct({});
     }
   },
   methods: {
     changed () {
-      this.dataChanged(this.saveProduct);
-    },
+      this.setDraftState();
 
-    toggleDiscount () {
-      this.discount.amount = 0;
-      this.product.sale_text = null;
-      this.product.is_sale
-        ? this.product.price_old = this.product.price
-        : this.product.price = this.product.price_old;
-    },
-
-    updateSalePrice () {
-      this.discount.amount = Math.round(this.product.price_old * this.discount.percent / 100);
-      this.product.price = this.product.price_old - this.discount.amount;
-      this.discount.percent = null;
+      if (this.propId) {
+        this.resetSaveTimer(this.saveProduct);
+      }
     },
 
     saveProduct () {
       this.saveData(async () => {
         if (this.propId) {
-          await this.$store.dispatch('updateProduct', this.product);
+          await this.updateProduct(this.product);
         } else {
-          await this.$store.dispatch('storeProduct', this.product);
+          await this.storeProduct(this.product);
           await this.$router.replace({
-            name: 'products-edit',
+            name: 'product-edit',
             params: { propId: this.product.id }
           });
         }
       });
-    }
+    },
+
+    ...mapActions([
+      'fetchProduct',
+      'updateProduct',
+      'storeProduct',
+      'fetchCategories'
+    ]),
+    ...mapMutations({
+      setProduct: 'PRODUCT_SET'
+    })
   }
 }
 </script>

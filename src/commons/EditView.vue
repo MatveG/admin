@@ -14,14 +14,6 @@ export default {
     this.mounted = true;
   },
   methods: {
-    dataChanged (timerMethod) {
-      this.setDraftState();
-
-      if (this.propId) {
-        this.resetSaveTimer(timerMethod);
-      }
-    },
-
     async saveData (saveHandler) {
       if (this.$v) {
         this.$v.$touch();
@@ -30,11 +22,10 @@ export default {
           return this.validationErrorMessage();
         }
       }
-
-      this.resetSaveTimer().setLoadingState();
+      clearTimeout(this.timers.save);
+      this.setLoadingState();
       await saveHandler();
       this.setSavedState();
-
       return this;
     },
 

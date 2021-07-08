@@ -10,7 +10,7 @@
     </div>
     <div slot="right">
       <b-button type="is-primary" icon-right="plus-circle"
-                tag="router-link" :to="{ name: 'products.create' }" target="_blank"/>
+                tag="router-link" :to="{ name: 'product.create' }" target="_blank"/>
     </div>
   </card-toolbar>
 </template>

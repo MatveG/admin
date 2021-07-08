@@ -70,8 +70,7 @@ export default {
     }
   },
   setup (props, context) {
-    const { model } = useModelBinding(props, context);
-    return { model };
+    return { ...useModelBinding(props, context) };
   }
 }
 </script>

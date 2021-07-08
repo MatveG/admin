@@ -1,5 +1,5 @@
 <template>
-  <card-component title="Цена" icon="currency-usd" class="card-top-margin">
+  <card-component title="Цена" icon="currency-usd" class="mt-5">
     <b-field :label="model.is_sale ? 'Старая цена' : 'Цена'" label-position="on-border">
       <b-input
           v-if="model.is_sale"
@@ -16,7 +16,7 @@
     </b-field>
 
     <b-field class="has-text-centered">
-      <b-switch v-model="model.is_sale" @change.native="$emit('toggleDiscount')">
+      <b-switch v-model="model.is_sale" @change.native="toggleDiscount">
         Скидка
       </b-switch>
     </b-field>
@@ -26,8 +26,8 @@
         <div class="column">
           <b-field label="Скидка" label-position="on-border">
             <b-input
-                v-model.number="discount.percent"
-                @change.native="$emit('updateSalePrice')"
+                v-model.number="percent"
+                @change.native="calcSalePrice"
                 placeholder="0"/>
             <div class="control">
               <button class="button is-primary">%</button>
@@ -67,10 +67,6 @@ export default {
       type: Object,
       required: true
     },
-    discount: {
-      type: Object,
-      required: true
-    },
     currencySign: {
       type: String,
       default: ''
@@ -78,7 +74,24 @@ export default {
   },
   data () {
     return {
+      percent: null,
       tab: 0
+    }
+  },
+  methods: {
+    toggleDiscount () {
+      if (this.model.is_sale) {
+        this.model.price_old = this.model.price;
+      } else {
+        this.model.price = this.model.price_old;
+      }
+      this.model.sale_text = null;
+    },
+
+    calcSalePrice () {
+      const discount = Math.round(this.model.price_old * this.percent / 100);
+      this.model.price = this.model.price_old - discount;
+      this.percent = null;
     }
   },
   setup (props, context) {

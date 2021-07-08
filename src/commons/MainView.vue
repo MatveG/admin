@@ -1,10 +1,10 @@
 <script>
 export default {
-  name: 'TableView',
+  name: 'MainView',
   data () {
     return {
       loading: false,
-      perPage: 20,
+      perPage: 30,
       checked: [],
       filters: {}
     }
@@ -42,3 +42,9 @@ export default {
   }
 }
 </script>
+
+<style>
+.b-table .table td {
+  vertical-align: middle;
+}
+</style>

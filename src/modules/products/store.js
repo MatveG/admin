@@ -1,76 +1,54 @@
-import axios from '@/api/axios';
+import * as api from './api'
 
 export default {
   state: {
     product: {},
     products: []
   },
+
   getters: {
     getProduct: (state) => state.product,
     getProducts: (state) => state.products
   },
+
   mutations: {
     PRODUCTS_SET (state, payload) {
-      state.products = payload;
+      if (payload) {
+        state.products = payload;
+      }
     },
     PRODUCT_SET (state, payload) {
-      state.product = payload;
+      if (payload) {
+        state.product = payload;
+      }
     },
     PRODUCT_ASSIGN (state, payload) {
-      Object.assign(state.product, payload);
+      if (payload) {
+        Object.assign(state.product, payload);
+      }
     },
     PRODUCT_DELETE (state, id) {
-      state.products = state.products.filter((el) => el.id !== id);
+      if (id) {
+        state.products = state.products.filter((el) => el.id !== id);
+      }
     }
   },
+
   actions: {
     async fetchProducts (context) {
-      try {
-        const { data } = await axios.get('/products');
-        context.commit('PRODUCTS_SET', data);
-      } catch (err) {
-        console.error('Axios api error', err);
-      }
+      context.commit('PRODUCTS_SET', await api.fetchProducts());
     },
-
     async fetchProduct (context, id) {
-      try {
-        const { data } = await axios.get(`/products/${id}`);
-        context.commit('PRODUCT_SET', data);
-      } catch (err) {
-        console.error('Axios api error', err);
-      }
+      context.commit('PRODUCT_SET', await api.fetchProduct(id));
     },
-
     async storeProduct (context, payload) {
-      try {
-        const { data } = await axios.post('/products', payload);
-        context.commit('PRODUCT_ASSIGN', data);
-      } catch (err) {
-        console.error('Axios api error', err);
-      }
+      context.commit('PRODUCT_ASSIGN', await api.storeProduct(payload));
     },
-
     async updateProduct (context, payload) {
-      try {
-        const { data } = await axios.patch(`/products/${payload.id}`, payload);
-        context.commit('PRODUCT_ASSIGN', data);
-      } catch (err) {
-        console.error('Axios api error', err);
-      }
+      context.commit('PRODUCT_ASSIGN', await api.updateProduct(payload));
     },
-
     async deleteProduct (context, id) {
-      try {
-        await axios.delete(`/products/${id}`);
-        context.commit('PRODUCT_DELETE', id);
-      } catch (err) {
-        console.error('Axios api error', err);
-      }
-    },
-
-    async resetProduct (context) {
-      context.commit('PRODUCT_SET', {});
+      context.commit('PRODUCT_DELETE', await api.deleteProduct(id));
     }
   }
 };

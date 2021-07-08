@@ -107,7 +107,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import TableView from '@/commons/TableView'
+import TableView from '@/commons/MainView'
 import CardComponent from '@/components/CardComponent'
 import OrdersDetail from '../components/OrdersDetail'
 import OrdersProducts from '../components/OrdersProducts'
