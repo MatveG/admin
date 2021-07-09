@@ -34,7 +34,7 @@
 
 <script>
 import AsideTools from '@/components/AsideTools'
-import scrollHandle from '@/mixins/scrollHandle'
+import scrollHandle from '@/scrollHandle'
 
 export default {
   name: 'AsideLeft',

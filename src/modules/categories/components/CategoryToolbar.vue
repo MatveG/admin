@@ -7,7 +7,7 @@
     </div>
     <div slot="right">
       <b-button type="is-primary" icon-right="plus-circle"
-                tag="router-link" :to="{ name: 'categories.create' }" target="_blank"/>
+                tag="router-link" :to="{ name: 'category.create' }" target="_blank"/>
     </div>
   </card-toolbar>
 </template>
@@ -16,15 +16,14 @@
 import CardToolbar from '@/components/CardToolbar'
 
 export default {
-  name: 'CategoriesToolbar',
+  name: 'ProductsToolbar',
   components: {
     CardToolbar
   },
   data () {
     return {
       toggled: {
-        is_active: false,
-        is_stock: false
+        is_active: false
       }
     }
   },

@@ -107,7 +107,6 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import TableView from '@/commons/MainView'
 import CardComponent from '@/components/CardComponent'
 import OrdersDetail from '../components/OrdersDetail'
 import OrdersProducts from '../components/OrdersProducts'
@@ -131,7 +130,6 @@ const delivery = {
 
 export default {
   name: 'Orders',
-  extends: TableView,
   components: {
     CardComponent,
     OrdersDetail,

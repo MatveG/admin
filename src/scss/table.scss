@@ -28,6 +28,10 @@ table.table {
   .table {
     border: 0;
     border-radius: 0;
+
+    td {
+      vertical-align: middle;
+    }
   }
 
   /* This stylizes buefy's pagination */

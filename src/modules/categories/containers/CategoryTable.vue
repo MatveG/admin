@@ -1,33 +1,30 @@
 <template>
     <div :class="{'nested' : nested}">
-<!--      <b-table ref="table"-->
-<!--               :data="items"-->
-<!--               :per-page="perPage"-->
-<!--               :loading="loading"-->
-<!--               custom-row-key="id"-->
-<!--               default-sort="ord"-->
-<!--               @drop="drop"-->
-<!--               @dragstart="dragstart"-->
-<!--               @dragover="dragover"-->
-<!--               @dragleave="dragleave"-->
-<!--               hoverable-->
-<!--               detailed-->
-<!--               detail-key="id"-->
-<!--               :show-detail-icon="false"-->
-<!--               :opened-detailed="opened"-->
-<!--               icon-pack="fa"-->
-<!--               class="valign-center">-->
         <b-table ref="table"
                  :data="categories"
-                 :per-page="perPage"
                  :loading="loading"
-                 :opened-detailed="opened"
+                 :opened-detailed="expanded"
                  :show-detail-icon="false"
-                 hoverable detailed
+                 @drop="dragdrop($event);swapOrd($event)"
+                 @dragstart="dragstart"
+                 @dragover="dragover"
+                 @dragleave="dragleave"
+                 draggable
+                 hoverable
+                 detailed
+                 per-page="25"
                  custom-row-key="id"
                  detail-key="id"
                  class="detail-paddingless"
-                 default-sort="id">
+                 default-sort="ord">
+
+                <b-table-column width="5%" centered v-slot="props">
+                  <a v-if="props.row.is_parent" @click="expandRow(props.row.id)" role="button">
+                    <span :class="'icon ' + (isExpanded(props.row.id) ? 'is-expanded' : '')">
+                      <i class="mdi mdi-chevron-right mdi-24px"></i>
+                    </span>
+                  </a>
+                </b-table-column>
 
                 <b-table-column field="ord" label="↑↓" width="10%" sortable centered v-slot="props">
                     {{ props.row.ord }}
@@ -42,21 +39,25 @@
                 </b-table-column>
 
                 <b-table-column field="is_active" label="Активна" width="15%" sortable centered v-slot="props">
-                    <b-checkbox v-model="props.row.is_active" class="is-small" disabled />
+                    <b-checkbox v-model="props.row.is_active" @change.native="update(props.row)" class="is-small" />
                 </b-table-column>
 
                 <b-table-column custom-key="actions" width="15%" centered v-slot="props">
-<!--                    <b-dropdown hoverable :expanded="false" aria-role="list" class="dropdown-buttons">-->
-<!--                        <button @click="edit(props.row)" slot="trigger" class="button is-primary fas fa-pen" />-->
-
-<!--                        <b-dropdown-item v-if="props.row.is_parent" @click="createChild(props.row)" aria-role="listitem">-->
-<!--                            <b-icon pack="fas" icon="plus" />-->
-<!--                        </b-dropdown-item>-->
-
-<!--                        <b-dropdown-item @click="confirmDestroy(props.row)" aria-role="listitem">-->
-<!--                            <b-icon pack="fas" icon="trash" />-->
-<!--                        </b-dropdown-item>-->
-<!--                    </b-dropdown>-->
+                  <div class="buttons">
+                    <b-button
+                        :to="{ name: 'category.edit', params: { propId: props.row.id } }"
+                        :size="nested ? 'is-small' : ''"
+                        tag="router-link"
+                        type="is-primary"
+                        icon-right="square-edit-outline"
+                        slot="trigger"/>
+                    <b-button
+                        :size="nested ? 'is-small' : ''"
+                        @click="confirmDelete(() => delete(props.row.id))"
+                        type="is-danger"
+                        icon-right="delete"
+                        slot="trigger"/>
+                  </div>
                 </b-table-column>
 
             <template slot="detail" slot-scope="props">
@@ -70,17 +71,18 @@
 </template>
 
 <script>
-import draggable from 'vuedraggable'
+import { mapActions } from 'vuex'
+import useDraggingRows from '@/hooks/useDraggingRows'
+import useExpandRow from '@/hooks/useExpandRow'
+import useDialogs from '@/hooks/useDialogs'
+import useListState from '@/hooks/useListState'
 import CategoryTable from './CategoryTable'
-import TableView from '@/commons/TableView'
 
 export default {
   name: 'CategoryTable',
-  extends: TableView,
-  mixins: [
-    draggable
-  ],
-  components: { CategoryTable },
+  components: {
+    CategoryTable
+  },
   props: {
     categories: {
       type: Array,
@@ -93,48 +95,63 @@ export default {
   },
   data () {
     return {
-      perPage: null
+      opened: []
     }
   },
-  computed: {
-    opened () {
-      return this.categories.filter((el) => el.is_parent).map((el) => el.id);
-    }
+  setup (props, context) {
+    const { confirmDelete } = useDialogs(props, context);
+    return {
+      confirmDelete,
+      ...useListState(),
+      ...useDraggingRows(),
+      ...useExpandRow()
+    };
   },
   methods: {
-    drop (payload) {
-      const [rowOne, rowTwo] = [payload.row, this.draggingRow];
+    async update (row) {
+      this.loadingState();
+      await this.updateCategory(row);
+      this.readyState();
+    },
 
-      if (rowOne && rowTwo && rowOne.ord !== rowTwo.ord) {
-        [rowOne.ord, rowTwo.ord] = [rowTwo.ord, rowOne.ord];
+    async delete (id) {
+      this.loadingState();
+      await this.deleteCategory(id);
+      this.readyState();
+    },
 
-        this.$store.dispatch('patchCategory', rowOne);
-        this.$store.dispatch('patchCategory', rowTwo);
+    async swapOrd (payload) {
+      const [targetRow, dragRow] = [payload.row, this.draggingRow];
+
+      if (targetRow && dragRow && targetRow.ord !== dragRow.ord) {
+        [targetRow.ord, dragRow.ord] = [dragRow.ord, targetRow.ord];
+        this.setLoadingState();
+        await this.updateCategory(targetRow);
+        await this.updateCategory(dragRow);
+        this.setReadyState();
         this.$refs.table.initSort();
       }
-      this.dragdrop(payload);
-    }
+    },
+
+    ...mapActions([
+      'updateCategory',
+      'deleteCategory'
+    ])
   }
 }
 </script>
 
 <style>
-.detail-paddingless tr.detail > td {
-  padding: 0.3rem;
-}
-.detail-paddingless div.detail-container {
-  padding: 0 !important;
-  margin: 0 !important;
-}
 .detail-paddingless tr.detail table {
   background-color: transparent;
 }
-.detail-paddingless tr.detail table th {
-  visibility: hidden;
-  font-size: 0;
-}
 .detail-paddingless tr.detail table td {
-  padding-top: 0;
-  padding-bottom: 0;
+  padding-top: 0.1rem;
+  padding-bottom: 0.1rem;
+  border-color: #eee;
+  color: #666;
+}
+.detail-paddingless tr.detail table.is-hoverable tr:hover {
+  background-color: #fff;
 }
 </style>

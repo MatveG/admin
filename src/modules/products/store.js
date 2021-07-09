@@ -7,8 +7,8 @@ export default {
   },
 
   getters: {
-    getProduct: (state) => state.product,
-    getProducts: (state) => state.products
+    getProduct: (state) => JSON.parse(JSON.stringify(state.product)),
+    getProducts: (state) => JSON.parse(JSON.stringify(state.products))
   },
 
   mutations: {

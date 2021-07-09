@@ -1,6 +1,6 @@
 import { ref } from '@vue/composition-api'
 
-export default (props, context) => {
+export default () => {
   const draggingRow = ref({});
 
   const dragdrop = (payload) => {

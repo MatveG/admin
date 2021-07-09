@@ -1,16 +1,17 @@
 <template>
     <div>
+<!--        :data="(hasOpen() && index === null) ? [...items, item] : items"-->
+<!--      @drop="drop"-->
+<!--      @dragstart="dragstart"-->
+<!--      @dragover="dragover"-->
+<!--      @dragleave="dragleave"-->
         <b-table ref="table"
-                 :data="(hasOpen() && index === null) ? [...items, item] : items"
+                 :data="(index === null) ? [...items, item] : items"
                  custom-row-key="id"
                  default-sort="index"
                  icon-pack="fa"
                  hoverable
                  draggable
-                 @drop="drop"
-                 @dragstart="dragstart"
-                 @dragover="dragover"
-                 @dragleave="dragleave"
                  class="valign-center">
 
             <template v-slot="props">
@@ -29,7 +30,7 @@
                     <template v-if="props.row.id === item.id || props.row === item">
                         <b-field :type="{ 'is-danger': $v.item.type.$error }">
                             <b-select v-model="item.type" @change.native="item.reset" expanded>
-                                <option v-for="(title, key) in dataTypes" :value="key">{{ title }}</option>
+                                <option v-for="(title, key) in dataTypes" :key="key" :value="key">{{ title }}</option>
                             </b-select>
                         </b-field>
                         <template v-if="item.type === 'number'">
@@ -79,32 +80,30 @@
 </template>
 
 <script>
-    import {draggable} from "@/mixins/draggable";
-    import {common} from "../mixins/common";
-    import Parameter from "../classes/Parameter";
+import Parameter from '../classes/Parameter';
 
-    export default {
-        name: "CategoryParameters",
-
-        mixins: [draggable, common],
-
-        data() {
-            return {
-                dataTypes: Parameter.getTypes()
-            }
-        },
-
-        methods: {
-            add() {
-                this.cancel();
-                this.item = new Parameter();
-            },
-
-            edit(index, row) {
-                this.cancel();
-                this.index = index;
-                this.item = Parameter.fromObj(row);
-            },
-        }
+export default {
+  name: 'CategoryParameters',
+  data () {
+    return {
+      dataTypes: {
+        number: 'число',
+        string: 'строка',
+        select: 'выбор'
+      }
     }
+  },
+  methods: {
+    add () {
+      this.cancel();
+      this.item = new Parameter();
+    },
+
+    edit (index, row) {
+      this.cancel();
+      this.index = index;
+      this.item = Parameter.fromObj(row);
+    }
+  }
+}
 </script>

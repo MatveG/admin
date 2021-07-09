@@ -7,6 +7,7 @@ import products from '@/modules/products/store';
 Vue.use(Vuex)
 
 export default new Vuex.Store({
+  strict: true,
   modules: {
     categories,
     orders,

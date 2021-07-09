@@ -1,76 +1,89 @@
-import axios from 'axios';
+import * as api from './api'
+
+const rootCategory = { id: 0, parent_id: 0, title: '[нет]' };
 
 export default {
   state: {
-    category: {},
+    category: {
+      features: [],
+      parameters: []
+    },
     categories: []
   },
+
   getters: {
-    getCategory: (state) => state.category,
-    getCategories: (state) => state.categories
+    getCategory: (state) => JSON.parse(JSON.stringify(state.category)),
+    getCategories: (state) => JSON.parse(JSON.stringify(state.categories)),
+    getParentCategories: (state) => [
+      rootCategory,
+      ...state.categories.filter((category) => category.is_parent)
+    ]
   },
+
   mutations: {
     CATEGORIES_SET (state, payload) {
-      state.categories = payload;
+      if (payload) {
+        state.categories = payload;
+      }
     },
     CATEGORY_SET (state, payload) {
-      state.category = payload;
+      if (payload) {
+        state.category = payload;
+      }
     },
     CATEGORY_ASSIGN (state, payload) {
-      Object.assign(state.category, payload);
+      if (payload) {
+        Object.assign(state.category, payload);
+      }
     },
     CATEGORY_DELETE (state, id) {
-      state.categories = state.categories.filter((el) => el.id !== id);
+      if (id) {
+        state.categories = state.categories.filter((el) => el.id !== id);
+      }
+    },
+
+    FEATURE_PUSH (state, payload) {
+      if (payload) {
+        state.category.features.push(payload);
+      }
+    },
+    FEATURE_UPDATE (state, payload) {
+      if (payload) {
+        state.category.features = state.category.features.map((el) => el.id === payload.id ? payload : el);
+      }
+    },
+    FEATURE_DELETE (state, id) {
+      if (id) {
+        state.category.features = state.category.features.filter((el) => el.id !== id);
+      }
     }
   },
+
   actions: {
-    async fetchCategories (context) {
-      try {
-        const { data } = await axios.get('/categories');
-        context.commit('CATEGORIES_SET', data);
-      } catch (err) {
-        console.error('Axios api error', err);
-      }
+    async fetchCategories ({ commit }) {
+      commit('CATEGORIES_SET', await api.fetchCategories());
+    },
+    async fetchCategory ({ commit }, id) {
+      commit('CATEGORY_SET', await api.fetchCategory(id));
+    },
+    async storeCategory ({ commit }, payload) {
+      commit('CATEGORY_ASSIGN', await api.storeCategory(payload));
+    },
+    async updateCategory ({ commit }, payload) {
+      commit('CATEGORY_ASSIGN', await api.updateCategory(payload));
+    },
+    async deleteCategory ({ commit }, id) {
+      commit('CATEGORY_DELETE', await api.deleteCategory(id));
     },
 
-    async fetchCategory (context, id) {
-      try {
-        const { data } = await axios.get(`/categories/${id}`);
-        context.commit('CATEGORY_SET', data);
-      } catch (err) {
-        console.error('Axios api error', err);
-      }
+    async storeFeature ({ commit }, payload) {
+      commit('FEATURE_PUSH', await api.storeFeature(payload));
     },
-
-    async storeCategory (context, payload) {
-      try {
-        const { data } = await axios.post('/categories', payload);
-        context.commit('CATEGORY_ASSIGN', data);
-      } catch (err) {
-        console.error('Axios api error', err);
-      }
+    async updateFeature ({ commit }, payload) {
+      commit('FEATURE_UPDATE', await api.updateFeature(payload));
     },
-
-    async updateCategory (context, payload) {
-      try {
-        const { data } = await axios.patch(`/categories/${payload.id}`, payload);
-        context.commit('CATEGORY_ASSIGN', data);
-      } catch (err) {
-        console.error('Axios api error', err);
-      }
-    },
-
-    async deleteCategory (context, id) {
-      try {
-        await axios.delete(`/categories/${id}`);
-        context.commit('CATEGORY_DELETE', id);
-      } catch (err) {
-        console.error('Axios api error', err);
-      }
-    },
-
-    async resetCategory (context) {
-      context.commit('CATEGORY_SET', {});
+    async deleteFeature ({ commit }, id) {
+      commit('FEATURE_DELETE', await api.deleteFeature(id));
     }
   }
 };

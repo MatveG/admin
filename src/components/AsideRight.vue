@@ -8,7 +8,7 @@
 
 <script>
 import AsideUpdates from '@/components/AsideUpdates'
-import scrollHandle from '@/mixins/scrollHandle'
+import scrollHandle from '@/scrollHandle'
 
 export default {
   name: 'AsideRight',

@@ -3,15 +3,16 @@
     <card-component class="has-table has-mobile-sort-spaced" title="Товары" icon="basket">
       <product-toolbar :toggled="filters" @toggle="toggleFilter"/>
 
-      <b-table ref="table"
-               :data="products"
-               :checked-rows="checked"
-               :per-page="perPage"
-               :loading="loading"
-               paginated checkable hoverable
-               class="valign-center"
-               default-sort="id"
-               default-sort-direction="desc">
+      <b-table
+          :data="products"
+          :checked-rows="checked"
+          :loading="loading"
+          ref="table"
+          per-page="25"
+          paginated checkable hoverable
+          class="valign-center"
+          default-sort="id"
+          default-sort-direction="desc">
         <b-table-column
             label="Фото"
             field="thumb"
@@ -101,22 +102,23 @@
 
         <b-table-column
             label="*"
-            cell-class="buttons is-flex-wrap-nowrap"
             custom-key="actions"
             width="13%"
             centered
             v-slot="props">
-            <b-button
-                :to="{ name: 'product.edit', params: { propId: props.row.id } }"
-                tag="router-link"
-                type="is-primary"
-                icon-right="square-edit-outline"
-                slot="trigger"/>
-            <b-button
-                @click="confirmDelete(() => delete(props.row.id))"
-                type="is-danger"
-                icon-right="delete"
-                slot="trigger"/>
+            <div class="buttons is-flex-wrap-nowrap">
+              <b-button
+                  :to="{ name: 'product.edit', params: { propId: props.row.id } }"
+                  tag="router-link"
+                  type="is-primary"
+                  icon-right="square-edit-outline"
+                  slot="trigger"/>
+              <b-button
+                  @click="confirmDelete(() => delete(props.row.id))"
+                  type="is-danger"
+                  icon-right="delete"
+                  slot="trigger"/>
+            </div>
         </b-table-column>
       </b-table>
     </card-component>
@@ -125,20 +127,33 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
-import MainView from '@/commons/MainView'
 import CardComponent from '@/components/CardComponent';
-import ProductToolbar from '@/modules/products/components/ProductToolbar'
+import ProductToolbar from '../components/ProductToolbar'
+import useDialogs from '@/hooks/useDialogs'
+import useListState from '@/hooks/useListState'
 
 export default {
   name: 'ProductMain',
-  extends: MainView,
   components: {
     CardComponent,
     ProductToolbar
   },
+  data () {
+    return {
+      checked: [],
+      filters: {}
+    }
+  },
   computed: mapGetters({
     products: 'getProducts'
   }),
+  setup (props, context) {
+    const { confirmDelete } = useDialogs(props, context);
+    return {
+      confirmDelete,
+      ...useListState()
+    };
+  },
   mounted () {
     if (!this.products.length) {
       this.fetchProducts();
@@ -146,15 +161,20 @@ export default {
   },
   methods: {
     async update (row) {
-      this.setLoadingState();
+      this.loadingState();
       await this.updateProduct(row);
-      this.setReadyState();
+      this.readyState();
     },
 
     async delete (id) {
-      this.setLoadingState();
+      this.loadingState();
       await this.deleteProduct(id);
-      this.setReadyState();
+      this.readyState();
+    },
+
+    toggleFilter (name) {
+      this.filters[name] = !this.filters[name];
+      this.$set(this.$refs.table.filters, name, this.$refs.table.filters[name] ? null : 'true')
     },
 
     ...mapActions([

@@ -6,7 +6,7 @@
       <b-button :to="{ name: 'products' }" tag="router-link" icon-right="arrow-left-circle"/>
     </buttons-toolbar>
 
-    <form @submit.prevent="saveProduct" @change="changed" @keyup="setDraftState" class="columns">
+    <form @submit.prevent="saveProduct" @change="changed" @keyup="draftState" class="columns">
       <div class="column is-two-thirds">
         <product-general
             v-model="product"
@@ -49,7 +49,6 @@
 
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
-import EditView from '@/commons/EditView'
 import ButtonsToolbar from '@/components/ButtonsToolbar'
 import CardComponent from '@/components/CardComponent'
 import ImagesUploader from '@/containers/ImagesUploader'
@@ -58,11 +57,11 @@ import ProductCategory from '../components/ProductCategory'
 import ProductFeatures from '../components/ProductFeatures'
 import ProductGeneral from '../components/ProductGeneral'
 import ProductPrice from '../components/ProductPrice'
+import useEditState from '@/hooks/useEditState'
 import validations from '../validations/product'
 
 export default {
   name: 'ProductEdit',
-  extends: EditView,
   components: {
     ButtonsToolbar,
     CardComponent,
@@ -91,6 +90,11 @@ export default {
   validations () {
     return validations(this);
   },
+  setup (props, context) {
+    return {
+      ...useEditState(props, context)
+    };
+  },
   mounted () {
     this.fetchCategories();
 
@@ -103,7 +107,7 @@ export default {
   },
   methods: {
     changed () {
-      this.setDraftState();
+      this.draftState();
 
       if (this.propId) {
         this.resetSaveTimer(this.saveProduct);
@@ -122,6 +126,30 @@ export default {
           });
         }
       });
+    },
+
+    async saveData (saveHandler) {
+      if (this.$v) {
+        this.$v.$touch();
+
+        if (this.$v.$invalid) {
+          return this.validationErrorMessage();
+        }
+      }
+      clearTimeout(this.timers.save);
+      this.loadingState();
+      await saveHandler();
+      this.savedState();
+      return this;
+    },
+
+    validationErrorMessage () {
+      this.$buefy.toast.open({
+        message: 'Заполните обязательные поля',
+        type: 'is-warning',
+        queue: true
+      });
+      return this;
     },
 
     ...mapActions([
