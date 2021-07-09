@@ -49,7 +49,9 @@ export default {
     },
     FEATURE_UPDATE (state, payload) {
       if (payload) {
-        state.category.features = state.category.features.map((el) => el.id === payload.id ? payload : el);
+        state.category.features = state.category.features.map((el) => {
+          return el.id === payload.id ? Object.assign(el, payload) : el
+        });
       }
     },
     FEATURE_DELETE (state, id) {
@@ -80,6 +82,7 @@ export default {
       commit('FEATURE_PUSH', await api.storeFeature(payload));
     },
     async updateFeature ({ commit }, payload) {
+      console.log('payload', payload);
       commit('FEATURE_UPDATE', await api.updateFeature(payload));
     },
     async deleteFeature ({ commit }, id) {

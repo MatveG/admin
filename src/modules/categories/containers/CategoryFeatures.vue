@@ -5,7 +5,7 @@
         :loading="loading"
         :opened-detailed="opened"
         :show-detail-icon="false"
-        @drop="dragdrop($event);swapOrd($event)"
+        @drop="dragdrop($event); swapOrd($event)"
         @dragstart="dragstart"
         @dragover="dragover"
         @dragleave="dragleave"
@@ -67,7 +67,7 @@
 
       <template slot="detail" slot-scope="props">
         <category-features
-            :items="props.row.children"
+            :items="props.row.children || []"
             :category-id="categoryId"
             :parent-id="props.row.id"
             :ref="`childTable-${props.row.id}`"/>
@@ -103,11 +103,6 @@ export default {
   components: {
     FeatureEditType
   },
-  data () {
-    return {
-      dataTypes
-    }
-  },
   props: {
     items: {
       type: Array,
@@ -120,6 +115,11 @@ export default {
     parentId: {
       type: Number,
       default: 0
+    }
+  },
+  data () {
+    return {
+      dataTypes
     }
   },
   computed: {
@@ -169,10 +169,9 @@ export default {
       if (targetRow && dragRow && targetRow !== dragRow) {
         [targetRow.ord, dragRow.ord] = [dragRow.ord, targetRow.ord];
         this.loadingState();
-        await this.updateFeature(targetRow);
-        await this.updateFeature(dragRow);
-        this.readyState();
+        await Promise.all([this.updateFeature(targetRow), this.updateFeature(dragRow)])
         this.$refs.table.initSort();
+        this.readyState();
       }
     },
 
