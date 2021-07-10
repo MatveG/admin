@@ -4,10 +4,7 @@ const rootCategory = { id: 0, parent_id: 0, title: '[нет]' };
 
 export default {
   state: {
-    category: {
-      features: [],
-      parameters: []
-    },
+    category: {},
     categories: []
   },
 
@@ -40,24 +37,6 @@ export default {
       if (id) {
         state.categories = state.categories.filter((el) => el.id !== id);
       }
-    },
-
-    FEATURE_PUSH (state, payload) {
-      if (payload) {
-        state.category.features.push(payload);
-      }
-    },
-    FEATURE_UPDATE (state, payload) {
-      if (payload) {
-        state.category.features = state.category.features.map((el) => {
-          return el.id === payload.id ? Object.assign(el, payload) : el
-        });
-      }
-    },
-    FEATURE_DELETE (state, id) {
-      if (id) {
-        state.category.features = state.category.features.filter((el) => el.id !== id);
-      }
     }
   },
 
@@ -76,17 +55,6 @@ export default {
     },
     async deleteCategory ({ commit }, id) {
       commit('CATEGORY_DELETE', await api.deleteCategory(id));
-    },
-
-    async storeFeature ({ commit }, payload) {
-      commit('FEATURE_PUSH', await api.storeFeature(payload));
-    },
-    async updateFeature ({ commit }, payload) {
-      console.log('payload', payload);
-      commit('FEATURE_UPDATE', await api.updateFeature(payload));
-    },
-    async deleteFeature ({ commit }, id) {
-      commit('FEATURE_DELETE', await api.deleteFeature(id));
     }
   }
 };

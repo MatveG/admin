@@ -19,7 +19,7 @@
             icon="subtitles-outline">
           <b-tabs v-model="tab" type="is-boxed">
             <b-tab-item label="Характеристики">
-              <category-features v-if="category.id" :items="category.features" :categoryId="category.id"/>
+              <category-features v-if="category.id" :categoryId="category.id"/>
             </b-tab-item>
             <b-tab-item label="Параметры">
 <!--              <category-parameters v-if="category.id"/>-->
@@ -46,9 +46,8 @@ import CardComponent from '@/components/CardComponent'
 import ButtonsToolbar from '@/components/ButtonsToolbar'
 import CategoryParent from '@/modules/categories/components/CategoryParent'
 import CategoryGeneral from '@/modules/categories/components/CategoryGeneral'
-import CategoryFeatures from '../containers/CategoryFeatures';
+import CategoryFeatures from '@/modules/features/containers/CategoryFeatures';
 import useEditState from '@/hooks/useEditState'
-// import CategoryParameters from '../components/CategoryParameters';
 
 export default {
   name: 'CategoryEdit',
@@ -58,7 +57,6 @@ export default {
     ButtonsToolbar,
     CategoryParent,
     CategoryFeatures
-    // CategoryParameters
   },
   props: {
     propId: {
@@ -73,7 +71,6 @@ export default {
   },
   computed: mapGetters({
     category: 'getCategory',
-    categories: 'getCategories',
     parentCategories: 'getParentCategories'
   }),
   validations: {
@@ -96,14 +93,12 @@ export default {
     };
   },
   mounted () {
-    this.fetchCategories();
+    this.setCategory({});
 
     if (this.propId) {
-      this.setCategory({});
       this.fetchCategory(this.propId);
-    } else {
-      this.setCategory({});
     }
+    this.fetchCategories();
   },
   methods: {
     changed () {

@@ -24,18 +24,3 @@ export const deleteCategory = async (id) => {
   const { data } = await axios.delete(`/categories/${id}`);
   return data;
 };
-
-export const storeFeature = async (payload) => {
-  const { data } = await axios.post('/features', payload);
-  return data;
-};
-
-export const updateFeature = async (payload) => {
-  const { data } = await axios.patch(`/features/${payload.id}`, payload);
-  return data;
-};
-
-export const deleteFeature = async (id) => {
-  const { data } = await axios.delete(`/features/${id}`);
-  return data;
-};

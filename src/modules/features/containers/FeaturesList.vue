@@ -30,7 +30,7 @@
       </b-table-column>
 
       <b-table-column field="type" label="Тип" width="25%" sortable centered v-slot="props">
-        <feature-edit-type v-if="isEdited(props.row)" v-model="item" :dataTypes="dataTypes"/>
+        <edit-type v-if="isEdited(props.row)" v-model="item" :dataTypes="dataTypes"/>
         <span v-else>{{ dataTypes[props.row.type] }}</span>
       </b-table-column>
 
@@ -66,8 +66,8 @@
       </b-table-column>
 
       <template slot="detail" slot-scope="props">
-        <category-features
-            :items="props.row.children || []"
+        <features-list
+            :features="features"
             :category-id="categoryId"
             :parent-id="props.row.id"
             :ref="`childTable-${props.row.id}`"/>
@@ -83,10 +83,10 @@
 <script>
 import { mapActions } from 'vuex'
 import useDialogs from '@/hooks/useDialogs'
+import useListState from '@/hooks/useListState'
 import useDraggingRows from '@/hooks/useDraggingRows'
 import useEditableList from '../hooks/useEditableList'
-import useListState from '@/hooks/useListState'
-import FeatureEditType from '@/modules/categories/components/FeatureEditType'
+import EditType from '@/modules/features/components/EditType'
 
 const dataTypes = {
   group: 'группа',
@@ -99,12 +99,12 @@ const dataTypes = {
 };
 
 export default {
-  name: 'CategoryFeatures',
+  name: 'FeaturesList',
   components: {
-    FeatureEditType
+    EditType
   },
   props: {
-    items: {
+    features: {
       type: Array,
       required: true
     },
@@ -123,8 +123,11 @@ export default {
     }
   },
   computed: {
-    opened: function () {
-      return this.items.filter((el) => el.is_parent).map((el) => el.id);
+    items () {
+      return this.features.filter((el) => el.parent_id === this.parentId);
+    },
+    opened () {
+      return this.features.filter((el) => el.is_parent).map((el) => el.id);
     }
   },
   setup (props, context) {
@@ -138,13 +141,13 @@ export default {
   },
   methods: {
     create () {
-      this.reset();
       this.$refs.table.initSort();
+      this.reset();
+      this.creating = true;
       this.item = {
         parent_id: this.parentId,
         category_id: this.categoryId
       };
-      this.creating = true;
     },
 
     edit (row) {
