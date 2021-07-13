@@ -2,10 +2,10 @@
   <div>
     <b-loading :is-full-page="false" :active="isLoading"/>
     <category-properties
-        :properties="features"
+        :properties="parameters"
         :category-id="categoryId"
         :parent-id="0"
-        :data-types="$settings('shop', 'features')"
+        :data-types="$settings('shop', 'parameters')"
         @store="store"
         @update="update"
         @remove="remove"/>
@@ -18,7 +18,7 @@ import CategoryProperties from '@/components/CategoryProperties'
 import useLoadingState from '@/compositions/useLoadingState'
 
 export default {
-  name: 'CategoryFeatures',
+  name: 'CategoryParameters',
   components: { CategoryProperties },
   props: {
     categoryId: {
@@ -28,25 +28,25 @@ export default {
   },
   async mounted () {
     this.loadingState();
-    await this.fetchFeatures(this.categoryId);
+    await this.fetchParameters(this.categoryId);
     this.readyState();
   },
   methods: {
     async store (payload) {
       this.loadingState();
-      await this.storeFeature(payload);
+      await this.storeParameter(payload);
       this.readyState();
     },
 
     async update (payload) {
       this.loadingState();
-      await this.updateFeature(payload);
+      await this.updateParameter(payload);
       this.readyState();
     },
 
     async remove (id) {
       this.loadingState();
-      await this.deleteFeature(id);
+      await this.deleteParameter(id);
       this.readyState();
     }
   },
@@ -54,13 +54,13 @@ export default {
     return {
       ...useLoadingState(),
       ...useGetters({
-        features: 'getFeatures'
+        parameters: 'getParameters'
       }),
       ...useActions([
-        'fetchFeatures',
-        'storeFeature',
-        'updateFeature',
-        'deleteFeature'
+        'fetchParameters',
+        'storeParameter',
+        'updateParameter',
+        'deleteParameter'
       ])
     };
   }

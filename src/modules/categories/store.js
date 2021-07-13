@@ -9,7 +9,8 @@ export default {
   },
 
   getters: {
-    getCategory: (state) => JSON.parse(JSON.stringify(state.category)),
+    // getCategory: (state) => JSON.parse(JSON.stringify(state.category)),
+    getCategory: (state) => state.category,
     getCategories: (state) => JSON.parse(JSON.stringify(state.categories)),
     getParentCategories: (state) => [
       rootCategory,
@@ -55,6 +56,9 @@ export default {
     },
     async deleteCategory ({ commit }, id) {
       commit('CATEGORY_DELETE', await api.deleteCategory(id));
+    },
+    resetCategory ({ commit }) {
+      commit('CATEGORY_SET', {});
     }
   }
 };

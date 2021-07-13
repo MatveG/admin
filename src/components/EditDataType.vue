@@ -1,8 +1,7 @@
 <template>
   <div>
-<!--    :type="{ 'is-danger': $v.model.type.$error }"-->
-    <b-field>
-      <b-select v-model="model.type" @change.native="reset" expanded>
+    <b-field :type="{ 'is-danger': v.type.$error }">
+      <b-select v-model="model.type" @change.native="$emit('change')" expanded>
         <option v-for="(title, key) in dataTypes" :key="key" :value="key">
           {{ title }}
         </option>
@@ -14,8 +13,8 @@
       </b-field>
     </template>
     <template v-if="model.type === 'select' || model.type === 'multiple'">
-<!--      :type="{ 'is-danger': $v.model.values.$error }-->
-      <b-field label="Список значений" label-position="on-border">
+      <b-field :type="{ 'is-danger': v.values.$error }"
+               label="Список значений" label-position="on-border">
         <b-taginput v-model="model.values" placeholder="Добавить"  />
       </b-field>
     </template>
@@ -23,10 +22,10 @@
 </template>
 
 <script>
-import useModelBinding from '@/hooks/useModelBinding'
+import useModelBinding from '@/compositions/useModelBinding'
 
 export default {
-  name: 'FeatureEditType',
+  name: 'EditDataType',
   props: {
     value: {
       type: Object,
@@ -35,18 +34,16 @@ export default {
     dataTypes: {
       type: Object,
       required: true
+    },
+    v: {
+      type: Object,
+      default: () => {}
     }
   },
   setup (props, context) {
-    return { ...useModelBinding(props, context) };
-  },
-  methods: {
-    reset () {
-      this.is_required = false;
-      this.is_filter = false;
-      this.units = null;
-      this.values = [];
-    }
+    return {
+      ...useModelBinding(props, context)
+    };
   }
 }
 </script>

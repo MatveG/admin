@@ -2,22 +2,22 @@ import { ref, onMounted } from '@vue/composition-api'
 
 export default () => {
   const mounted = ref(false);
-  const loading = ref(false);
+  const isLoading = ref(false);
 
   onMounted(() => {
     mounted.value = true;
   });
 
   const loadingState = () => {
-    loading.value = true;
+    isLoading.value = true;
   };
 
   const readyState = () => {
-    loading.value = false;
+    isLoading.value = false;
   };
 
   return {
-    loading,
+    isLoading,
     loadingState,
     readyState
   }
