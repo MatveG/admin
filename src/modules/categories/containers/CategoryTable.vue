@@ -1,11 +1,11 @@
 <template>
-  <div :class="{'nested' : nested}">
+  <div>
     <b-table
-        :data="categories"
+        :data="items"
         :loading="isLoading"
         :opened-detailed="expanded"
         :show-detail-icon="false"
-        @drop="dragdrop($event);swap($event)"
+        @drop="dragdrop($event);swapOrd($event)"
         @dragstart="dragstart"
         @dragover="dragover"
         @dragleave="dragleave"
@@ -13,17 +13,17 @@
         hoverable
         detailed
         ref="table"
+        class="detail-paddingless"
         per-page="25"
         custom-row-key="id"
         detail-key="id"
-        class="detail-paddingless"
         default-sort="ord">
 
       <b-table-column width="5%" centered v-slot="props">
-        <a v-if="props.row.is_parent" @click="expandRow(props.row.id)" role="button">
-                    <span :class="'icon ' + (isExpanded(props.row.id) ? 'is-expanded' : '')">
-                      <i class="mdi mdi-chevron-right mdi-24px"></i>
-                    </span>
+        <a v-if="props.row.is_parent" @click="expandRow(props.row.id)">
+            <span :class="'icon ' + (isExpanded(props.row.id) ? 'is-expanded' : '')">
+              <i class="mdi mdi-chevron-right mdi-24px"></i>
+            </span>
         </a>
       </b-table-column>
 
@@ -41,9 +41,9 @@
 
       <b-table-column field="is_active" label="Активна" width="15%" sortable centered v-slot="props">
         <b-switch
-            v-model="props.row.is_active"
+            :value="props.row.is_active"
             :size="nested ? 'is-small' : ''"
-            @change.native="update(props.row)"
+            @input="updateProp(props.row, 'is_active', $event)"
             outlined/>
       </b-table-column>
 
@@ -58,7 +58,7 @@
               icon-right="square-edit-outline"/>
           <b-button
               :size="nested ? 'is-small' : ''"
-              @click="remove(props.row.id)"
+              @click="removeItem(props.row.id)"
               outlined
               type="is-danger"
               icon-right="delete"/>
@@ -66,32 +66,26 @@
       </b-table-column>
 
       <template slot="detail" slot-scope="props">
-        <category-table
-            v-if="props.row.is_parent"
-            :categories="props.row.children"
-            :nested="true" />
+        <category-table v-if="props.row.is_parent" :parent-id="props.row.id"/>
       </template>
     </b-table>
   </div>
 </template>
 
 <script>
-import { useActions } from 'vuex-composition-helpers'
+import { useActions, useGetters } from 'vuex-composition-helpers'
 import useDraggingRows from '@/compositions/useDraggingRows'
 import useExpandRow from '@/compositions/useExpandRow'
 import useDialogs from '@/compositions/useDialogs'
 import useLoadingState from '@/compositions/useLoadingState'
+import { computed } from '@vue/composition-api'
 
 export default {
   name: 'CategoryTable',
   props: {
-    categories: {
-      type: Array,
-      required: true
-    },
-    nested: {
-      type: Boolean,
-      default: false
+    parentId: {
+      type: Number,
+      default: null
     },
     filters: {
       type: Object
@@ -105,44 +99,52 @@ export default {
     }
   },
   methods: {
-    async update (row) {
+    async updateProp (row, prop, value) {
       this.loadingState();
-      await this.updateCategory(row);
+      await this.updateInCategories({ ...row, [prop]: value });
       this.readyState();
     },
 
-    async swap (payload) {
+    async swapOrd (payload) {
       const [targetRow, dragRow] = [payload.row, this.draggingRow];
 
       if (targetRow && dragRow && targetRow.ord !== dragRow.ord) {
-        [targetRow.ord, dragRow.ord] = [dragRow.ord, targetRow.ord];
-        this.loadingState();
-        await this.updateCategory(targetRow);
-        await this.updateCategory(dragRow);
-        this.readyState();
+        await Promise.all([
+          this.updateProp(targetRow, 'ord', dragRow.ord),
+          this.updateProp(dragRow, 'ord', targetRow.ord)
+        ]);
         this.$refs.table.initSort();
       }
     },
 
-    remove (id) {
+    removeItem (id) {
       this.confirmDelete(async () => {
         this.loadingState();
-        await this.deleteCategory(id);
+        await this.removeFromCategories(id);
         this.readyState();
       });
     }
   },
-  setup (props, context) {
-    const { confirmDelete } = useDialogs(props, context);
+  setup (props) {
+    const { categories } = useGetters({ categories: 'getCategories' });
+
+    const items = computed(() => categories.value.filter((el) => {
+      return props.parentId === null || el.parent_id === props.parentId;
+    }));
+    const nested = props.parentId !== null;
+
+    const { confirmDelete } = useDialogs();
 
     return {
+      items,
+      nested,
       confirmDelete,
       ...useLoadingState(),
       ...useDraggingRows(),
       ...useExpandRow(),
       ...useActions([
-        'updateCategory',
-        'deleteCategory'
+        'updateInCategories',
+        'removeFromCategories'
       ])
     };
   }
@@ -153,9 +155,6 @@ export default {
 .detail-paddingless tr.detail td {
   padding: 0;
 }
-/*.detail-paddingless tr.detail table {*/
-/*  background-color: transparent;*/
-/*}*/
 .detail-paddingless tr.detail table td {
   padding: 0.25rem;
 }

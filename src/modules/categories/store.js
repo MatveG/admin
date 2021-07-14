@@ -21,20 +21,31 @@ export default {
     CATEGORIES_SET (state, payload) {
       state.categories = payload;
     },
+    CATEGORIES_UPDATE (state, payload) {
+      state.categories = state.categories.map((el) => {
+        return el.id === payload.id ? Object.assign(el, payload) : el
+      });
+    },
+    CATEGORIES_REMOVE (state, id) {
+      state.categories = state.categories.filter((el) => el.id !== id);
+    },
     CATEGORY_SET (state, payload) {
       state.category = payload;
     },
     CATEGORY_ASSIGN (state, payload) {
       Object.assign(state.category, payload);
-    },
-    CATEGORY_DELETE (state, id) {
-      state.categories = state.categories.filter((el) => el.id !== id);
     }
   },
 
   actions: {
     async fetchCategories ({ commit }) {
       commit('CATEGORIES_SET', await api.fetchCategories());
+    },
+    async updateInCategories ({ commit }, payload) {
+      commit('CATEGORIES_UPDATE', Object.assign(payload, await api.updateCategory(payload)));
+    },
+    async removeFromCategories ({ commit }, id) {
+      commit('CATEGORIES_REMOVE', await api.deleteCategory(id));
     },
     async fetchCategory ({ commit }, id) {
       commit('CATEGORY_SET', await api.fetchCategory(id));
@@ -44,9 +55,6 @@ export default {
     },
     async updateCategory ({ commit }, payload) {
       commit('CATEGORY_ASSIGN', await api.updateCategory(payload));
-    },
-    async deleteCategory ({ commit }, id) {
-      commit('CATEGORY_DELETE', await api.deleteCategory(id));
     },
     resetCategory ({ commit }) {
       commit('CATEGORY_SET', {});

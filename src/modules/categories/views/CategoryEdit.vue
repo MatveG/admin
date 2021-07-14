@@ -13,7 +13,7 @@
     <div class="columns">
       <div class="column is-9">
         <form @submit.prevent="submit" @change="changed" @keyup="draftState">
-          <category-general v-model="category" :v="$v.category"/>
+          <category-general :category="category" :v="$v.category"/>
         </form>
 
         <card-component
@@ -33,11 +33,12 @@
       </div>
 
       <div class="column">
-        <category-parent
-            v-model="category"
-            :parentCategories="getParentCategories"
-            :v="$v.category"
-            @change="changed"/>
+        <form @submit.prevent="submit" @change="changed" @keyup="draftState">
+          <category-parent
+              :category="category"
+              :parentCategories="getParentCategories"
+              :v="$v.category"/>
+        </form>
 
         <card-component v-if="category.id" class="mt-5" title="Фотография" icon="image">
 <!--          <images-upload :prop-images="category.images" @update="assign('images', $event)"-->
@@ -138,7 +139,6 @@ export default {
           params: { propId: this.category.id }
         });
       }
-
       this.savedState();
     }
   },
