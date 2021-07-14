@@ -4,13 +4,13 @@ const rootCategory = { id: 0, parent_id: 0, title: '[отсувствует]' };
 
 export default {
   state: {
-    category: {},
-    categories: []
+    categories: [],
+    category: {}
   },
 
   getters: {
-    getCategory: (state) => state.category,
     getCategories: (state) => state.categories,
+    getCategory: (state) => state.category,
     getParentCategories: (state) => [
       rootCategory,
       ...state.categories.filter((category) => category.is_parent)

@@ -6,7 +6,7 @@ export default {
   },
 
   getters: {
-    getFeatures: (state) => JSON.parse(JSON.stringify(state.features))
+    getFeatures: (state) => state.features
   },
 
   mutations: {

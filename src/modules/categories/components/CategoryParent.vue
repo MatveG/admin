@@ -20,7 +20,7 @@
       </b-switch>
     </b-field>
 
-    <b-field :type="{ 'is-danger': v.parent_id.$error }"
+    <b-field :type="{ 'is-danger': $v.category.parent_id.$error }"
              class="mt-5" label="Родительская категория" label-position="on-border">
       <b-select
           v-model="category.parent_id"
@@ -55,7 +55,7 @@ export default {
       type: Array,
       required: true
     },
-    v: {
+    $v: {
       type: Object,
       default: () => {}
     }

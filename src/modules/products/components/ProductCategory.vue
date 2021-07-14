@@ -1,6 +1,6 @@
 <template>
   <card-component
-      :title="`ID товара: ${model.id || ''}`"
+      :title="`ID товара: ${product.id || ''}`"
       :hasButtonSlot="true"
       icon="shape"
       class="tile is-child">
@@ -9,17 +9,16 @@
     </template>
 
     <b-field class="has-text-centered">
-      <b-switch v-model="model.is_active">Активен</b-switch>
+      <b-switch v-model="product.is_active">Активен</b-switch>
     </b-field>
 
     <b-field
         label="Категория"
         label-position="on-border"
-        :type="{ 'is-danger': v.category_id.$error }">
+        :type="{ 'is-danger': $v.product.category_id.$error }">
       <b-select
           expanded
-          v-model="model.category_id"
-          @select="$emit('changed')">
+          v-model="product.category_id">
         <template v-for="(category, idx) in categories">
           <optgroup
               v-if="category.is_parent"
@@ -46,7 +45,6 @@
 </template>
 
 <script>
-import useModelBinding from '@/compositions/useModelBinding'
 import CardComponent from '@/components/CardComponent'
 
 export default {
@@ -55,7 +53,7 @@ export default {
     CardComponent
   },
   props: {
-    value: {
+    product: {
       type: Object,
       required: true
     },
@@ -63,14 +61,10 @@ export default {
       type: Array,
       required: true
     },
-    v: {
+    $v: {
       type: Object,
       default: () => {}
     }
-  },
-  setup (props, context) {
-    const { model } = useModelBinding(props, context);
-    return { model };
   }
 }
 </script>

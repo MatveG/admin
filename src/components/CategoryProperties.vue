@@ -7,15 +7,15 @@
         @dragstart="dragstart($event); reset()"
         @dragover="dragover"
         @dragleave="dragleave"
-        @drop="dragdrop($event); swap($event)"
+        @drop="dragdrop($event); swapOrd($event)"
         draggable
         detailed
         hoverable
         ref="table"
+        class="detail-simple"
         custom-row-key="id"
         default-sort="ord"
-        detail-key="id"
-        class="detail-simple">
+        detail-key="id">
 
       <b-table-column field="ord" label="↑↓" width="10%" sortable centered v-slot="props">
         {{ props.row.ord }}
@@ -33,7 +33,7 @@
       <b-table-column field="type" label="Тип" width="20%" sortable centered v-slot="props">
         <edit-data-type
             v-if="isEdited(props.row)"
-            v-model="item"
+            :item="item"
             :data-types="dataTypes"
             :v="$v.item"
             @change="changeType"/>
@@ -58,16 +58,16 @@
 
       <b-table-column label="*" width="20%" centered v-slot="props">
         <div v-if="isEdited(props.row)" class="buttons is-pulled-right is-flex-wrap-nowrap">
-          <b-button @click="save" size="is-small" type="is-primary" icon-right="check"/>
-          <b-button @click="reset" size="is-small" icon-right="close"/>
+          <b-button @click="save" outlined size="is-small" type="is-primary" icon-right="check"/>
+          <b-button @click="reset" outlined size="is-small" type="is-dark" icon-right="close"/>
         </div>
         <div v-else class="buttons is-pulled-right is-flex-wrap-nowrap">
           <b-button v-if="props.row.is_parent" @click="createChild(props.row.id)"
-                    size="is-small" type="is-link is-light" icon-right="plus"/>
+                    outlined size="is-small" type="is-link" icon-right="plus"/>
           <b-button @click="edit(props.row)"
-                    size="is-small" type="is-primary" icon-right="square-edit-outline"/>
+                    outlined size="is-small" type="is-primary" icon-right="square-edit-outline"/>
           <b-button @click="remove(props.row.id)"
-                    size="is-small" type="is-danger is-light" icon-right="delete"/>
+                    outlined size="is-small" type="is-danger" icon-right="delete"/>
         </div>
       </b-table-column>
 
@@ -152,9 +152,10 @@ export default {
       this.$v.$touch();
 
       if (this.$v.$invalid) {
-        return false;
+        return this.validationError();
+      } else {
+        this.$emit(this.item.id ? 'update' : 'store', this.item);
       }
-      this.$emit(this.item.id ? 'update' : 'store', this.item);
       this.reset();
     },
 
@@ -164,13 +165,12 @@ export default {
       });
     },
 
-    swap (event) {
+    swapOrd (event) {
       const [targetRow, dragRow] = [event.row, this.draggingRow];
 
       if (targetRow && dragRow && targetRow !== dragRow) {
-        [targetRow.ord, dragRow.ord] = [dragRow.ord, targetRow.ord];
-        this.$emit('update', targetRow);
-        this.$emit('update', dragRow);
+        this.$emit('update', { ...targetRow, ord: dragRow.ord });
+        this.$emit('update', { ...dragRow, ord: targetRow.ord });
         this.$refs.table.initSort();
       }
     },
@@ -189,11 +189,9 @@ export default {
     const item = ref({});
     const isCreated = ref(false);
 
-    const items = computed(() => {
-      return props.properties.filter((el) => {
-        return props.parentId === null || el.parent_id === props.parentId;
-      });
-    });
+    const items = computed(() => props.properties.filter((el) => {
+      return props.parentId === null || el.parent_id === props.parentId;
+    }));
     const opened = computed(() => {
       return items.value.filter((el) => el.is_parent).map((el) => el.id);
     });
@@ -203,6 +201,7 @@ export default {
     }
 
     function changeType () {
+      item.value.is_parent = item.value.type === 'group';
       item.value.is_required = false;
       item.value.is_filter = false;
     }

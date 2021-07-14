@@ -5,7 +5,7 @@
         <b-button :to="{ name: 'categories' }" tag="router-link" icon-right="arrow-left-circle"/>
       </template>
       <template slot="right">
-        <b-button :loading="loading" :disabled="saved" @click="submit"
+        <b-button :loading="isLoading" :disabled="isSaved" @click="submit"
                   type="is-primary" icon-right="content-save"/>
       </template>
     </buttons-toolbar>
@@ -13,7 +13,7 @@
     <div class="columns">
       <div class="column is-9">
         <form @submit.prevent="submit" @change="changed" @keyup="draftState">
-          <category-general :category="category" :v="$v.category"/>
+          <category-general :category="category" :$v="$v"/>
         </form>
 
         <card-component
@@ -37,7 +37,7 @@
           <category-parent
               :category="category"
               :parentCategories="getParentCategories"
-              :v="$v.category"/>
+              :$v="$v"/>
         </form>
 
         <card-component v-if="category.id" class="mt-5" title="Фотография" icon="image">
@@ -107,7 +107,7 @@ export default {
     if (this.propId) {
       this.globalLoading();
       await this.fetchCategory(this.propId);
-      this.category = { ...this.getCategory };
+      this.category = JSON.parse(JSON.stringify(this.getCategory))
       this.globalReady();
     }
     await this.fetchCategories();
@@ -143,10 +143,8 @@ export default {
     }
   },
   setup (props, context) {
-    const { validationError } = useDialogs();
-
     return {
-      validationError,
+      ...useDialogs(),
       ...useGlobalLoader(),
       ...useAutoSave(),
       ...useEditState(props, context),

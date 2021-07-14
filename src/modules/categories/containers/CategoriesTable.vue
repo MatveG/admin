@@ -1,7 +1,7 @@
 <template>
   <div>
     <b-table
-        :data="items"
+        :data="categories"
         :loading="isLoading"
         :opened-detailed="expanded"
         :show-detail-icon="false"
@@ -43,7 +43,7 @@
         <b-switch
             :value="props.row.is_active"
             :size="nested ? 'is-small' : ''"
-            @input="updateProp(props.row, 'is_active', $event)"
+            @input="update(props.row, 'is_active', $event)"
             outlined/>
       </b-table-column>
 
@@ -58,7 +58,7 @@
               icon-right="square-edit-outline"/>
           <b-button
               :size="nested ? 'is-small' : ''"
-              @click="removeItem(props.row.id)"
+              @click="remove(props.row.id)"
               outlined
               type="is-danger"
               icon-right="delete"/>
@@ -99,10 +99,18 @@ export default {
     }
   },
   methods: {
-    async updateProp (row, prop, value) {
+    async update (row, prop, value) {
       this.loadingState();
       await this.updateInCategories({ ...row, [prop]: value });
       this.readyState();
+    },
+
+    remove (id) {
+      this.confirmDelete(async () => {
+        this.loadingState();
+        await this.removeFromCategories(id);
+        this.readyState();
+      });
     },
 
     async swapOrd (payload) {
@@ -110,25 +118,17 @@ export default {
 
       if (targetRow && dragRow && targetRow.ord !== dragRow.ord) {
         await Promise.all([
-          this.updateProp(targetRow, 'ord', dragRow.ord),
-          this.updateProp(dragRow, 'ord', targetRow.ord)
+          this.update(targetRow, 'ord', dragRow.ord),
+          this.update(dragRow, 'ord', targetRow.ord)
         ]);
         this.$refs.table.initSort();
       }
-    },
-
-    removeItem (id) {
-      this.confirmDelete(async () => {
-        this.loadingState();
-        await this.removeFromCategories(id);
-        this.readyState();
-      });
     }
   },
   setup (props) {
-    const { categories } = useGetters({ categories: 'getCategories' });
+    const { getCategories } = useGetters(['getCategories']);
 
-    const items = computed(() => categories.value.filter((el) => {
+    const categories = computed(() => getCategories.value.filter((el) => {
       return props.parentId === null || el.parent_id === props.parentId;
     }));
     const nested = props.parentId !== null;
@@ -136,7 +136,7 @@ export default {
     const { confirmDelete } = useDialogs();
 
     return {
-      items,
+      categories,
       nested,
       confirmDelete,
       ...useLoadingState(),

@@ -1,21 +1,25 @@
 <template>
   <section class="section is-main-section">
     <buttons-toolbar>
-      <b-button :loading="loading" :disabled="saved" @click="saveProduct"
-                type="is-primary" icon-right="content-save"/>
-      <b-button :to="{ name: 'products' }" tag="router-link" icon-right="arrow-left-circle"/>
+      <template slot="left">
+        <b-button :to="{ name: 'products' }" tag="router-link" icon-right="arrow-left-circle"/>
+      </template>
+      <template slot="right">
+        <b-button :loading="isLoading" :disabled="isSaved" @click="submit"
+                  type="is-primary" icon-right="content-save"/>
+      </template>
     </buttons-toolbar>
 
-    <form @submit.prevent="saveProduct" @change="changed" @keyup="draftState" class="columns">
+    <form @submit.prevent="submit" @change="changed" @keyup="draftState" class="columns">
       <div class="column is-two-thirds">
         <product-general
-            v-model="product"
-            :v="$v.product">
+            :product="product"
+            :$v="$v">
             <product-features
                 v-if="product.category"
-                v-model="product"
+                :product="product"
                 :features="product.category.features"
-                :v="$v.product.features"/>
+                :$v="$v"/>
         </product-general>
 
         <card-component title="Фотографии" icon="image" class="mt-5">
@@ -31,24 +35,23 @@
 
       <div class="column">
         <product-category
-            v-model="product"
+            :product="product"
             :categories="categories"
-            :v="$v.product"
-            @changed="changed"/>
+            :$v="$v"/>
         <product-price
-            v-model="product"
+            :product="product"
             :currency-sign="$settings('currency', 'sign')"/>
         <product-availability
-            v-model="product"
+            :product="product"
             :stocks="$settings('shop', 'stocks')"/>
       </div>
     </form>
-<!--    <product-variants v-if="product.id" :discount="discount" />-->
   </section>
 </template>
 
 <script>
-import { mapActions, mapGetters, mapMutations } from 'vuex'
+import { maxLength, minLength, required } from 'vuelidate/lib/validators'
+import { useActions, useGetters } from 'vuex-composition-helpers'
 import ButtonsToolbar from '@/components/ButtonsToolbar'
 import CardComponent from '@/components/CardComponent'
 import ImagesUploader from '@/containers/ImagesUploader'
@@ -58,7 +61,10 @@ import ProductFeatures from '../components/ProductFeatures'
 import ProductGeneral from '../components/ProductGeneral'
 import ProductPrice from '../components/ProductPrice'
 import useEditState from '@/compositions/useEditState'
-import validations from '../validations/product'
+import useDialogs from '@/compositions/useDialogs'
+import useGlobalLoader from '@/compositions/useGlobalLoader'
+import useAutoSave from '@/compositions/useAutoSave'
+import validationRule from '@/utils/validationRule'
 
 export default {
   name: 'ProductEdit',
@@ -78,89 +84,99 @@ export default {
       required: true
     }
   },
-  computed: {
-    ...mapGetters({
-      product: 'getProduct',
-      categories: 'getCategories'
-    }),
-    discount: function () {
-      return this.product.price_old - this.product.price;
-    }
-  },
   validations () {
-    return validations(this);
-  },
-  setup (props, context) {
-    return {
-      ...useEditState(props, context)
-    };
-  },
-  mounted () {
-    this.fetchCategories();
-
-    if (this.propId) {
-      this.setProduct({});
-      this.fetchProduct(this.propId);
-    } else {
-      this.setProduct({});
-    }
-  },
-  methods: {
-    changed () {
-      this.draftState();
-
-      if (this.propId) {
-        this.resetSaveTimer(this.saveProduct);
+    const res = {
+      product: {
+        category_id: {
+        },
+        model: {
+          required,
+          minLength: minLength(2),
+          maxLength: maxLength(255)
+        },
+        features: {}
       }
-    },
+    };
 
-    saveProduct () {
-      this.saveData(async () => {
-        if (this.propId) {
-          await this.updateProduct(this.product);
-        } else {
-          await this.storeProduct(this.product);
-          await this.$router.replace({
-            name: 'product-edit',
-            params: { propId: this.product.id }
+    if (this.product.category && this.product.category.features.length) {
+      this.product.category.features.filter((el) => el.is_required).forEach((feature) => {
+        res.product.features[feature.key] = validationRule(feature.type);
+      });
+      this.product.category.features.filter((el) => el.is_parent).forEach((feature) => {
+        if (feature.children && feature.children.length) {
+          feature.children.filter((el) => el.is_required).forEach((subFeature) => {
+            res.product.features[subFeature.key] = validationRule(subFeature.type);
           });
         }
       });
-    },
+    }
 
-    async saveData (saveHandler) {
-      if (this.$v) {
-        this.$v.$touch();
+    return res;
+  },
+  data () {
+    return {
+      product: {}
+    }
+  },
+  async mounted () {
+    this.resetProduct();
 
-        if (this.$v.$invalid) {
-          return this.validationErrorMessage();
-        }
+    if (this.propId) {
+      this.globalLoading();
+      await this.fetchProduct(this.propId);
+      this.product = JSON.parse(JSON.stringify(this.getProduct))
+      this.globalReady();
+    }
+    await this.fetchCategories();
+  },
+  methods: {
+    changed () {
+      if (this.propId) {
+        this.initAutoSave(this.submit);
       }
-      clearTimeout(this.timers.save);
+      this.draftState();
+    },
+
+    submit () {
+      this.$v.$touch();
+      this.cancelAutoSave();
+
+      return this.$v.$invalid ? this.validationError() : this.save();
+    },
+
+    async save () {
       this.loadingState();
-      await saveHandler();
+
+      if (this.propId) {
+        await this.updateProduct(this.product);
+      } else {
+        await this.storeProduct(this.product);
+        await this.$router.replace({
+          name: 'product-edit',
+          params: { propId: this.product.id }
+        });
+      }
       this.savedState();
-      return this;
-    },
-
-    validationErrorMessage () {
-      this.$buefy.toast.open({
-        message: 'Заполните обязательные поля',
-        type: 'is-warning',
-        queue: true
-      });
-      return this;
-    },
-
-    ...mapActions([
-      'fetchProduct',
-      'updateProduct',
-      'storeProduct',
-      'fetchCategories'
-    ]),
-    ...mapMutations({
-      setProduct: 'PRODUCT_SET'
-    })
+    }
+  },
+  setup (props, context) {
+    return {
+      ...useDialogs(),
+      ...useGlobalLoader(),
+      ...useAutoSave(),
+      ...useEditState(props, context),
+      ...useGetters({
+        getProduct: 'getProduct',
+        categories: 'getCategories'
+      }),
+      ...useActions([
+        'fetchCategories',
+        'fetchProduct',
+        'updateProduct',
+        'storeProduct',
+        'resetProduct'
+      ])
+    };
   }
 }
 </script>

@@ -1,31 +1,32 @@
 import { ref, onMounted } from '@vue/composition-api'
 
 export default () => {
-  const mounted = ref(false);
-  const loading = ref(false);
-  const saved = ref(true);
+  const isMounted = ref(false);
+  const isLoading = ref(false);
+  const isSaved = ref(true);
 
   onMounted(() => {
-    mounted.value = true;
+    isMounted.value = true;
   });
 
   const draftState = () => {
-    saved.value = false;
+    isSaved.value = false;
   };
 
   const loadingState = () => {
-    saved.value = false;
-    loading.value = true;
+    isSaved.value = false;
+    isLoading.value = true;
   };
 
   const savedState = () => {
-    saved.value = true;
-    loading.value = false;
+    isSaved.value = true;
+    isLoading.value = false;
   };
 
   return {
-    loading,
-    saved,
+    isMounted,
+    isLoading,
+    isSaved,
     draftState,
     loadingState,
     savedState

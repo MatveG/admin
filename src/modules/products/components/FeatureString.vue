@@ -1,14 +1,12 @@
 <template>
-  <b-input v-model="model.features[feature.key]"/>
+  <b-input v-model="product.features[feature.key]"/>
 </template>
 
 <script>
-import useModelBinding from '@/compositions/useModelBinding'
-
 export default {
   name: 'FeatureString',
   props: {
-    value: {
+    product: {
       type: Object,
       required: true
     },
@@ -16,10 +14,6 @@ export default {
       type: Object,
       required: true
     }
-  },
-  setup (props, context) {
-    const { model } = useModelBinding(props, context);
-    return { model };
   }
 }
 </script>

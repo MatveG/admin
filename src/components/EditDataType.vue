@@ -1,33 +1,31 @@
 <template>
   <div>
     <b-field :type="{ 'is-danger': v.type.$error }">
-      <b-select v-model="model.type" @change.native="$emit('change')" expanded>
+      <b-select v-model="item.type" @change.native="$emit('change')" expanded>
         <option v-for="(title, key) in dataTypes" :key="key" :value="key">
           {{ title }}
         </option>
       </b-select>
     </b-field>
-    <template v-if="model.type === 'number'">
+    <template v-if="item.type === 'number'">
       <b-field label="Ед. измерения" label-position="on-border">
-        <b-input v-model="model.units" placeholder="кг" />
+        <b-input v-model="item.units" placeholder="кг" />
       </b-field>
     </template>
-    <template v-if="model.type === 'select' || model.type === 'multiple'">
+    <template v-if="item.type === 'select' || item.type === 'multiple'">
       <b-field :type="{ 'is-danger': v.values.$error }"
                label="Список значений" label-position="on-border">
-        <b-taginput v-model="model.values" placeholder="Добавить"  />
+        <b-taginput v-model="item.values" placeholder="Добавить"  />
       </b-field>
     </template>
   </div>
 </template>
 
 <script>
-import useModelBinding from '@/compositions/useModelBinding'
-
 export default {
   name: 'EditDataType',
   props: {
-    value: {
+    item: {
       type: Object,
       required: true
     },
@@ -39,11 +37,6 @@ export default {
       type: Object,
       default: () => {}
     }
-  },
-  setup (props, context) {
-    return {
-      ...useModelBinding(props, context)
-    };
   }
 }
 </script>

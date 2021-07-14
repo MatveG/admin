@@ -1,13 +1,13 @@
 <template>
   <card-component title="Цена" icon="currency-usd" class="mt-5">
-    <b-field :label="model.is_sale ? 'Старая цена' : 'Цена'" label-position="on-border">
+    <b-field :label="product.is_sale ? 'Старая цена' : 'Цена'" label-position="on-border">
       <b-input
-          v-if="model.is_sale"
-          v-model.number="model.price_old"
+          v-if="product.is_sale"
+          v-model.number="product.price_old"
           type="number" step="any" placeholder="0.0" expanded/>
       <b-input
           v-else
-          v-model.number="model.price"
+          v-model.number="product.price"
           type="number" step="any" placeholder="0.0" expanded/>
 
       <div class="control">
@@ -16,12 +16,12 @@
     </b-field>
 
     <b-field class="has-text-centered">
-      <b-switch v-model="model.is_sale" @change.native="toggleDiscount">
+      <b-switch v-model="product.is_sale" @change.native="toggleDiscount">
         Скидка
       </b-switch>
     </b-field>
 
-    <div v-if="model.is_sale">
+    <div v-if="product.is_sale">
       <div class="columns">
         <div class="column">
           <b-field label="Скидка" label-position="on-border">
@@ -37,8 +37,8 @@
         <div class="column">
           <b-field label="Цена со скидкой" label-position="on-border">
             <b-input
-                v-model.number="model.price"
-                :disabled="!model.is_sale"
+                v-model.number="product.price"
+                :disabled="!product.is_sale"
                 type="number" step="any" placeholder="0.0" expanded/>
             <div class="control">
               <div class="button is-static">{{ currencySign }}</div>
@@ -47,7 +47,7 @@
         </div>
       </div>
       <b-field label="Детали акции" label-position="on-border">
-        <b-input v-model="model.sale_text" type="textarea" rows="1" />
+        <b-input v-model="product.sale_text" type="textarea" rows="1" />
       </b-field>
     </div>
   </card-component>
@@ -55,7 +55,6 @@
 
 <script>
 import CardComponent from '@/components/CardComponent'
-import useModelBinding from '@/compositions/useModelBinding'
 
 export default {
   name: 'ProductPrice',
@@ -63,7 +62,7 @@ export default {
     CardComponent
   },
   props: {
-    value: {
+    product: {
       type: Object,
       required: true
     },
@@ -80,23 +79,19 @@ export default {
   },
   methods: {
     toggleDiscount () {
-      if (this.model.is_sale) {
-        this.model.price_old = this.model.price;
+      if (this.product.is_sale) {
+        this.product.price_old = this.product.price;
       } else {
-        this.model.price = this.model.price_old;
+        this.product.price = this.product.price_old;
       }
-      this.model.sale_text = null;
+      this.product.sale_text = null;
     },
 
     calcSalePrice () {
-      const discount = Math.round(this.model.price_old * this.percent / 100);
-      this.model.price = this.model.price_old - discount;
+      const discount = Math.round(this.product.price_old * this.percent / 100);
+      this.product.price = this.product.price_old - discount;
       this.percent = null;
     }
-  },
-  setup (props, context) {
-    const { model } = useModelBinding(props, context);
-    return { model };
   }
 }
 </script>

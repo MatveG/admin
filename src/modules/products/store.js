@@ -2,13 +2,13 @@ import * as api from './api'
 
 export default {
   state: {
-    product: {},
-    products: []
+    products: [],
+    product: {}
   },
 
   getters: {
-    getProduct: (state) => JSON.parse(JSON.stringify(state.product)),
-    getProducts: (state) => JSON.parse(JSON.stringify(state.products))
+    getProducts: (state) => state.products,
+    getProduct: (state) => state.product
   },
 
   mutations: {
@@ -16,6 +16,14 @@ export default {
       if (payload) {
         state.products = payload;
       }
+    },
+    PRODUCTS_UPDATE (state, payload) {
+      state.products = state.products.map((el) => {
+        return el.id === payload.id ? Object.assign(el, payload) : el
+      });
+    },
+    PRODUCTS_REMOVE (state, id) {
+      state.products = state.products.filter((el) => el.id !== id);
     },
     PRODUCT_SET (state, payload) {
       if (payload) {
@@ -26,29 +34,30 @@ export default {
       if (payload) {
         Object.assign(state.product, payload);
       }
-    },
-    PRODUCT_DELETE (state, id) {
-      if (id) {
-        state.products = state.products.filter((el) => el.id !== id);
-      }
     }
   },
 
   actions: {
-    async fetchProducts (context) {
-      context.commit('PRODUCTS_SET', await api.fetchProducts());
+    async fetchProducts ({ commit }) {
+      commit('PRODUCTS_SET', await api.fetchProducts());
     },
-    async fetchProduct (context, id) {
-      context.commit('PRODUCT_SET', await api.fetchProduct(id));
+    async updateInProducts ({ commit }, payload) {
+      commit('PRODUCTS_UPDATE', Object.assign(payload, await api.updateProduct(payload)));
     },
-    async storeProduct (context, payload) {
-      context.commit('PRODUCT_ASSIGN', await api.storeProduct(payload));
+    async removeFromProducts ({ commit }, id) {
+      commit('PRODUCTS_REMOVE', await api.deleteProduct(id));
     },
-    async updateProduct (context, payload) {
-      context.commit('PRODUCT_ASSIGN', await api.updateProduct(payload));
+    async fetchProduct ({ commit }, id) {
+      commit('PRODUCT_SET', await api.fetchProduct(id));
     },
-    async deleteProduct (context, id) {
-      context.commit('PRODUCT_DELETE', await api.deleteProduct(id));
+    async storeProduct ({ commit }, payload) {
+      commit('PRODUCT_ASSIGN', await api.storeProduct(payload));
+    },
+    async updateProduct ({ commit }, payload) {
+      commit('PRODUCT_ASSIGN', await api.updateProduct(payload));
+    },
+    resetProduct ({ commit }) {
+      commit('PRODUCT_SET', {});
     }
   }
 };

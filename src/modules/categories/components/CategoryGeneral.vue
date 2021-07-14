@@ -2,11 +2,11 @@
   <card-component title="Основная информация" icon="image-text">
     <b-tabs type="is-boxed">
       <b-tab-item label="Название">
-        <b-field :type="{ 'is-danger': v.title.$error }"
+        <b-field :type="{ 'is-danger': $v.category.title.$error }"
                  label="Название" message="Полное название" horizontal>
           <b-input v-model="category.title" />
         </b-field>
-        <b-field :type="{ 'is-danger': v.title_short.$error }"
+        <b-field :type="{ 'is-danger': $v.category.title_short.$error }"
                  label="Текст ссылки" message="Сокращенное название" horizontal>
           <b-input v-model="category.title_short" />
         </b-field>
@@ -45,7 +45,7 @@ export default {
       type: Object,
       required: true
     },
-    v: {
+    $v: {
       type: Object,
       default: () => {}
     }

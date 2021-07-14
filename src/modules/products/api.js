@@ -1,26 +1,26 @@
 import axios from '@/api/axios'
 
-export const fetchProducts = async () => {
+export async function fetchProducts () {
   const { data } = await axios.get('/products');
   return data;
-};
+}
 
-export const fetchProduct = async (id) => {
+export async function fetchProduct (id) {
   const { data } = await axios.get(`/products/${id}`);
   return data;
-};
+}
 
-export const storeProduct = async (payload) => {
+export async function storeProduct (payload) {
   const { data } = await axios.post('/products', payload);
   return data;
-};
+}
 
-export const updateProduct = async (payload) => {
+export async function updateProduct (payload) {
   const { data } = await axios.patch(`/products/${payload.id}`, payload);
   return data;
-};
+}
 
-export const deleteProduct = async (id) => {
+export async function deleteProduct (id) {
   const { data } = await axios.delete(`/products/${id}`);
   return data;
-};
+}
