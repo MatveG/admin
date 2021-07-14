@@ -1,6 +1,6 @@
 import { ToastProgrammatic as Toast, DialogProgrammatic as Dialog } from 'buefy'
 
-export default () => {
+export default function () {
   function validationError () {
     Toast.open({
       message: 'Заполните обязательные поля',

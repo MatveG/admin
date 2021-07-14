@@ -1,26 +1,26 @@
 import axios from '@/api/axios'
 
-export const fetchCategories = async () => {
+export async function fetchCategories () {
   const { data } = await axios.get('/categories');
   return data;
-};
+}
 
-export const fetchCategory = async (id) => {
+export async function fetchCategory (id) {
   const { data } = await axios.get(`/categories/${id}`);
   return data;
-};
+}
 
-export const storeCategory = async (payload) => {
+export async function storeCategory (payload) {
   const { data } = await axios.post('/categories', payload);
   return data;
-};
+}
 
-export const updateCategory = async (payload) => {
+export async function updateCategory (payload) {
   const { data } = await axios.patch(`/categories/${payload.id}`, payload);
   return data;
-};
+}
 
-export const deleteCategory = async (id) => {
+export async function deleteCategory (id) {
   const { data } = await axios.delete(`/categories/${id}`);
   return data;
-};
+}

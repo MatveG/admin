@@ -1,6 +1,6 @@
 <template>
   <card-component
-      :title="`ID категории: ${model.id || ''}`"
+      :title="`ID категории: ${category.id || ''}`"
       :hasButtonSlot="true"
       icon="shape"
       class="tile is-child">
@@ -9,13 +9,13 @@
     </template>
 
     <b-field class="has-text-centered">
-      <b-switch v-model="model.is_active" @change.native="$emit('change')">
+      <b-switch v-model="category.is_active">
         Активная
       </b-switch>
     </b-field>
 
     <b-field class="has-text-centered">
-      <b-switch v-model="model.is_parent" @change.native="$emit('change')">
+      <b-switch v-model="category.is_parent">
         Корневая
       </b-switch>
     </b-field>
@@ -23,7 +23,7 @@
     <b-field :type="{ 'is-danger': v.parent_id.$error }"
              class="mt-5" label="Родительская категория" label-position="on-border">
       <b-select
-          v-model="model.parent_id"
+          v-model="category.parent_id"
           @change.native="$emit('change')"
           expanded
           placeholder="Выберите">
@@ -40,7 +40,6 @@
 
 <script>
 import CardComponent from '@/components/CardComponent'
-import useModelBinding from '@/compositions/useModelBinding'
 
 export default {
   name: 'CategoryParent',
@@ -48,7 +47,7 @@ export default {
     CardComponent
   },
   props: {
-    value: {
+    category: {
       type: Object,
       required: true
     },
@@ -60,11 +59,6 @@ export default {
       type: Object,
       default: () => {}
     }
-  },
-  setup (props, context) {
-    return {
-      ...useModelBinding(props, context)
-    };
   }
 }
 </script>

@@ -4,28 +4,28 @@
       <b-tab-item label="Название">
         <b-field :type="{ 'is-danger': v.title.$error }"
                  label="Название" message="Полное название" horizontal>
-          <b-input v-model="model.title" />
+          <b-input v-model="category.title" />
         </b-field>
         <b-field :type="{ 'is-danger': v.title_short.$error }"
                  label="Текст ссылки" message="Сокращенное название" horizontal>
-          <b-input v-model="model.title_short" />
+          <b-input v-model="category.title_short" />
         </b-field>
         <b-field label="Описание" horizontal>
-          <b-input v-model="model.description" type="textarea" />
+          <b-input v-model="category.description" type="textarea" />
         </b-field>
       </b-tab-item>
       <b-tab-item label="SEO">
         <b-field label="URL" horizontal>
-          <b-input v-model="model.slug" custom-class="is-static" readonly />
+          <b-input v-model="category.slug" custom-class="is-static" readonly />
         </b-field>
         <b-field label="Заголовок" message="Тег title" horizontal>
-          <b-input v-model="model.meta_title" />
+          <b-input v-model="category.meta_title" />
         </b-field>
         <b-field label="Описание" message="Тег description" horizontal>
-          <b-input v-model="model.meta_description" />
+          <b-input v-model="category.meta_description" />
         </b-field>
         <b-field label="Ключевые слова" message="Тег keywords" horizontal>
-          <b-input v-model="model.meta_keywords" />
+          <b-input v-model="category.meta_keywords" />
         </b-field>
       </b-tab-item>
     </b-tabs>
@@ -33,7 +33,6 @@
 </template>
 
 <script>
-import useModelBinding from '@/compositions/useModelBinding'
 import CardComponent from '@/components/CardComponent'
 
 export default {
@@ -42,7 +41,7 @@ export default {
     CardComponent
   },
   props: {
-    value: {
+    category: {
       type: Object,
       required: true
     },
@@ -50,9 +49,6 @@ export default {
       type: Object,
       default: () => {}
     }
-  },
-  setup (props, context) {
-    return { ...useModelBinding(props, context) };
   }
 }
 </script>
