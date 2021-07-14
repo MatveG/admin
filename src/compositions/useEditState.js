@@ -4,19 +4,12 @@ export default () => {
   const mounted = ref(false);
   const loading = ref(false);
   const saved = ref(true);
-  const timers = {};
 
   onMounted(() => {
     mounted.value = true;
   });
 
-  const resetSaveTimer = (timeoutHandler) => {
-    clearTimeout(timers.save);
-    timers.save = setTimeout(timeoutHandler, 2000);
-  };
-
   const draftState = () => {
-    clearTimeout(timers.save);
     saved.value = false;
   };
 
@@ -33,7 +26,6 @@ export default () => {
   return {
     loading,
     saved,
-    resetSaveTimer,
     draftState,
     loadingState,
     savedState

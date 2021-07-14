@@ -11,26 +11,18 @@ export default {
 
   mutations: {
     FEATURES_SET (state, payload) {
-      if (payload) {
-        state.features = payload;
-      }
+      state.features = payload;
     },
     FEATURE_PUSH (state, payload) {
-      if (payload) {
-        state.features.push(payload);
-      }
+      state.features.push(payload);
     },
     FEATURE_UPDATE (state, payload) {
-      if (payload) {
-        state.features = state.features.map((el) => {
-          return el.id === payload.id ? Object.assign(el, payload) : el
-        });
-      }
+      state.features = state.features.map((el) => {
+        return el.id === payload.id ? Object.assign(el, payload) : el
+      });
     },
     FEATURE_REMOVE (state, id) {
-      if (id) {
-        state.features = state.features.filter((el) => el.id !== id);
-      }
+      state.features = state.features.filter((el) => el.id !== id);
     }
   },
 

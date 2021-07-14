@@ -10,6 +10,8 @@ import store from './store'
 import axios from '@/api/axios'
 import AsideMenuList from '@/components/AsideMenuList'
 
+Vue.config.productionTip = false;
+
 Vue.use(VueCompositionAPI)
 Vue.use(Buefy);
 Vue.use(Vuelidate);
@@ -33,7 +35,7 @@ axios.get('/settings')
     }, {});
 
     Vue.prototype.$settings = (group, key) => {
-      return key ? settings[group][key] ?? null : settings[group] ?? null;
+      return key ? settings[group][key] || null : settings[group] || null;
     }
 
     new Vue({

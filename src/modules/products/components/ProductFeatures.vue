@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import useModelBinding from '@/hooks/useModelBinding'
+import useModelBinding from '@/compositions/useModelBinding'
 import FeatureBoolean from './FeatureBoolean'
 import FeatureMultiple from './FeatureMultiple'
 import FeatureNumber from './FeatureNumber'

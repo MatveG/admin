@@ -1,15 +1,19 @@
 <template>
   <section class="section is-main-section">
     <buttons-toolbar>
-      <b-button :loading="loading" :disabled="saved" @click="saveCategory"
-                type="is-primary" icon-right="content-save"/>
-      <b-button :to="{ name: 'categories' }" tag="router-link" icon-right="arrow-left-circle"/>
+      <template slot="left">
+        <b-button :to="{ name: 'categories' }" tag="router-link" icon-right="arrow-left-circle"/>
+      </template>
+      <template slot="right">
+        <b-button :loading="loading" :disabled="saved" @click="submit"
+                  type="is-primary" icon-right="content-save"/>
+      </template>
     </buttons-toolbar>
 
     <div class="columns">
       <div class="column is-9">
-        <form @submit.prevent="saveCategory" @change="changed" @keyup="draftState">
-          <category-general v-model="category"/>
+        <form @submit.prevent="submit" @change="changed" @keyup="draftState">
+          <category-general v-model="category" :v="$v.category"/>
         </form>
 
         <card-component
@@ -17,22 +21,27 @@
             class="mt-5"
             title="Характеристики и параметры"
             icon="subtitles-outline">
-          <b-tabs v-model="tab" type="is-boxed">
+          <b-tabs type="is-boxed">
             <b-tab-item label="Характеристики">
               <category-features v-if="category.id" :categoryId="category.id"/>
             </b-tab-item>
             <b-tab-item label="Параметры">
-<!--              <category-parameters v-if="category.id"/>-->
+              <category-parameters v-if="category.id" :categoryId="category.id"/>
             </b-tab-item>
           </b-tabs>
         </card-component>
       </div>
 
       <div class="column">
-        <category-parent v-model="category" :parentCategories="parentCategories" @change="changed"/>
+        <category-parent
+            v-model="category"
+            :parentCategories="getParentCategories"
+            :v="$v.category"
+            @change="changed"/>
+
         <card-component v-if="category.id" class="mt-5" title="Фотография" icon="image">
-<!--&lt;!&ndash;          <images-upload :prop-images="category.images" @update="assign('images', $event)"&ndash;&gt;-->
-<!--&lt;!&ndash;                         :prop-api="`/admin/categories/${category.id}`" :prop-max="1" prop-width="100%" />&ndash;&gt;-->
+<!--          <images-upload :prop-images="category.images" @update="assign('images', $event)"-->
+<!--                         :prop-api="`/admin/categories/${category.id}`" :prop-max="1" prop-width="100%" />-->
         </card-component>
       </div>
     </div>
@@ -41,13 +50,17 @@
 
 <script>
 import { required, minLength, maxLength } from 'vuelidate/lib/validators'
-import { mapActions, mapGetters, mapMutations } from 'vuex'
+import { useActions, useGetters } from 'vuex-composition-helpers'
 import CardComponent from '@/components/CardComponent'
 import ButtonsToolbar from '@/components/ButtonsToolbar'
-import CategoryParent from '@/modules/categories/components/CategoryParent'
-import CategoryGeneral from '@/modules/categories/components/CategoryGeneral'
 import CategoryFeatures from '@/modules/features/containers/CategoryFeatures';
-import useEditState from '@/hooks/useEditState'
+import CategoryParameters from '@/modules/parameters/containers/CategoryParameters';
+import CategoryParent from '../components/CategoryParent'
+import CategoryGeneral from '../components/CategoryGeneral'
+import useGlobalLoader from '@/compositions/useGlobalLoader'
+import useEditState from '@/compositions/useEditState'
+import useAutoSave from '@/compositions/useAutoSave'
+import useDialogs from '@/compositions/useDialogs'
 
 export default {
   name: 'CategoryEdit',
@@ -56,7 +69,8 @@ export default {
     CardComponent,
     ButtonsToolbar,
     CategoryParent,
-    CategoryFeatures
+    CategoryFeatures,
+    CategoryParameters
   },
   props: {
     propId: {
@@ -64,89 +78,90 @@ export default {
       default: null
     }
   },
-  data () {
-    return {
-      tab: 0
-    }
-  },
-  computed: mapGetters({
-    category: 'getCategory',
-    parentCategories: 'getParentCategories'
-  }),
   validations: {
     category: {
       title: {
         required,
-        minLength: minLength(3),
+        minLength: minLength(2),
         maxLength: maxLength(255)
       },
       title_short: {
         required,
-        minLength: minLength(3),
+        minLength: minLength(2),
         maxLength: maxLength(255)
+      },
+      parent_id: {
+        required
       }
     }
   },
-  setup (props, context) {
+  data () {
     return {
-      ...useEditState(props, context)
-    };
+      category: {}
+    }
   },
-  mounted () {
-    this.setCategory({});
+  async mounted () {
+    this.resetCategory();
 
     if (this.propId) {
-      this.fetchCategory(this.propId);
+      this.globalLoading();
+      await this.fetchCategory(this.propId);
+      this.category = { ...this.getCategory };
+      this.globalReady();
     }
-    this.fetchCategories();
+    await this.fetchCategories();
   },
   methods: {
     changed () {
+      if (this.propId) {
+        this.initAutoSave(this.submit);
+      }
       this.draftState();
+    },
+
+    submit () {
+      this.$v.$touch();
+      this.cancelAutoSave();
+
+      return this.$v.$invalid ? this.validationError() : this.save();
+    },
+
+    async save () {
+      this.loadingState();
 
       if (this.propId) {
-        this.resetSaveTimer(this.saveCategory);
+        await this.updateCategory(this.category);
+      } else {
+        await this.storeCategory(this.category);
+        await this.$router.replace({
+          name: 'category-edit',
+          params: { propId: this.category.id }
+        });
       }
-    },
 
-    saveCategory () {
-      this.saveData(async () => {
-        if (this.propId) {
-          await this.updateCategory(this.category);
-        } else {
-          await this.storeCategory(this.category);
-          await this.$router.replace({
-            name: 'category-edit',
-            params: { propId: this.category.id }
-          });
-        }
-      });
-    },
-
-    async saveData (saveHandler) {
-      if (this.$v) {
-        this.$v.$touch();
-
-        if (this.$v.$invalid) {
-          return this.validationErrorMessage();
-        }
-      }
-      // clearTimeout(this.timers.save);
-      this.loadingState();
-      await saveHandler();
       this.savedState();
-      return this;
-    },
+    }
+  },
+  setup (props, context) {
+    const { validationError } = useDialogs();
 
-    ...mapActions([
-      'fetchCategory',
-      'updateCategory',
-      'storeCategory',
-      'fetchCategories'
-    ]),
-    ...mapMutations({
-      setCategory: 'CATEGORY_SET'
-    })
+    return {
+      validationError,
+      ...useGlobalLoader(),
+      ...useAutoSave(),
+      ...useEditState(props, context),
+      ...useGetters([
+        'getCategory',
+        'getParentCategories'
+      ]),
+      ...useActions([
+        'fetchCategories',
+        'fetchCategory',
+        'storeCategory',
+        'updateCategory',
+        'resetCategory'
+      ])
+    };
   }
 }
 </script>

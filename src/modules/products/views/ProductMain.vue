@@ -129,8 +129,8 @@
 import { mapActions, mapGetters } from 'vuex'
 import CardComponent from '@/components/CardComponent';
 import ProductToolbar from '../components/ProductToolbar'
-import useDialogs from '@/hooks/useDialogs'
-import useListState from '@/hooks/useListState'
+import useDialogs from '@/compositions/useDialogs'
+import useLoadingState from '@/compositions/useLoadingState'
 
 export default {
   name: 'ProductMain',
@@ -151,7 +151,7 @@ export default {
     const { confirmDelete } = useDialogs(props, context);
     return {
       confirmDelete,
-      ...useListState()
+      ...useLoadingState()
     };
   },
   mounted () {

@@ -1,13 +1,13 @@
 <template>
   <card-component title="Основная информация" icon="image-text">
-    <b-tabs v-model="tab" type="is-boxed">
+    <b-tabs type="is-boxed">
       <b-tab-item label="Название">
-<!--        :type="{ 'is-danger': v.model.title.$error }"-->
-        <b-field label="Название" message="Полное название" horizontal>
+        <b-field :type="{ 'is-danger': v.title.$error }"
+                 label="Название" message="Полное название" horizontal>
           <b-input v-model="model.title" />
         </b-field>
-<!--        :type="{ 'is-danger': v.model.title_short.$error }"-->
-        <b-field label="Текст ссылки" message="Сокращенное название" horizontal>
+        <b-field :type="{ 'is-danger': v.title_short.$error }"
+                 label="Текст ссылки" message="Сокращенное название" horizontal>
           <b-input v-model="model.title_short" />
         </b-field>
         <b-field label="Описание" horizontal>
@@ -33,7 +33,7 @@
 </template>
 
 <script>
-import useModelBinding from '@/hooks/useModelBinding'
+import useModelBinding from '@/compositions/useModelBinding'
 import CardComponent from '@/components/CardComponent'
 
 export default {
@@ -45,15 +45,10 @@ export default {
     value: {
       type: Object,
       required: true
-    }
-    // v: {
-    //   type: Object,
-    //   default: () => {}
-    // }
-  },
-  data () {
-    return {
-      tab: 0
+    },
+    v: {
+      type: Object,
+      default: () => {}
     }
   },
   setup (props, context) {

@@ -1,6 +1,6 @@
 import * as api from './api'
 
-const rootCategory = { id: 0, parent_id: 0, title: '[нет]' };
+const rootCategory = { id: 0, parent_id: 0, title: '[отсувствует]' };
 
 export default {
   state: {
@@ -9,9 +9,8 @@ export default {
   },
 
   getters: {
-    // getCategory: (state) => JSON.parse(JSON.stringify(state.category)),
     getCategory: (state) => state.category,
-    getCategories: (state) => JSON.parse(JSON.stringify(state.categories)),
+    getCategories: (state) => state.categories,
     getParentCategories: (state) => [
       rootCategory,
       ...state.categories.filter((category) => category.is_parent)
@@ -20,24 +19,16 @@ export default {
 
   mutations: {
     CATEGORIES_SET (state, payload) {
-      if (payload) {
-        state.categories = payload;
-      }
+      state.categories = payload;
     },
     CATEGORY_SET (state, payload) {
-      if (payload) {
-        state.category = payload;
-      }
+      state.category = payload;
     },
     CATEGORY_ASSIGN (state, payload) {
-      if (payload) {
-        Object.assign(state.category, payload);
-      }
+      Object.assign(state.category, payload);
     },
     CATEGORY_DELETE (state, id) {
-      if (id) {
-        state.categories = state.categories.filter((el) => el.id !== id);
-      }
+      state.categories = state.categories.filter((el) => el.id !== id);
     }
   },
 

@@ -46,7 +46,7 @@
 </template>
 
 <script>
-import useModelBinding from '@/hooks/useModelBinding'
+import useModelBinding from '@/compositions/useModelBinding'
 import CardComponent from '@/components/CardComponent'
 
 export default {

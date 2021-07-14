@@ -1,24 +1,27 @@
 import { ref } from '@vue/composition-api'
 
-export default () => {
+export default function useDraggingRows () {
   const draggingRow = ref({});
 
-  const dragdrop = (payload) => {
+  function dragdrop (payload) {
     payload.event.target.closest('tr').classList.remove('is-selected');
-  };
-  const dragstart = (payload) => {
+  }
+
+  function dragstart (payload) {
     draggingRow.value = payload.row;
     payload.event.dataTransfer.effectAllowed = 'copy';
-  };
-  const dragover = (payload) => {
+  }
+
+  function dragover (payload) {
     payload.event.dataTransfer.dropEffect = 'copy';
     payload.event.target.closest('tr').classList.add('is-selected');
     payload.event.preventDefault();
-  };
-  const dragleave = (payload) => {
+  }
+
+  function dragleave (payload) {
     payload.event.target.closest('tr').classList.remove('is-selected');
     payload.event.preventDefault();
-  };
+  }
 
   return {
     draggingRow,

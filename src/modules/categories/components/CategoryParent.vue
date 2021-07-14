@@ -16,26 +16,31 @@
 
     <b-field class="has-text-centered">
       <b-switch v-model="model.is_parent" @change.native="$emit('change')">
-        Подкатегории
+        Корневая
       </b-switch>
     </b-field>
 
-    <b-field class="mt-5" label="Родительская категория" label-position="on-border">
-      <b-autocomplete
-          v-model="autocomplete"
-          :data="filteredParentCategories"
-          :open-on-focus="true"
-          keep-first
-          clearable
-          @select="selectParent"
-          field="title"/>
+    <b-field :type="{ 'is-danger': v.parent_id.$error }"
+             class="mt-5" label="Родительская категория" label-position="on-border">
+      <b-select
+          v-model="model.parent_id"
+          @change.native="$emit('change')"
+          expanded
+          placeholder="Выберите">
+        <option
+            v-for="category in parentCategories"
+            :value="category.id"
+            :key="category.id">
+          {{ category.title }}
+        </option>
+      </b-select>
     </b-field>
   </card-component>
 </template>
 
 <script>
-import useModelBinding from '@/hooks/useModelBinding'
 import CardComponent from '@/components/CardComponent'
+import useModelBinding from '@/compositions/useModelBinding'
 
 export default {
   name: 'CategoryParent',
@@ -50,39 +55,16 @@ export default {
     parentCategories: {
       type: Array,
       required: true
-    }
-    // v: {
-    //   type: Object,
-    //   default: () => {}
-    // }
-  },
-  data () {
-    return {
-      autocomplete: ''
-    }
-  },
-  computed: {
-    filteredParentCategories () {
-      return this.parentCategories.filter((option) => option.id !== this.model.id &&
-          option.title.toLowerCase().indexOf(this.autocomplete.toLowerCase()) >= 0)
-    }
-  },
-  watch: {
-    'model.parent_id': function () {
-      const parentCategory = this.parentCategories.find((el) => el.id === this.model.parent_id) || {};
-      this.autocomplete = parentCategory.title || '';
+    },
+    v: {
+      type: Object,
+      default: () => {}
     }
   },
   setup (props, context) {
-    return { ...useModelBinding(props, context) };
-  },
-  methods: {
-    selectParent (parent) {
-      if (parent) {
-        this.model.parent_id = parent.id;
-        this.$emit('change');
-      }
-    }
+    return {
+      ...useModelBinding(props, context)
+    };
   }
 }
 </script>

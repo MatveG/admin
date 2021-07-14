@@ -4,6 +4,9 @@
       <b-button :type="{'is-info is-light' : !!toggled.is_active}" @click="toggle('is_active')">
         Активные
       </b-button>
+      <b-button :type="{'is-info is-light' : !!toggled.is_parent}" @click="toggle('is_parent')">
+        Корневые
+      </b-button>
     </div>
     <div slot="right">
       <b-button type="is-primary" icon-right="plus-circle"
@@ -23,7 +26,8 @@ export default {
   data () {
     return {
       toggled: {
-        is_active: false
+        is_active: false,
+        is_parent: false
       }
     }
   },

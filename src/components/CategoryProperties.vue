@@ -221,6 +221,15 @@ export default {
 }
 </script>
 
-<style scoped>
-
+<style>
+.detail-simple tr.detail td {
+  padding: 0;
+}
+.detail-simple tr.detail table th {
+  visibility: hidden;
+  font-size: 0;
+}
+.detail-simple tr.detail table td {
+  padding: 0.25rem;
+}
 </style>

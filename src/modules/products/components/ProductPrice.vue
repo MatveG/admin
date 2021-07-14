@@ -55,7 +55,7 @@
 
 <script>
 import CardComponent from '@/components/CardComponent'
-import useModelBinding from '@/hooks/useModelBinding'
+import useModelBinding from '@/compositions/useModelBinding'
 
 export default {
   name: 'ProductPrice',

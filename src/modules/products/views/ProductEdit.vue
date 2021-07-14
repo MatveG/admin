@@ -57,7 +57,7 @@ import ProductCategory from '../components/ProductCategory'
 import ProductFeatures from '../components/ProductFeatures'
 import ProductGeneral from '../components/ProductGeneral'
 import ProductPrice from '../components/ProductPrice'
-import useEditState from '@/hooks/useEditState'
+import useEditState from '@/compositions/useEditState'
 import validations from '../validations/product'
 
 export default {
