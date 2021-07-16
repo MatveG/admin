@@ -12,20 +12,16 @@
       <b-switch v-model="product.is_active">Активен</b-switch>
     </b-field>
 
-    <b-field
-        label="Категория"
-        label-position="on-border"
-        :type="{ 'is-danger': $v.product.category_id.$error }">
-      <b-select
-          expanded
-          v-model="product.category_id">
-        <template v-for="(category, idx) in categories">
+    <b-field :type="{ 'is-danger': $v.product.category_id.$error }"
+        label="Категория" label-position="on-border">
+      <b-select v-model="product.category_id" expanded>
+        <template v-for="(category, idx) in categories.filter((el) => el.parent_id === 0)">
           <optgroup
               v-if="category.is_parent"
               :label="category.title"
               :key="idx">
             <option
-                v-for="(child, idx2) in category.children"
+                v-for="(child, idx2) in categories.filter((el) => el.parent_id === category.id)"
                 :value="child.id"
                 :key="idx2">
               {{ child.title }}

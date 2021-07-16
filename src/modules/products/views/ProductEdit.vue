@@ -1,8 +1,10 @@
 <template>
   <section class="section is-main-section">
+<!--    {{categories}}-->
     <buttons-toolbar>
       <template slot="left">
-        <b-button :to="{ name: 'products' }" tag="router-link" icon-right="arrow-left-circle"/>
+        <b-button :to="{ name: 'products' }" tag="router-link"
+                  type="is-primary" outlined icon-right="arrow-left-circle"/>
       </template>
       <template slot="right">
         <b-button :loading="isLoading" :disabled="isSaved" @click="submit"
@@ -10,42 +12,45 @@
       </template>
     </buttons-toolbar>
 
-    <form @submit.prevent="submit" @change="changed" @keyup="draftState" class="columns">
+    <div class="columns">
       <div class="column is-two-thirds">
-        <product-general
-            :product="product"
-            :$v="$v">
+        <form @submit.prevent="submit" @change="changed" @keyup="draftState">
+          <product-general
+              :product="product"
+              :$v="$v">
             <product-features
                 v-if="product.category"
                 :product="product"
                 :features="product.category.features"
                 :$v="$v"/>
-        </product-general>
+          </product-general>
+        </form>
 
-        <card-component title="Фотографии" icon="image" class="mt-5">
+        <card-component v-if="product.id" title="Фотографии" icon="image" class="mt-5">
           <images-uploader
-              v-if="product.id"
+              v-model="product.images"
+              :path="product.imagesStorage"
               :id="product.id"
-              :prop-images="product.images"
               :max-amount="10"
-              @update="product.images = $event"
-              model="product"/>
+              module="product"/>
         </card-component>
       </div>
 
       <div class="column">
-        <product-category
-            :product="product"
-            :categories="categories"
-            :$v="$v"/>
-        <product-price
-            :product="product"
-            :currency-sign="$settings('currency', 'sign')"/>
-        <product-availability
-            :product="product"
-            :stocks="$settings('shop', 'stocks')"/>
+        <form @submit.prevent="submit" @change="changed" @keyup="draftState">
+          <product-category
+              :product="product"
+              :categories="categories"
+              :$v="$v"/>
+          <product-price
+              :product="product"
+              :currency-sign="$settings('currency', 'sign')"/>
+          <product-availability
+              :product="product"
+              :stocks="$settings('shop', 'stocks')"/>
+        </form>
       </div>
-    </form>
+    </div>
   </section>
 </template>
 
@@ -119,8 +124,6 @@ export default {
     }
   },
   async mounted () {
-    this.resetProduct();
-
     if (this.propId) {
       this.globalLoading();
       await this.fetchProduct(this.propId);
@@ -149,6 +152,7 @@ export default {
 
       if (this.propId) {
         await this.updateProduct(this.product);
+        Object.assign(this.product, this.getProduct);
       } else {
         await this.storeProduct(this.product);
         await this.$router.replace({
@@ -173,8 +177,7 @@ export default {
         'fetchCategories',
         'fetchProduct',
         'updateProduct',
-        'storeProduct',
-        'resetProduct'
+        'storeProduct'
       ])
     };
   }

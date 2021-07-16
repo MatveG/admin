@@ -1,18 +1,20 @@
 <template>
   <div>
-    <draggable ghost-class="opacity-30" v-model="propImages" @start="dragStart" @end="dragEnd">
+    <b-loading v-model="isLoading" :is-full-page="false"/>
+
+    <draggable v-model="model" @start="dragStart" @end="dragEnd"
+               ghost-class="opacity-30">
       <transition-group class="images-grid">
-        <div v-for="(image, idx) in propImages" :key="idx" class="image-cont">
-          <img :src="image" alt="">
-          <button @click.prevent="deleteImage(idx)" type="button" class="delete is-danger"/>
+        <div v-for="(image, idx) in model" :key="idx" class="image-cont">
+          <img :src="path + image" alt="">
+          <button @click="deleteImage(idx)" class="delete is-danger" type="button"/>
         </div>
       </transition-group>
     </draggable>
 
-    <b-field
-        v-if="propImages.length < maxAmount"
+    <b-field v-if="model.length < maxAmount"
         class="file is-primary is-centered mt-3">
-      <b-upload v-model="uploadFiles" multiple class="file-label">
+      <b-upload v-model="upload" multiple>
           <span class="file-cta">
               <b-icon class="file-icon" icon="upload"/>
               <span class="file-label">Загрузить</span>
@@ -25,6 +27,9 @@
 <script>
 import draggable from 'vuedraggable'
 import axios from '@/api/axios'
+import useModelBinding from '@/compositions/useModelBinding';
+import useLoadingState from '@/compositions/useLoadingState'
+import useDialogs from '@/compositions/useDialogs';
 
 export default {
   name: 'ImagesUploader',
@@ -32,17 +37,21 @@ export default {
     draggable
   },
   props: {
-    id: {
-      type: Number,
+    value: {
+      type: Array,
       required: true
     },
-    model: {
+    path: {
+      type: String,
+      default: ''
+    },
+    module: {
       type: String,
       required: true
     },
-    propImages: {
-      type: Array,
-      default: () => []
+    id: {
+      type: Number,
+      required: true
     },
     maxAmount: {
       type: [Number],
@@ -51,88 +60,93 @@ export default {
   },
   data () {
     return {
-      // images: [...this.propImages],
-      uploadFiles: []
+      upload: []
     }
   },
   watch: {
-    // 'propImages': function () {
-    //   this.images = [...this.propImages];
-    // },
-    'uploadFiles': function () {
-      if (this.uploadFiles.length) {
-        this.uploadImages();
-        // this.uploadFiles = [];
+    'upload': function () {
+      if (this.upload.length) {
+        this.uploadImages(this.upload);
+        this.upload = [];
       }
     }
   },
   methods: {
-    dragStart () {
-      this.temp = this.propImages;
-    },
-
-    dragEnd () {
-      if (this.propImages !== this.temp) {
-        this.$emit('update', this.propImages);
+    uploadImages (files) {
+      if (this.filesValid(files)) {
+        this.handleUpload(files);
       }
     },
 
     deleteImage (idx) {
-      this.propImages.splice(idx, 1);
-      this.$emit('update', this.propImages);
+      this.handleUpdate(this.model.filter((el, index) => idx !== index));
     },
 
-    uploadImages () {
-      if (this.validateImages(this.uploadFiles)) {
-        this.handleUpload();
+    dragStart () {
+      this.temp = this.model;
+    },
+
+    dragEnd () {
+      if (this.model !== this.temp) {
+        this.handleUpdate(this.model);
       }
-    },
+    }
+  },
+  setup (props, context) {
+    const { model } = useModelBinding(props, context);
+    const { isLoading, loadingState, readyState } = useLoadingState();
+    const { fireToast } = useDialogs();
 
-    validateImages () {
-      this.uploadFiles.forEach((file) => {
+    function filesValid (files) {
+      files.forEach((file) => {
         if (!file.name.match(/\.(jpg|jpeg|gif|png)$/i)) {
-          this.$buefy.toast.open({
-            message: 'Allowed file formats: jpg, jpeg, gif, png',
-            type: 'is-warning'
-          })
+          fireToast('Allowed file formats: jpg, jpeg, gif, png');
           return false;
         }
         if (file.size > 1024 * 1024) {
-          this.$buefy.toast.open({
-            message: 'The maximum supported file sizes is 1 mb',
-            type: 'is-warning'
-          })
+          fireToast('The maximum supported file sizes is 1 mb');
           return false;
         }
       });
       return true;
-    },
+    }
 
-    async handleUpload () {
+    async function handleUpload (files) {
       const request = new FormData();
       const settings = { headers: { 'content-type': 'multipart/form-data' } };
 
-      this.uploadFiles.forEach((image) => request.append('images[]', image));
+      files.forEach((file) => request.append('images[]', file));
+
+      loadingState();
+      try {
+        const { data } = await axios.post(`/images/upload/${props.module}/${props.id}`, request, settings);
+        model.value = data;
+      } catch (error) {
+        fireToast('Error uploading images', 'is-error');
+        console.error(error);
+      }
+      readyState();
+    }
+
+    async function handleUpdate (images) {
+      loadingState();
 
       try {
-        const { data } = await axios.post(`images/upload/${this.model}/${this.id}/`, request, settings);
-        console.error('data', data);
+        const { data } = await axios.post(`/images/update/${props.module}/${props.id}`, { images });
+        model.value = data;
       } catch (error) {
-        console.error('Error uploading images', error);
+        fireToast('Error updating images', 'is-error');
+        console.error(error);
       }
-    },
+      readyState();
+    }
 
-    async handleUpdate (images) {
-      console.log('updateImages', { images });
-      try {
-        const { data } = await axios.post(`products/${this.product.id}/update-images`, { images });
-
-        console.log('updateImages', data);
-        // this.product.images = data;
-        this.product['images'] = data;
-      } catch (error) {
-        console.error('Error updating images', error);
-      }
+    return {
+      model,
+      isLoading,
+      filesValid,
+      handleUpload,
+      handleUpdate
     }
   }
 }

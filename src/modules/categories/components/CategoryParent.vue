@@ -15,7 +15,7 @@
     </b-field>
 
     <b-field class="has-text-centered">
-      <b-switch v-model="category.is_parent">
+      <b-switch v-model="category.is_parent" @input="changeIsParent">
         Корневая
       </b-switch>
     </b-field>
@@ -24,7 +24,7 @@
              class="mt-5" label="Родительская категория" label-position="on-border">
       <b-select
           v-model="category.parent_id"
-          @change.native="$emit('change')"
+          :disabled="category.is_parent"
           expanded
           placeholder="Выберите">
         <option
@@ -58,6 +58,13 @@ export default {
     $v: {
       type: Object,
       default: () => {}
+    }
+  },
+  methods: {
+    changeIsParent (value) {
+      if (value) {
+        this.category.parent_id = 0;
+      }
     }
   }
 }

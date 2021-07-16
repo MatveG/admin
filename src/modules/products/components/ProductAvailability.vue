@@ -1,8 +1,5 @@
 <template>
-  <card-component
-      v-if="product.variants && !product.variants.length"
-      title="Наличие"
-      icon="warehouse">
+  <card-component title="Наличие" icon="warehouse">
     <div class="columns">
       <div class="column is-half">
         <b-field label="Артикул" label-position="on-border">
@@ -26,18 +23,17 @@
     </div>
 
     <b-field class="has-text-centered">
-      <b-switch v-model="product.is_stock">
+      <b-switch v-model="product.is_stock" @input="changeIsStock">
         В наличии
       </b-switch>
     </b-field>
 
-    <div class="columns is-multiline mt-3">
+    <div v-if="product.is_stock" class="columns is-multiline mt-3">
       <template v-for="(stock, idx) in stocks">
         <div :key="idx" class="column is-half">
           <b-field :label="stock" label-position="on-border">
             <b-input
                 v-model.number="product.stocks[idx]"
-                :disabled="!product.is_stock"
                 type="number"
                 placeholder="0"/>
             <div class="control">
@@ -68,9 +64,9 @@ export default {
       required: true
     }
   },
-  watch: {
-    'product.is_stock': function () {
-      if (!this.product.is_stock) {
+  methods: {
+    changeIsStock (value) {
+      if (!value) {
         Object.keys(this.product.stocks).forEach((el) => {
           this.product.stocks[el] = 0
         })

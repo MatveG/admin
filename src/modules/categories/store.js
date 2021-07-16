@@ -55,9 +55,6 @@ export default {
     },
     async updateCategory ({ commit }, payload) {
       commit('CATEGORY_ASSIGN', await api.updateCategory(payload));
-    },
-    resetCategory ({ commit }) {
-      commit('CATEGORY_SET', {});
     }
   }
 };

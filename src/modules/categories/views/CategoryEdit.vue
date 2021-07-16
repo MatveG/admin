@@ -2,7 +2,8 @@
   <section class="section is-main-section">
     <buttons-toolbar>
       <template slot="left">
-        <b-button :to="{ name: 'categories' }" tag="router-link" icon-right="arrow-left-circle"/>
+        <b-button :to="{ name: 'categories' }" tag="router-link"
+                  type="is-primary" outlined icon-right="arrow-left-circle"/>
       </template>
       <template slot="right">
         <b-button :loading="isLoading" :disabled="isSaved" @click="submit"
@@ -41,8 +42,11 @@
         </form>
 
         <card-component v-if="category.id" class="mt-5" title="Фотография" icon="image">
-<!--          <images-upload :prop-images="category.images" @update="assign('images', $event)"-->
-<!--                         :prop-api="`/admin/categories/${category.id}`" :prop-max="1" prop-width="100%" />-->
+          <images-uploader
+              v-model="category.images"
+              :path="category.imagesStorage"
+              :id="category.id"
+              module="category"/>
         </card-component>
       </div>
     </div>
@@ -54,6 +58,7 @@ import { required, minLength, maxLength } from 'vuelidate/lib/validators'
 import { useActions, useGetters } from 'vuex-composition-helpers'
 import CardComponent from '@/components/CardComponent'
 import ButtonsToolbar from '@/components/ButtonsToolbar'
+import ImagesUploader from '@/containers/ImagesUploader'
 import CategoryFeatures from '@/modules/features/containers/CategoryFeatures';
 import CategoryParameters from '@/modules/parameters/containers/CategoryParameters';
 import CategoryParent from '../components/CategoryParent'
@@ -69,6 +74,7 @@ export default {
     CategoryGeneral,
     CardComponent,
     ButtonsToolbar,
+    ImagesUploader,
     CategoryParent,
     CategoryFeatures,
     CategoryParameters
@@ -102,8 +108,6 @@ export default {
     }
   },
   async mounted () {
-    this.resetCategory();
-
     if (this.propId) {
       this.globalLoading();
       await this.fetchCategory(this.propId);
@@ -132,6 +136,7 @@ export default {
 
       if (this.propId) {
         await this.updateCategory(this.category);
+        Object.assign(this.category, this.getCategory);
       } else {
         await this.storeCategory(this.category);
         await this.$router.replace({
@@ -156,8 +161,7 @@ export default {
         'fetchCategories',
         'fetchCategory',
         'storeCategory',
-        'updateCategory',
-        'resetCategory'
+        'updateCategory'
       ])
     };
   }

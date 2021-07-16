@@ -55,9 +55,6 @@ export default {
     },
     async updateProduct ({ commit }, payload) {
       commit('PRODUCT_ASSIGN', await api.updateProduct(payload));
-    },
-    resetProduct ({ commit }) {
-      commit('PRODUCT_SET', {});
     }
   }
 };
