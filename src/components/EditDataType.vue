@@ -1,7 +1,7 @@
 <template>
   <div>
     <b-field :type="{ 'is-danger': v.type.$error }">
-      <b-select v-model="item.type" @change.native="$emit('change')" expanded>
+      <b-select v-model="item.type" @input="changeType" expanded>
         <option v-for="(title, key) in dataTypes" :key="key" :value="key">
           {{ title }}
         </option>
@@ -36,6 +36,13 @@ export default {
     v: {
       type: Object,
       default: () => {}
+    }
+  },
+  methods: {
+    changeType () {
+      this.item.is_parent = this.item.type === 'group';
+      this.item.is_required = false;
+      this.item.is_filter = false;
     }
   }
 }

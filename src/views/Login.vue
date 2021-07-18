@@ -28,7 +28,7 @@
 </template>
 
 <script>
-import axios from '@/api/axios'
+import axios from '@/loaders/axios'
 import FullPage from '@/containers/FullPage'
 import CardComponent from '@/components/CardComponent'
 

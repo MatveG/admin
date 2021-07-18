@@ -35,9 +35,10 @@
             v-if="isEdited(props.row)"
             :item="item"
             :data-types="dataTypes"
-            :v="$v.item"
-            @change="changeType"/>
-        <span v-else>{{ dataTypes[props.row.type] }}</span>
+            :v="$v.item"/>
+        <span v-else>
+          {{ dataTypes[props.row.type] }}
+        </span>
       </b-table-column>
 
       <b-table-column field="is_required" label="Обязательное" width="10%" sortable centered v-slot="props">
@@ -64,25 +65,25 @@
         <div v-else class="buttons is-pulled-right is-flex-wrap-nowrap">
           <b-button v-if="props.row.is_parent" @click="createChild(props.row.id)"
                     outlined size="is-small" type="is-link" icon-right="plus"/>
-          <b-button @click="edit(props.row)"
-                    outlined size="is-small" type="is-primary" icon-right="square-edit-outline"/>
-          <b-button @click="remove(props.row.id)"
-                    outlined size="is-small" type="is-danger" icon-right="delete"/>
+          <edit-button size="is-small" @click="edit(props.row)"/>
+          <remove-button size="is-small" @click="this.$emit('remove', props.row)"/>
         </div>
       </b-table-column>
 
       <template slot="detail" slot-scope="props">
         <category-properties
             :properties="properties"
-            :category-id="categoryId"
             :parent-id="props.row.id"
             :data-types="dataTypes"
-            :ref="`subTable-${props.row.id}`"/>
+            :ref="`subTable-${props.row.id}`"
+            @store="$emit('store', $event)"
+            @update="$emit('update', $event)"
+            @remove="$emit('remove', $event)"/>
       </template>
     </b-table>
 
     <div v-if="!parentId" class="buttons is-centered mt-3">
-      <b-button size="is-small" @click="create" type="is-primary" icon-left="plus">
+      <b-button @click="create" type="is-primary" icon-left="plus">
         Добавить
       </b-button>
     </div>
@@ -90,27 +91,28 @@
 </template>
 
 <script>
-import { ref, computed } from '@vue/composition-api'
 import { minLength, required, requiredIf } from 'vuelidate/lib/validators'
+import EditButton from '@/components/buttons/EditButton'
+import RemoveButton from '@/components/buttons/RemoveButton'
 import EditDataType from '@/components/EditDataType'
 import useDialogs from '@/compositions/useDialogs'
 import useDraggingRows from '@/compositions/useDraggingRows'
 
 export default {
   name: 'CategoryProperties',
-  components: { EditDataType },
+  components: {
+    RemoveButton,
+    EditButton,
+    EditDataType
+  },
   props: {
     properties: {
       type: Array,
       required: true
     },
-    categoryId: {
-      type: Number,
-      required: true
-    },
     parentId: {
       type: Number,
-      default: null
+      default: 0
     },
     dataTypes: {
       type: Object,
@@ -132,15 +134,30 @@ export default {
       }
     }
   },
+  data () {
+    return {
+      item: {},
+      isCreated: false
+    }
+  },
+  computed: {
+    items: function () {
+      return this.properties.filter((el) => el.parent_id === this.parentId);
+    },
+    opened: function () {
+      return this.items.filter((el) => el.is_parent).map((el) => el.id);
+    }
+  },
   methods: {
+    isEdited (row) {
+      return row.id === this.item.id || row === this.item;
+    },
+
     create () {
       this.reset();
       this.$refs.table.initSort();
       this.isCreated = true;
-      this.item = {
-        parent_id: this.parentId,
-        category_id: this.categoryId
-      }
+      this.item = { parent_id: this.parentId };
     },
 
     edit (row) {
@@ -149,24 +166,17 @@ export default {
     },
 
     save () {
-      this.$v.$touch();
-
-      if (this.$v.$invalid) {
-        return this.validationError();
-      } else {
-        this.$emit(this.item.id ? 'update' : 'store', this.item);
+      if (!this.$v.$touch() && this.$v.$invalid) {
+        return this.fireToast('Заполните обязательные поля')
+      } if (!this.uniqueTitle()) {
+        return this.fireToast('Имя должно быть уникальным')
       }
+      this.$emit(this.item.id ? 'update' : 'store', this.item);
       this.reset();
     },
 
-    remove (id) {
-      this.confirmDelete(() => {
-        this.$emit('remove', id);
-      });
-    },
-
-    swapOrd (event) {
-      const [targetRow, dragRow] = [event.row, this.draggingRow];
+    swapOrd (payload) {
+      const [targetRow, dragRow] = [payload.row, this.draggingRow];
 
       if (targetRow && dragRow && targetRow !== dragRow) {
         this.$emit('update', { ...targetRow, ord: dragRow.ord });
@@ -183,37 +193,17 @@ export default {
 
     createChild (id) {
       this.$refs[`subTable-${id}`].create();
+    },
+
+    uniqueTitle () {
+      return !this.items.find((el) => el.id !== this.item.id && el.title === this.item.title)
     }
   },
-  setup (props) {
-    const item = ref({});
-    const isCreated = ref(false);
-
-    const items = computed(() => props.properties.filter((el) => {
-      return props.parentId === null || el.parent_id === props.parentId;
-    }));
-    const opened = computed(() => {
-      return items.value.filter((el) => el.is_parent).map((el) => el.id);
-    });
-
-    function isEdited (row) {
-      return row.id === item.value.id || row === item.value;
-    }
-
-    function changeType () {
-      item.value.is_parent = item.value.type === 'group';
-      item.value.is_required = false;
-      item.value.is_filter = false;
-    }
+  setup () {
+    const { fireToast } = useDialogs();
 
     return {
-      item,
-      isCreated,
-      items,
-      opened,
-      isEdited,
-      changeType,
-      ...useDialogs(),
+      fireToast,
       ...useDraggingRows()
     };
   }

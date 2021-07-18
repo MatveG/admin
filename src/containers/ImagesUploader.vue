@@ -26,7 +26,7 @@
 
 <script>
 import draggable from 'vuedraggable'
-import axios from '@/api/axios'
+import axios from '@/loaders/axios'
 import useModelBinding from '@/compositions/useModelBinding';
 import useLoadingState from '@/compositions/useLoadingState'
 import useDialogs from '@/compositions/useDialogs';

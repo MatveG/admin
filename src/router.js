@@ -1,17 +1,17 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import categories from '@/modules/categories/router'
-import orders from '@/modules/orders/router'
-import products from '@/modules/products/router'
+import category from '@/modules/category/router'
+import order from '@/modules/order/router'
+import product from '@/modules/product/router'
 
 Vue.use(Router)
 
 export default new Router({
   base: process.env.BASE_URL,
   routes: [
-    ...categories,
-    ...orders,
-    ...products,
+    ...category,
+    ...order,
+    ...product,
     {
       path: '/',
       name: 'home',

@@ -7,7 +7,7 @@ import Buefy from 'buefy'
 import App from './App.vue'
 import router from './router'
 import store from './store'
-import axios from '@/api/axios'
+import axios from '@/loaders/axios'
 import AsideMenuList from '@/components/AsideMenuList'
 
 Vue.config.productionTip = false;

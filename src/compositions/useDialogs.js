@@ -5,27 +5,18 @@ export default function () {
     Toast.open({ message, type, queue: true });
   }
 
-  function validationError () {
-    Toast.open({
-      message: 'Заполните обязательные поля',
-      type: 'is-warning',
-      queue: true
-    });
-  }
-
-  function confirmDelete (deleteHandler) {
+  function confirmDialog (handler, message, type, icon) {
     Dialog.confirm({
-      hasIcon: true,
-      type: 'is-danger',
-      icon: 'delete',
-      message: 'Удалить?',
-      onConfirm: () => deleteHandler()
+      onConfirm: () => handler(),
+      message,
+      icon,
+      hasIcon: !!icon,
+      ...(type ? { type } : {})
     })
   }
 
   return {
     fireToast,
-    validationError,
-    confirmDelete
+    confirmDialog
   }
 }
