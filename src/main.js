@@ -9,6 +9,7 @@ import router from './router'
 import store from './store'
 import axios from '@/loaders/axios'
 import AsideMenuList from '@/components/AsideMenuList'
+import api from './api'
 
 Vue.config.productionTip = false;
 
@@ -21,19 +22,17 @@ router.afterEach(() => {
   store.commit('overlayToggle', false)
   store.commit('asideMobileStateToggle', false)
   store.commit('asideActiveForcedKeyToggle', null)
-})
+});
 
-axios.get('/settings')
-  .then(({ data }) => {
+(async () => {
+  try {
+    const { data } = await axios(api.fetchSettings());
+
     const settings = data.reduce((acc, el) => {
-      if (!acc[el.group]) {
-        acc[el.group] = {};
-      }
+      acc[el.group] = { ...(acc[el.group] || {}) };
       acc[el.group][el.key] = el.value;
-
       return acc;
     }, {});
-
     Vue.prototype.$settings = (group, key) => {
       return key ? settings[group][key] || null : settings[group] || null;
     }
@@ -46,7 +45,7 @@ axios.get('/settings')
       },
       render: (h) => h(App)
     }).$mount('#app');
-  })
-  .catch((error) => {
-    console.error('Failed to load app config', error);
-  });
+  } catch (error) {
+    throw error
+  }
+})();

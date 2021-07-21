@@ -1,6 +1,6 @@
 <template>
   <div>
-    <b-field :type="{ 'is-danger': v.type.$error }">
+    <b-field :type="{ 'is-danger': $v.item.type.$error }">
       <b-select v-model="item.type" @input="changeType" expanded>
         <option v-for="(title, key) in dataTypes" :key="key" :value="key">
           {{ title }}
@@ -13,7 +13,7 @@
       </b-field>
     </template>
     <template v-if="item.type === 'select' || item.type === 'multiple'">
-      <b-field :type="{ 'is-danger': v.values.$error }"
+      <b-field :type="{ 'is-danger': $v.item.values.$error }"
                label="Список значений" label-position="on-border">
         <b-taginput v-model="item.values" placeholder="Добавить"  />
       </b-field>
@@ -33,7 +33,7 @@ export default {
       type: Object,
       required: true
     },
-    v: {
+    $v: {
       type: Object,
       default: () => {}
     }

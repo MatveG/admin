@@ -1,7 +1,7 @@
 <template>
   <section class="section is-main-section">
     <card-component class="has-table has-mobile-sort-spaced" title="Заказы" icon="basket-outline">
-      <orders-toolbar :statuses="statuses"/>
+      <orders-toolbar :settings="settings" @toggle="toggleFilter" @reset="resetFilters"/>
 
       <b-table
           :data="orders"
@@ -10,10 +10,10 @@
           ref="table"
           detailed
           paginated
-          hoverable
           detail-key="id"
           default-sort="id"
-          default-sort-direction="desc">
+          default-sort-direction="desc"
+          :row-class="(row) => 'order-status-' + row.status">
 
         <b-table-column v-slot="props" centered sortable
             label="ID" field="id" width="10%">
@@ -22,12 +22,12 @@
 
         <b-table-column v-slot="props" sortable centered
             label="Оплата" field="payment" width="15%">
-          {{paymentValue(props.row.payment)}}
+          {{settings.payment[props.row.payment]}}
         </b-table-column>
 
         <b-table-column v-slot="props" sortable centered
             label="Доставка" field="delivery" width="15%">
-          {{deliveryValue(props.row.delivery)}}
+          {{settings.delivery[props.row.delivery]}}
         </b-table-column>
 
         <b-table-column v-slot="props" centered searchable
@@ -38,10 +38,12 @@
 
         <b-table-column v-slot="props" sortable centered
             label="Статус" field="status" width="15%">
-          <b-field :type="statusClass(props.row.status)">
-            <b-select v-model="props.row.status" @input="updateOrdersRow(props.row)">
-              <option v-for="(status, idx) in statuses" :key="idx" :value="status[0]">
-                {{status[1].title}}
+          <b-field>
+            <b-select class="order-status-1"
+                v-model="props.row.status"
+                @input="updateOrdersRow(props.row)">
+              <option v-for="(status, idx) in statuses" :key="idx" :value="status[0]" :class="`order-status-${status[0]}`">
+                {{status[1]}}
               </option>
             </b-select>
           </b-field>
@@ -54,13 +56,8 @@
         </b-table-column>
 
         <template slot="detail" slot-scope="props">
-          <order-details
-              :row="props.row"
-              :status="statusValue(props.row.status)"
-              :payment="paymentValue(props.row.payment)"
-              :delivery="deliveryValue(props.row.delivery)"
-              :addresses="addressValue(props.row.address)"/>
-          <order-products :products="props.row.products"/>
+          <orders-details :row="props.row" :settings="settings" :currency="$settings('currency')"/>
+          <orders-products :products="props.row.products"/>
         </template>
       </b-table>
     </card-component>
@@ -72,27 +69,10 @@ import CardComponent from '@/components/CardComponent'
 import EditButton from '@/components/buttons/EditButton'
 import RemoveButton from '@/components/buttons/RemoveButton'
 import OrdersToolbar from '../components/OrdersToolbar'
-import OrderDetails from '../components/OrderDetails'
-import OrderProducts from '../components/OrderProducts'
+import OrdersDetails from '../components/OrdersDetails'
+import OrdersProducts from '../containers/OrderProducts'
 import useTableFilters from '@/compositions/useTableFilters'
 import useOrderState from '../compositions/useOrderState'
-
-const status = {
-  1: { title: 'Новый', class: 'is-danger' },
-  2: { title: 'В обработке', class: 'is-primary' },
-  3: { title: 'На доставку', class: 'has-background-warning-light' },
-  4: { title: 'Выполнен', class: 'is-danger' }
-};
-const payment = {
-  1: 'Наличными',
-  2: 'Приват',
-  3: 'Безнал'
-};
-const delivery = {
-  1: 'Курьером',
-  2: 'Новой Почтой',
-  3: 'Интаймом'
-};
 
 export default {
   name: 'Orders',
@@ -101,42 +81,19 @@ export default {
     EditButton,
     RemoveButton,
     OrdersToolbar,
-    OrderDetails,
-    OrderProducts
-  },
-  data () {
-    return {
-      statuses: Object.entries(status)
-    }
+    OrdersDetails,
+    OrdersProducts
   },
   mounted () {
     this.fetchOrders();
   },
-  methods: {
-    statusClass (key) {
-      return status[key].class;
-    },
-
-    statusValue (key) {
-      return status[key].title;
-    },
-
-    paymentValue (key) {
-      return payment[key];
-    },
-
-    deliveryValue (key) {
-      return delivery[key];
-    },
-
-    addressValue (addressObj) {
-      return addressObj
-        ? Object.entries(addressObj).reduce((acc, el) => [...acc, el], [])
-        : addressObj;
-    }
-  },
   setup (props, context) {
+    const settings = context.root.$settings('order');
+    const statuses = Object.entries(settings.status);
+
     return {
+      settings,
+      statuses,
       ...useOrderState(),
       ...useTableFilters(props, context)
     };
@@ -144,6 +101,32 @@ export default {
 }
 </script>
 
-<style scoped>
-
+<style>
+tr.order-status-1 td:first-child {
+  border-left: solid 7px #1abc9c;
+}
+tr.order-status-2 td:first-child {
+  border-left: solid 7px #f1c40f;
+}
+tr.order-status-3 td:first-child {
+  border-left: solid 7px #9b59b6;
+}
+tr.order-status-4 td:first-child {
+  border-left: solid 7px #e67e22;
+}
+tr.order-status-5 td:first-child {
+  border-left: solid 7px #3498db;
+}
+tr.order-status-6 td:first-child {
+  border-left: solid 7px #e74c3c;
+}
+tr.order-status-7 td:first-child {
+  border-left: solid 7px #2ecc71;
+}
+tr.order-status-8 td:first-child {
+  border-left: solid 7px #7f8c8d;
+}
+tr.order-status-9 td:first-child {
+  border-left: solid 7px #2c3e50;
+}
 </style>

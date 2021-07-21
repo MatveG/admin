@@ -1,6 +1,7 @@
 import { ref, computed } from '@vue/composition-api'
 import '@/loaders/composition'
 import axios from '@/loaders/axios'
+import api from '@/api'
 
 const parameters = ref([]);
 const error = ref(null);
@@ -11,10 +12,10 @@ export default function () {
   async function fetchParameters (categoryId) {
     setLoading(true);
     try {
-      const { data } = await axios.get(`/parameters/${categoryId}`);
+      const { data } = await axios(api.fetchParameters(categoryId));
       parameters.value = data;
     } catch (error) {
-      error.value = error;
+      throw error;
     }
     setLoading(false);
   }
@@ -22,10 +23,10 @@ export default function () {
   async function storeParametersRow (payload) {
     setLoading(true);
     try {
-      const { data } = await axios.post('/parameters', payload);
+      const { data } = await axios(api.storeParameter(payload));
       parameters.value.push(data);
     } catch (error) {
-      error.value = error;
+      throw error;
     }
     setLoading(false);
   }
@@ -33,12 +34,12 @@ export default function () {
   async function updateParametersRow (payload) {
     setLoading(true);
     try {
-      const { data } = await axios.patch(`/parameters/${payload.id}`, payload);
+      const { data } = await axios(api.updateParameter(payload.id, payload));
       parameters.value = parameters.value.map((el) => {
         return el.id === payload.id ? Object.assign(el, data) : el;
       });
     } catch (error) {
-      error.value = error;
+      throw error;
     }
     setLoading(false);
   }
@@ -46,7 +47,7 @@ export default function () {
   async function removeParametersRow (payload) {
     setLoading(true);
     try {
-      const { data } = await axios.delete(`/parameters/${payload.id}`);
+      const { data } = await axios(api.deleteParameter(payload.id));
       parameters.value = parameters.value
         .filter((el) => el.id !== data.id)
         .map((el) => {
@@ -56,7 +57,7 @@ export default function () {
           return el;
         });
     } catch (error) {
-      error.value = error;
+      throw error;
     }
     setLoading(false);
   }

@@ -53,7 +53,7 @@
         <div class="buttons">
           <edit-button
               :size="nested ? 'is-small' : ''"
-              :to="{ name: 'category.edit', params: { propId: id } }"/>
+              :to="{ name: 'category.edit', params: { propId: props.row.id } }"/>
           <remove-button :size="nested ? 'is-small' : ''" @click="removeCategoriesRow(props.row)"/>
         </div>
       </b-table-column>

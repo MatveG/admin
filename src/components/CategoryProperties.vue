@@ -35,7 +35,7 @@
             v-if="isEdited(props.row)"
             :item="item"
             :data-types="dataTypes"
-            :v="$v.item"/>
+            :$v="$v"/>
         <span v-else>
           {{ dataTypes[props.row.type] }}
         </span>
@@ -66,7 +66,7 @@
           <b-button v-if="props.row.is_parent" @click="createChild(props.row.id)"
                     outlined size="is-small" type="is-link" icon-right="plus"/>
           <edit-button size="is-small" @click="edit(props.row)"/>
-          <remove-button size="is-small" @click="this.$emit('remove', props.row)"/>
+          <remove-button size="is-small" @click="$emit('remove', props.row)"/>
         </div>
       </b-table-column>
 

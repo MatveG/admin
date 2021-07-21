@@ -50,6 +50,7 @@
 
 <script>
 import { required, minLength, maxLength } from 'vuelidate/lib/validators'
+import EditForm from '@/containers/EditForm'
 import CardComponent from '@/components/CardComponent'
 import ButtonsToolbar from '@/components/ButtonsToolbar'
 import BackButton from '@/components/buttons/BackButton'
@@ -59,12 +60,11 @@ import CategoryFeatures from '@/modules/feature/containers/CategoryFeatures';
 import CategoryParameters from '@/modules/parameter/containers/CategoryParameters';
 import CategoryParent from '../components/CategoryParent'
 import CategoryGeneral from '../components/CategoryGeneral'
-import useAutoSave from '@/compositions/useAutoSave'
-import useDialogs from '@/compositions/useDialogs'
 import useCategoriesApi from '../compositions/useCategoryState'
 
 export default {
   name: 'CategoryEdit',
+  extends: EditForm,
   components: {
     SaveButton,
     BackButton,
@@ -106,20 +106,6 @@ export default {
     this.fetchCategories();
   },
   methods: {
-    changed () {
-      if (this.propId) {
-        this.initAutoSave(this.submit);
-      }
-      this.isSaved = false;
-    },
-
-    submit () {
-      this.cancelAutoSave();
-      return !this.$v.$touch() && this.$v.$invalid
-        ? this.fireToast('Заполните обязательные поля')
-        : this.save();
-    },
-
     async save () {
       if (this.propId) {
         return this.updateCategory(this.category);
@@ -132,11 +118,7 @@ export default {
     }
   },
   setup () {
-    const { fireToast } = useDialogs();
-
     return {
-      fireToast,
-      ...useAutoSave(),
       ...useCategoriesApi()
     };
   }

@@ -1,6 +1,5 @@
 <template>
   <section class="section is-main-section">
-    {{error}}
     <buttons-toolbar>
       <template slot="left">
         <back-button @click="$router.push({ name: 'products' })"/>
@@ -44,6 +43,7 @@
 
 <script>
 import { maxLength, minLength, required } from 'vuelidate/lib/validators'
+import EditForm from '@/containers/EditForm'
 import CardComponent from '@/components/CardComponent'
 import ButtonsToolbar from '@/components/ButtonsToolbar'
 import BackButton from '@/components/buttons/BackButton'
@@ -54,14 +54,13 @@ import ProductCategory from '../components/ProductCategory'
 import ProductFeatures from '../components/ProductFeatures'
 import ProductGeneral from '../components/ProductGeneral'
 import ProductPrice from '../components/ProductPrice'
-import useDialogs from '@/compositions/useDialogs'
-import useAutoSave from '@/compositions/useAutoSave'
 import useCategoryState from '@/modules/category/compositions/useCategoryState'
 import useProductState from '../compositions/useProductState'
 import useValidationRules from '../compositions/useValidationRules'
 
 export default {
   name: 'ProductEdit',
+  extends: EditForm,
   components: {
     ButtonsToolbar,
     BackButton,
@@ -131,12 +130,12 @@ export default {
         : this.save();
     },
 
-    save () {
+    async save () {
       if (this.propId) {
         return this.updateProduct(this.product);
       }
-      this.storeProduct(this.product);
-      this.$router.replace({
+      await this.storeProduct(this.product);
+      await this.$router.replace({
         name: 'product.edit',
         params: { propId: this.product.id }
       });
@@ -144,13 +143,10 @@ export default {
   },
   setup () {
     const { categories, fetchCategories } = useCategoryState();
-    const { fireToast } = useDialogs();
 
     return {
       categories,
       fetchCategories,
-      fireToast,
-      ...useAutoSave(),
       ...useProductState(),
       ...useValidationRules()
     };

@@ -1,6 +1,7 @@
 import { ref, computed } from '@vue/composition-api'
 import '@/loaders/composition'
 import axios from '@/loaders/axios'
+import api from '@/api'
 
 const category = ref({
   images: []
@@ -19,10 +20,10 @@ export default function () {
   async function fetchCategory (id) {
     setLoading(true);
     try {
-      const { data } = await axios.get(`/categories/${id}`);
+      const { data } = await axios(api.fetchCategory(id));
       category.value = data;
     } catch (error) {
-      error.value = error;
+      throw error;
     }
     setLoading(false);
   }
@@ -30,10 +31,10 @@ export default function () {
   async function storeCategory (payload) {
     setLoading(true);
     try {
-      const { data } = await axios.post('/categories', payload);
+      const { data } = await axios(api.storeCategory(payload));
       Object.assign(category.value, data);
     } catch (error) {
-      error.value = error;
+      throw error;
     }
     setLoading(false);
   }
@@ -41,10 +42,10 @@ export default function () {
   async function updateCategory (payload) {
     setLoading(true);
     try {
-      const { data } = await axios.patch(`/categories/${payload.id}`, payload);
+      const { data } = await axios(api.updateCategory(payload.id, payload));
       Object.assign(category.value, data);
     } catch (error) {
-      error.value = error;
+      throw error;
     }
     setLoading(false);
   }
@@ -52,10 +53,10 @@ export default function () {
   async function fetchCategories () {
     setLoading(true);
     try {
-      const { data } = await axios.get('/categories');
+      const { data } = await axios(api.fetchCategories());
       categories.value = data;
     } catch (error) {
-      error.value = error;
+      throw error;
     }
     setLoading(false);
   }
@@ -63,12 +64,12 @@ export default function () {
   async function updateCategoriesRow (payload) {
     setLoading(true);
     try {
-      const { data } = await axios.patch(`/categories/${payload.id}`, payload);
+      const { data } = await axios(api.updateCategory(payload.id, payload));
       categories.value = categories.value.map((el) => {
         return el.id === payload.id ? Object.assign(el, data) : el;
       });
     } catch (error) {
-      error.value = error;
+      throw error;
     }
     setLoading(false);
   }
@@ -76,7 +77,7 @@ export default function () {
   async function removeCategoriesRow (payload) {
     setLoading(true);
     try {
-      const { data } = await axios.delete(`/categories/${payload.id}`);
+      const { data } = await axios(api.deleteCategory(payload.id));
       categories.value = categories.value
         .filter((el) => el.id !== data.id)
         .map((el) => {
@@ -86,7 +87,7 @@ export default function () {
           return el;
         });
     } catch (error) {
-      error.value = error;
+      throw error;
     }
     setLoading(false);
   }

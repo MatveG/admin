@@ -1,6 +1,7 @@
 import { ref, computed } from '@vue/composition-api'
 import '@/loaders/composition'
 import axios from '@/loaders/axios'
+import api from '@/api'
 
 const product = ref({
   category: {},
@@ -15,10 +16,10 @@ export default function () {
   async function fetchProduct (id) {
     setLoading(true);
     try {
-      const { data } = await axios.get(`/products/${id}`);
+      const { data } = await axios(api.fetchProduct(id));
       product.value = data;
     } catch (error) {
-      error.value = error;
+      throw error;
     }
     setLoading(false);
   }
@@ -26,10 +27,10 @@ export default function () {
   async function storeProduct (payload) {
     setLoading(true);
     try {
-      const { data } = await axios.post('/products', payload);
+      const { data } = await axios(api.storeProduct(payload));
       Object.assign(product.value, data);
     } catch (error) {
-      error.value = error;
+      throw error;
     }
     setLoading(false);
   }
@@ -37,10 +38,10 @@ export default function () {
   async function updateProduct (payload) {
     setLoading(true);
     try {
-      const { data } = await axios.post('/products', payload);
+      const { data } = await axios(api.storeProduct(payload));
       Object.assign(product.value, data);
     } catch (error) {
-      error.value = error;
+      throw error;
     }
     setLoading(false);
   }
@@ -48,10 +49,10 @@ export default function () {
   async function fetchProducts () {
     setLoading(true);
     try {
-      const { data } = await axios.get('/products');
+      const { data } = await axios(api.fetchProducts());
       products.value = data;
     } catch (error) {
-      error.value = error;
+      throw error;
     }
     setLoading(false);
   }
@@ -59,12 +60,12 @@ export default function () {
   async function updateProductsRow (payload) {
     setLoading(true);
     try {
-      const { data } = await axios.patch(`/products/${payload.id}`, payload);
+      const { data } = await axios(api.updateProduct(payload.id, payload));
       products.value = products.value.map((el) => {
         return el.id === payload.id ? Object.assign(el, data) : el;
       });
     } catch (error) {
-      error.value = error;
+      throw error;
     }
     setLoading(false);
   }
@@ -72,10 +73,10 @@ export default function () {
   async function removeProductsRow (payload) {
     setLoading(true);
     try {
-      const { data } = await axios.delete(`/products/${payload.id}`);
+      const { data } = await axios(api.deleteProduct(payload.id));
       products.value = products.value.filter((el) => el.id !== data.id);
     } catch (error) {
-      error.value = error;
+      throw error;
     }
     setLoading(false);
   }

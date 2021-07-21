@@ -87,7 +87,6 @@ export default {
 
     logout () {
       localStorage.removeItem('_utoken');
-      sessionStorage.removeItem('_utoken');
       this.$router.push({ name: 'login' });
       this.$buefy.snackbar.open({ message: 'Logged out' });
     }

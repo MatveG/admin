@@ -1,5 +1,5 @@
 <template>
-  <card-component title="Основная информация" icon="image-text">
+  <card-component>
     <b-tabs v-model="tab" type="is-boxed">
       <b-tab-item label="Название" icon="form-textbox">
         <b-field label="Название" message="Пример: Конфеты" horizontal>

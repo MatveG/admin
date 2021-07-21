@@ -1,6 +1,7 @@
 import { ref, computed } from '@vue/composition-api'
 import '@/loaders/composition'
 import axios from '@/loaders/axios'
+import api from '@/api'
 
 const features = ref([]);
 const error = ref(null);
@@ -11,10 +12,10 @@ export default function () {
   async function fetchFeatures (categoryId) {
     setLoading(true);
     try {
-      const { data } = await axios.get(`/features/${categoryId}`);
+      const { data } = await axios(api.fetchFeatures(categoryId));
       features.value = data;
     } catch (error) {
-      error.value = error;
+      throw error;
     }
     setLoading(false);
   }
@@ -22,10 +23,10 @@ export default function () {
   async function storeFeaturesRow (payload) {
     setLoading(true);
     try {
-      const { data } = await axios.post('/features', payload);
+      const { data } = await axios(api.storeFeature(payload));
       features.value.push(data);
     } catch (error) {
-      error.value = error;
+      throw error;
     }
     setLoading(false);
   }
@@ -33,12 +34,12 @@ export default function () {
   async function updateFeaturesRow (payload) {
     setLoading(true);
     try {
-      const { data } = await axios.patch(`/features/${payload.id}`, payload);
+      const { data } = await axios(api.updateFeature(payload.id, payload));
       features.value = features.value.map((el) => {
         return el.id === payload.id ? Object.assign(el, data) : el;
       });
     } catch (error) {
-      error.value = error;
+      throw error;
     }
     setLoading(false);
   }
@@ -46,7 +47,7 @@ export default function () {
   async function removeFeaturesRow (payload) {
     setLoading(true);
     try {
-      const { data } = await axios.delete(`/features/${payload.id}`);
+      const { data } = await axios(api.deleteFeature(payload.id));
       features.value = features.value
         .filter((el) => el.id !== data.id)
         .map((el) => {
@@ -56,7 +57,7 @@ export default function () {
           return el;
         });
     } catch (error) {
-      error.value = error;
+      throw error;
     }
     setLoading(false);
   }

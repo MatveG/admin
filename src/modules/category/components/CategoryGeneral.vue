@@ -1,5 +1,5 @@
 <template>
-  <card-component title="Основная информация" icon="image-text">
+  <card-component>
     <b-tabs type="is-boxed">
       <b-tab-item label="Название">
         <b-field :type="{ 'is-danger': $v.category.title.$error }"

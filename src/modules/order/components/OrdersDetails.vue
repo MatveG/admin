@@ -3,47 +3,48 @@
     <div class="column is-2">
       <h5 class="subtitle is-6">Заказ</h5>
       <p>
-        <span class="has-text-grey">#:</span>
+        <span class="has-text-grey">Номер:</span>
         &nbsp;{{row.id}}
       </p>
       <p>
-        <span class="has-text-grey">Дата:</span>
+        <span class="has-text-grey">Время:</span>
         &nbsp;{{row.created_at}}
       </p>
       <p>
         <span class="has-text-grey">Статус:</span>
-        &nbsp;{{status}}
+        &nbsp;{{settings.status[row.status]}}
       </p>
     </div>
     <div class="column is-3">
       <h5 class="subtitle is-6">Оплата</h5>
       <p>
         <span class="has-text-grey">Оплата:</span>
-        &nbsp;{{payment}}
+        &nbsp;{{settings.payment[row.payment]}}
       </p>
       <p>
         <span class="has-text-grey">Сумма:</span>
-        &nbsp;{{row.total}}
+        &nbsp;{{row.total}} {{currency.sign}}
       </p>
       <p>
         <span class="has-text-grey">
           Скидка:
         </span>
-        &nbsp;{{row.discount}} %
+        &nbsp;{{row.discount ? row.discount + '%' : '-'}}
       </p>
     </div>
     <div class="column is-3">
       <h5 class="subtitle is-6">Доставка</h5>
       <p>
         <span class="has-text-grey">Доставка:</span>
-        &nbsp;{{delivery}}
+        &nbsp;{{settings.delivery[row.delivery]}}
       </p>
       <p>
         <span class="has-text-grey">Стоимость:</span>
-        &nbsp;{{row.shipping}}
+        &nbsp;{{row.shipping}} {{currency.sign}}
       </p>
       <div>
-        <div v-for="(address, idx) in addresses" :key="idx" class="is-italic">
+        <span class="has-text-grey">Доставка:</span>
+        <div v-for="(address, idx) in Object.entries(row.address)" :key="idx" class="is-italic">
           <span class="has-text-grey">{{address[0]}}:</span>
           &nbsp;{{address[1]}}
         </div>
@@ -75,12 +76,13 @@ export default {
       type: Object,
       default: () => {}
     },
-    status: String,
-    payment: String,
-    delivery: String,
-    addresses: {
-      type: Array,
-      default: () => []
+    currency: {
+      type: Object,
+      default: () => {}
+    },
+    settings: {
+      type: Object,
+      default: () => {}
     }
   }
 }

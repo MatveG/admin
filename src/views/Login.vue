@@ -54,12 +54,10 @@ export default {
       if (response.status === 200) {
         const token = `${response.data.type} ${response.data.token}`;
 
+        localStorage.setItem('_utoken', token);
+
         if (this.formData.remember) {
-          localStorage.setItem('_utoken', token);
-          sessionStorage.removeItem('_utoken');
-        } else {
-          sessionStorage.setItem('_utoken', token);
-          localStorage.removeItem('_utoken');
+          // remember user
         }
 
         await this.$router.push({ name: 'home' });

@@ -4,7 +4,7 @@
     <category-properties
         :properties="features"
         :data-types="$settings('shop', 'features')"
-        @store="storeFeaturesRow({ ...$event, category_id: this.categoryId })"
+        @store="storeFeaturesRow({ ...$event, category_id: categoryId })"
         @update="updateFeaturesRow"
         @remove="removeFeaturesRow"/>
   </div>

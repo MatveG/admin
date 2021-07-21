@@ -1,14 +1,25 @@
 <template>
   <card-toolbar slot="toolbar" class="is-upper">
-    <div slot="left">
-      <b-field>
-        <b-select placeholder="Фильтр статуса" @select="$emit('toggleFilter', 'status', $event)">
-          <option v-for="(status, idx) in statuses" :key="idx" :value="status[0]">
-            {{status[1].title}}
+    <b-field slot="left" grouped>
+      <b-field v-for="(key) in Object.keys(filters)" :key="key">
+        <b-select
+            v-model="filters[key]"
+            @input="$emit('toggle', key, $event)"
+            :placeholder="titles[key]">
+          <option :value="null">Все</option>
+          <option v-for="(value, idx) in Object.entries(settings[key])" :key="idx" :value="value[0]">
+            {{value[1]}}
           </option>
         </b-select>
       </b-field>
-    </div>
+
+      <b-button
+          v-if="Object.entries(filters).find((el) => el[1] !== null)"
+          @click="reset"
+          outlined
+          type="is-link"
+          icon-right="close"/>
+    </b-field>
     <div slot="right">
       <b-button
           :to="{ name: 'order.create' }"
@@ -29,9 +40,31 @@ export default {
     CardToolbar
   },
   props: {
-    statuses: {
-      type: Array,
-      default: () => []
+    settings: {
+      type: Object,
+      required: true
+    }
+  },
+  data () {
+    return {
+      filters: {
+        payment: null,
+        delivery: null,
+        status: null
+      },
+      titles: {
+        payment: 'Оплата',
+        delivery: 'Доставка',
+        status: 'Статус'
+      }
+    }
+  },
+  methods: {
+    reset () {
+      Object.keys(this.filters).forEach((key) => {
+        this.filters[key] = null;
+      });
+      this.$emit('reset');
     }
   }
 }
