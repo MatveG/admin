@@ -1,4 +1,4 @@
-import { ref } from '@vue/composition-api'
+import { ref } from '@vue/composition-api';
 
 export default function useDraggingRows () {
   const draggingRow = ref({});
@@ -29,5 +29,5 @@ export default function useDraggingRows () {
     dragstart,
     dragover,
     dragleave
-  }
+  };
 }

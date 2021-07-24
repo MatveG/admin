@@ -1,4 +1,4 @@
-import { ref } from '@vue/composition-api'
+import { ref } from '@vue/composition-api';
 
 export default (props, context) => {
   const table = ref(null);
@@ -6,10 +6,14 @@ export default (props, context) => {
 
   function toggleFilter (name, value = null) {
     if (value) {
-      context.root.$set(table.value.filters, name, value)
+      context.root.$set(table.value.filters, name, value);
     } else {
       filters.value[name] = !filters.value[name];
-      context.root.$set(table.value.filters, name, table.value.filters[name] ? null : value || 'true')
+      context.root.$set(
+        table.value.filters,
+        name,
+        table.value.filters[name] ? null : value || 'true'
+      );
     }
   }
 
@@ -22,5 +26,5 @@ export default (props, context) => {
     filters,
     toggleFilter,
     resetFilters
-  }
-}
+  };
+};

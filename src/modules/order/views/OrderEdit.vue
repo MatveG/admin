@@ -40,22 +40,22 @@
 </template>
 
 <script>
-import { minLength, required } from 'vuelidate/lib/validators'
-import EditForm from '@/containers/EditForm'
-import ButtonsToolbar from '@/components/ButtonsToolbar'
-import BackButton from '@/components/buttons/BackButton'
-import SaveButton from '@/components/buttons/SaveButton'
-import OrderStatus from '../components/OrderStatus'
-import OrderClient from '../components/OrderClient'
-import OrderProducts from '../containers/OrderProducts'
-import OrderPayment from '../components/OrderPayment'
-import OrderAddress from '../components/OrderAddress'
-import OrderSummary from '../components/OrderSummary'
-import useOrderState from '../compositions/useOrderState'
+import { minLength, required } from 'vuelidate/lib/validators';
+import AutoSaveForm from '@/containers/AutoSaveForm';
+import ButtonsToolbar from '@/components/ButtonsToolbar';
+import BackButton from '@/components/buttons/BackButton';
+import SaveButton from '@/components/buttons/SaveButton';
+import OrderStatus from '../components/OrderStatus';
+import OrderClient from '../components/OrderClient';
+import OrderProducts from '../containers/OrderProducts';
+import OrderPayment from '../components/OrderPayment';
+import OrderAddress from '../components/OrderAddress';
+import OrderSummary from '../components/OrderSummary';
+import useOrderState from '../compositions/useOrderState';
 
 export default {
   name: 'OrderEdit',
-  extends: EditForm,
+  extends: AutoSaveForm,
   components: {
     OrderSummary,
     OrderAddress,
@@ -86,7 +86,7 @@ export default {
   },
   async mounted () {
     if (this.propId) {
-      await this.fetchOrder(this.propId)
+      await this.fetchOrder(this.propId);
     }
   },
   methods: {
@@ -97,7 +97,7 @@ export default {
         onConfirm: (value) => {
           this.order.address = { ...this.order.address, [value]: null };
         }
-      })
+      });
     },
 
     async save () {
@@ -117,9 +117,9 @@ export default {
     return {
       settings,
       ...useOrderState()
-    }
+    };
   }
-}
+};
 </script>
 
 <style scoped>

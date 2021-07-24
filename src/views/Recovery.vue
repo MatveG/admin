@@ -20,8 +20,10 @@
 </template>
 
 <script>
-import FullPage from '@/containers/FullPage'
-import CardComponent from '@/components/CardComponent'
+import FullPage from '@/containers/FullPage';
+import CardComponent from '@/components/CardComponent';
+
+// todo: recovery logic?
 
 export default {
   name: 'Recovery',
@@ -33,23 +35,7 @@ export default {
     return {
       isLoading: false,
       form: {}
-    }
-  },
-  methods: {
-    submit () {
-      this.isLoading = true
-
-      setTimeout(() => {
-        this.form.email = null
-        this.isLoading = false
-
-        this.$buefy.snackbar.open({
-          message: 'Link sent',
-          duration: 1000,
-          queue: false
-        })
-      }, 750)
-    }
+    };
   }
-}
+};
 </script>

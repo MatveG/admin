@@ -5,8 +5,6 @@
 </template>
 
 <script>
-import numeral from 'numeral'
-
 export default {
   name: 'GrowingNumber',
   props: {
@@ -31,39 +29,38 @@ export default {
     return {
       newValue: 0,
       step: 0
-    }
+    };
   },
   computed: {
     newValueFormatted () {
-      return (this.newValue < 1000) ? this.newValue : numeral(this.newValue).format('0,0')
+      return this.newValue < 1000 ? this.newValue : this.newValue;
     }
   },
   mounted () {
-    this.growInit()
+    this.growInit();
   },
   methods: {
     growInit () {
-      const m = this.value / (this.duration / 25)
-      this.grow(m)
+      const m = this.value / (this.duration / 25);
+      this.grow(m);
     },
     grow (m) {
-      const v = Math.ceil(this.newValue + m)
+      const v = Math.ceil(this.newValue + m);
 
       if (v > this.value) {
-        this.newValue = this.value
-        return false
+        this.newValue = this.value;
+        return false;
       }
-
-      this.newValue = v
+      this.newValue = v;
       setTimeout(() => {
-        this.grow(m)
-      }, 25)
+        this.grow(m);
+      }, 25);
     }
   },
   watch: {
     value () {
-      this.growInit()
+      this.growInit();
     }
   }
-}
+};
 </script>

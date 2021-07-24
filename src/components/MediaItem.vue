@@ -2,7 +2,7 @@
   <article v-if="!isDismissed" class="media">
     <figure class="media-left" v-if="item.avatar">
       <p class="image is-64x64">
-        <img :src="item.avatar" class="is-rounded">
+        <img :src="item.avatar" class="is-rounded" alt="">
       </p>
     </figure>
     <div class="media-content">
@@ -56,25 +56,24 @@ export default {
   data () {
     return {
       isDismissed: false
-    }
+    };
   },
   computed: {
     timeAgo () {
       if (this.item.timestamp) {
-        return '2 years ago'
+        return '2 years ago';
       }
-
-      return null
+      return null;
     }
   },
   methods: {
     dismiss () {
-      this.isDismissed = true
+      this.isDismissed = true;
       this.$buefy.snackbar.open({
         message: 'Dismissed',
         queue: false
-      })
+      });
     }
   }
-}
+};
 </script>

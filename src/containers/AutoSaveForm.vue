@@ -1,5 +1,5 @@
 <script>
-import useDialogs from '@/compositions/useDialogs'
+import useDialogs from '@/compositions/useDialogs';
 
 export default {
   name: 'EditForm',
@@ -7,7 +7,7 @@ export default {
   data () {
     return {
       saveTimer: null
-    }
+    };
   },
   created () {
     if (!this.save) {
@@ -29,7 +29,7 @@ export default {
       this.$v.$touch();
 
       if (this.$v.$invalid) {
-        return this.fireToast('Заполните обязательные поля')
+        return this.fireToast('Заполните обязательные поля');
       }
       this.save();
     }
@@ -37,7 +37,7 @@ export default {
   setup () {
     return {
       ...useDialogs()
-    }
+    };
   }
-}
+};
 </script>

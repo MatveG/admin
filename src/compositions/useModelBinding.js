@@ -1,4 +1,4 @@
-import { computed } from '@vue/composition-api'
+import { computed } from '@vue/composition-api';
 
 export default (props, context) => {
   const model = computed({
@@ -8,5 +8,5 @@ export default (props, context) => {
 
   return {
     model
-  }
-}
+  };
+};

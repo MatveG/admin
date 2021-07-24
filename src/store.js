@@ -1,161 +1,76 @@
-import Vue from 'vue'
-import Vuex from 'vuex'
+import Vue from 'vue';
+import Vuex from 'vuex';
 
-Vue.use(Vuex)
+Vue.use(Vuex);
+
+const fullPageHasAside = 'has-aside-left';
+const fullPageHasFixed = 'has-navbar-fixed-top';
+const asideExpandedClass = 'has-aside-expanded';
+const asideMobileExpanded = 'has-aside-mobile-expanded';
+const asideRightAsideClass = 'has-aside-right';
+const htmlDarkModeClass = 'is-dark-mode-active';
 
 export default new Vuex.Store({
   strict: true,
   state: {
-    /* User */
-    userName: null,
-    userEmail: null,
-    userAvatar: null,
-
-    /* NavBar */
-    isNavBarVisible: true,
-
-    /* FooterBar */
-    isFooterBarVisible: true,
-
-    /* Aside */
-    isNavbarVisible: true,
+    asideActiveForcedKey: null,
     isAsideVisible: true,
     isAsideExpanded: false,
     isAsideMobileExpanded: false,
-    asideActiveForcedKey: null,
+    isNavbarVisible: true,
+    isFooterBarVisible: true,
     isAsideRightVisible: false,
-
-    /* Updates */
-    hasUpdates: false,
-
-    /* Overlay */
     isOverlayVisible: false,
-
-    /* Dark mode */
     isDarkModeActive: false
   },
   mutations: {
-    /* A fit-them-all commit */
-    basic (state, payload) {
-      state[payload.key] = payload.value
-    },
-
-    /* User */
-    user (state, payload) {
-      if (payload.name) {
-        state.userName = payload.name
-      }
-      if (payload.email) {
-        state.userEmail = payload.email
-      }
-      if (payload.avatar) {
-        state.userAvatar = payload.avatar
-      }
-    },
-
-    /* Full Page mode */
     fullPage (state, payload) {
-      state.isNavBarVisible = !payload;
       state.isAsideVisible = !payload;
       state.isNavbarVisible = !payload;
       state.isFooterBarVisible = !payload;
 
-      ['has-aside-left', 'has-navbar-fixed-top'].forEach((htmlClass) => {
+      [fullPageHasAside, fullPageHasFixed].forEach((htmlClass) => {
         document.documentElement.classList[payload ? 'remove' : 'add'](htmlClass);
-      })
+      });
     },
 
-    /* Aside Desktop */
     asideStateToggle (state, payload = null) {
-      const htmlAsideClassName = 'has-aside-expanded'
-
-      let isExpand
-
-      if (payload !== null) {
-        isExpand = payload
-      } else {
-        isExpand = !state.isAsideExpanded
-      }
-
-      if (isExpand) {
-        document.documentElement.classList.add(htmlAsideClassName)
-      } else {
-        document.documentElement.classList.remove(htmlAsideClassName)
-      }
-
-      state.isAsideExpanded = isExpand
+      const isExpand = payload !== null ? payload : !state.isAsideExpanded;
+      state.isAsideExpanded = isExpand;
+      document.documentElement
+        .classList[isExpand ? 'add' : 'remove'](asideExpandedClass);
     },
 
-    /* Aside Mobile */
     asideMobileStateToggle (state, payload = null) {
-      const htmlClassName = 'has-aside-mobile-expanded'
-
-      let isShow
-
-      if (payload !== null) {
-        isShow = payload
-      } else {
-        isShow = !state.isAsideMobileExpanded
-      }
-
-      if (isShow) {
-        document.documentElement.classList.add(htmlClassName)
-      } else {
-        document.documentElement.classList.remove(htmlClassName)
-      }
-
-      state.isAsideMobileExpanded = isShow
+      const isShow = payload !== null ? payload : !state.isAsideMobileExpanded;
+      state.isAsideMobileExpanded = isShow;
+      document.documentElement
+        .classList[isShow ? 'add' : 'remove'](asideMobileExpanded);
     },
 
-    /* Aside Forced Active Key (when secondary submenu is open) */
+    asideRightToggle (state, payload = null) {
+      const isShow = payload !== null ? payload : !state.isAsideRightVisible;
+      state.isAsideRightVisible = isShow;
+      document.documentElement
+        .classList[isShow ? 'add' : 'remove'](asideRightAsideClass);
+    },
+
     asideActiveForcedKeyToggle (state, payload) {
       state.asideActiveForcedKey = payload && payload.menuSecondaryKey
-        ? payload.menuSecondaryKey : null
+        ? payload.menuSecondaryKey : null;
     },
 
-    /* Aside Right */
-    asideRightToggle (state, payload = null) {
-      const htmlClassName = 'has-aside-right'
-
-      let isShow
-
-      if (payload !== null) {
-        isShow = payload
-      } else {
-        isShow = !state.isAsideRightVisible
-      }
-
-      if (isShow) {
-        document.documentElement.classList.add(htmlClassName)
-      } else {
-        document.documentElement.classList.remove(htmlClassName)
-      }
-
-      state.isAsideRightVisible = isShow
-      state.hasUpdates = false
-    },
-
-    /* Overlay */
     overlayToggle (state, payload = null) {
       if (payload === null) {
-        payload = !state.isOverlayVisible
+        payload = !state.isOverlayVisible;
       }
-
-      state.isOverlayVisible = !!payload
+      state.isOverlayVisible = !!payload;
     },
 
-    /* Dark Mode */
-    darkModeToggle (state, payload = null) {
-      const htmlClassName = 'is-dark-mode-active'
-
-      state.isDarkModeActive = !state.isDarkModeActive
-
-      if (state.isDarkModeActive) {
-        document.documentElement.classList.add(htmlClassName)
-      } else {
-        document.documentElement.classList.remove(htmlClassName)
-      }
+    darkModeToggle (state) {
+      state.isDarkModeActive = !state.isDarkModeActive;
+      document.documentElement
+        .classList[state.isDarkModeActive ? 'add' : 'remove'](htmlDarkModeClass);
     }
-  },
-  actions: {}
-})
+  }
+});

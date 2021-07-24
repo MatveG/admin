@@ -33,14 +33,11 @@
 </template>
 
 <script>
-import AsideTools from '@/components/AsideTools'
-import scrollHandle from '@/scrollHandle'
+import AsideTools from '@/components/AsideTools';
+import useScrollbar from '@/compositions/useScrollbar';
 
 export default {
   name: 'AsideLeft',
-  mixins: [
-    scrollHandle
-  ],
   components: {
     AsideTools
   },
@@ -67,6 +64,11 @@ export default {
   },
   mounted () {
     this.scrollInit(this.$refs.menuContainer);
+  },
+  setup () {
+    return {
+      ...useScrollbar()
+    };
   }
-}
+};
 </script>

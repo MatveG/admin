@@ -32,8 +32,8 @@ export default {
   },
   methods: {
     emitGoBack () {
-      this.$emit('go-back')
+      this.$emit('go-back');
     }
   }
-}
+};
 </script>

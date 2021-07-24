@@ -12,7 +12,7 @@
             </span>
           </div>
           <div v-if="timestamp" class="level-item">
-            <small>{{ timeAgo }}</small>
+            <small>timeAgo</small>
           </div>
         </div>
       </nav>
@@ -36,11 +36,6 @@ export default {
       type: Number,
       default: null
     }
-  },
-  computed: {
-    timeAgo () {
-      return '2 years ago';
-    }
   }
-}
+};
 </script>

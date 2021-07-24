@@ -19,5 +19,5 @@ export default {
   props: {
     isVisible: Boolean
   }
-}
+};
 </script>

@@ -7,16 +7,18 @@
 </template>
 
 <script>
-import AsideUpdates from '@/components/AsideUpdates'
-import scrollHandle from '@/scrollHandle'
+import AsideUpdates from '@/components/AsideUpdates';
+import useScrollbar from '@/compositions/useScrollbar';
 
 export default {
   name: 'AsideRight',
-  mixins: [
-    scrollHandle
-  ],
   components: {
     AsideUpdates
+  },
+  setup () {
+    return {
+      ...useScrollbar()
+    };
   }
-}
+};
 </script>

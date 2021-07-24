@@ -27,20 +27,20 @@ export default {
   data () {
     return {
       newValue: null
-    }
+    };
   },
   created () {
-    this.newValue = this.value
+    this.newValue = this.value;
   },
   methods: {
     input () {
-      this.$emit('input', this.newValue)
+      this.$emit('input', this.newValue);
     }
   },
   watch: {
     value (newValue) {
-      this.newValue = newValue
+      this.newValue = newValue;
     }
   }
-}
+};
 </script>

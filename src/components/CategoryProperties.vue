@@ -41,7 +41,8 @@
         </span>
       </b-table-column>
 
-      <b-table-column field="is_required" label="Обязательное" width="10%" sortable centered v-slot="props">
+      <b-table-column field="is_required" label="Обязательное"
+                      width="10%" sortable centered v-slot="props">
         <b-checkbox
             v-if="isEdited(props.row)"
             v-model="item.is_required"
@@ -91,12 +92,12 @@
 </template>
 
 <script>
-import { minLength, required, requiredIf } from 'vuelidate/lib/validators'
-import EditButton from '@/components/buttons/EditButton'
-import RemoveButton from '@/components/buttons/RemoveButton'
-import EditDataType from '@/components/EditDataType'
-import useDialogs from '@/compositions/useDialogs'
-import useDraggingRows from '@/compositions/useDraggingRows'
+import { minLength, required, requiredIf } from 'vuelidate/lib/validators';
+import EditButton from '@/components/buttons/EditButton';
+import RemoveButton from '@/components/buttons/RemoveButton';
+import EditDataType from '@/components/EditDataType';
+import useDialogs from '@/compositions/useDialogs';
+import useDraggingRows from '@/compositions/useDraggingRows';
 
 export default {
   name: 'CategoryProperties',
@@ -138,7 +139,7 @@ export default {
     return {
       item: {},
       isCreated: false
-    }
+    };
   },
   computed: {
     items: function () {
@@ -167,9 +168,9 @@ export default {
 
     save () {
       if (!this.$v.$touch() && this.$v.$invalid) {
-        return this.fireToast('Заполните обязательные поля')
+        return this.fireToast('Заполните обязательные поля');
       } if (!this.uniqueTitle()) {
-        return this.fireToast('Имя должно быть уникальным')
+        return this.fireToast('Имя должно быть уникальным');
       }
       this.$emit(this.item.id ? 'update' : 'store', this.item);
       this.reset();
@@ -196,7 +197,7 @@ export default {
     },
 
     uniqueTitle () {
-      return !this.items.find((el) => el.id !== this.item.id && el.title === this.item.title)
+      return !this.items.find((el) => el.id !== this.item.id && el.title === this.item.title);
     }
   },
   setup () {
@@ -207,7 +208,7 @@ export default {
       ...useDraggingRows()
     };
   }
-}
+};
 </script>
 
 <style>

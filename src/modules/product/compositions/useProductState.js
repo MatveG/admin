@@ -1,7 +1,7 @@
-import { ref, computed } from '@vue/composition-api'
-import '@/loaders/composition'
-import axios from '@/loaders/axios'
-import api from '@/api'
+import { ref, computed } from '@vue/composition-api';
+import '@/loaders/composition';
+import axios from '@/loaders/axios';
+import api from '@/api';
 
 const product = ref({
   category: {},
@@ -38,7 +38,7 @@ export default function () {
   async function updateProduct (payload) {
     setLoading(true);
     try {
-      const { data } = await axios(api.storeProduct(payload));
+      const { data } = await axios(api.updateProduct(payload));
       Object.assign(product.value, data);
     } catch (error) {
       throw error;
@@ -93,7 +93,7 @@ export default function () {
     fetchProducts,
     updateProductsRow,
     removeProductsRow
-  }
+  };
 }
 
 function setLoading (value) {

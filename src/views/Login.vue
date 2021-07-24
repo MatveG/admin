@@ -28,9 +28,10 @@
 </template>
 
 <script>
-import axios from '@/loaders/axios'
-import FullPage from '@/containers/FullPage'
-import CardComponent from '@/components/CardComponent'
+// todo: extract login logic
+import axios from '@/loaders/axios';
+import FullPage from '@/containers/FullPage';
+import CardComponent from '@/components/CardComponent';
 
 export default {
   name: 'Login',
@@ -42,7 +43,7 @@ export default {
     return {
       isLoading: false,
       formData: {}
-    }
+    };
   },
   methods: {
     async submit () {
@@ -69,5 +70,5 @@ export default {
       this.isLoading = false;
     }
   }
-}
+};
 </script>

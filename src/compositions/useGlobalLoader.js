@@ -1,4 +1,4 @@
-import { LoadingProgrammatic } from 'buefy'
+import { LoadingProgrammatic } from 'buefy';
 
 export default function () {
   let component;
@@ -14,5 +14,5 @@ export default function () {
   return {
     globalLoading,
     globalReady
-  }
+  };
 }

@@ -12,7 +12,7 @@
 <script>
 export default {
   name: 'ButtonsToolbar'
-}
+};
 </script>
 
 <style scoped>

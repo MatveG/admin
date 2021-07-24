@@ -42,25 +42,25 @@
 </template>
 
 <script>
-import { maxLength, minLength, required } from 'vuelidate/lib/validators'
-import EditForm from '@/containers/EditForm'
-import CardComponent from '@/components/CardComponent'
-import ButtonsToolbar from '@/components/ButtonsToolbar'
-import BackButton from '@/components/buttons/BackButton'
-import SaveButton from '@/components/buttons/SaveButton'
-import ImagesUploader from '@/containers/ImagesUploader'
-import ProductAvailability from '../components/ProductAvailability'
-import ProductCategory from '../components/ProductCategory'
-import ProductFeatures from '../components/ProductFeatures'
-import ProductGeneral from '../components/ProductGeneral'
-import ProductPrice from '../components/ProductPrice'
-import useCategoryState from '@/modules/category/compositions/useCategoryState'
-import useProductState from '../compositions/useProductState'
-import useValidationRules from '../compositions/useValidationRules'
+import { maxLength, minLength, required } from 'vuelidate/lib/validators';
+import AutoSaveForm from '@/containers/AutoSaveForm';
+import CardComponent from '@/components/CardComponent';
+import ButtonsToolbar from '@/components/ButtonsToolbar';
+import BackButton from '@/components/buttons/BackButton';
+import SaveButton from '@/components/buttons/SaveButton';
+import ImagesUploader from '@/containers/ImagesUploader';
+import ProductAvailability from '../components/ProductAvailability';
+import ProductCategory from '../components/ProductCategory';
+import ProductFeatures from '../components/ProductFeatures';
+import ProductGeneral from '../components/ProductGeneral';
+import ProductPrice from '../components/ProductPrice';
+import useCategoryState from '@/modules/category/compositions/useCategoryState';
+import useProductState from '../compositions/useProductState';
+import useValidationRules from '../compositions/useValidationRules';
 
 export default {
   name: 'ProductEdit',
-  extends: EditForm,
+  extends: AutoSaveForm,
   components: {
     ButtonsToolbar,
     BackButton,
@@ -111,25 +111,11 @@ export default {
   },
   async mounted () {
     if (this.propId) {
-      await this.fetchProduct(this.propId)
+      await this.fetchProduct(this.propId);
     }
     await this.fetchCategories();
   },
   methods: {
-    changed () {
-      if (this.propId) {
-        this.initAutoSave(this.submit);
-      }
-      this.isSaved = false;
-    },
-
-    submit () {
-      this.cancelAutoSave();
-      return !this.$v.$touch() && this.$v.$invalid
-        ? this.fireToast('Заполните обязательные поля')
-        : this.save();
-    },
-
     async save () {
       if (this.propId) {
         return this.updateProduct(this.product);
@@ -151,7 +137,7 @@ export default {
       ...useValidationRules()
     };
   }
-}
+};
 </script>
 
 <style scoped>

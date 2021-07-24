@@ -1,4 +1,4 @@
-import { ref } from '@vue/composition-api'
+import { ref } from '@vue/composition-api';
 
 export default () => {
   const expanded = ref([]);
@@ -9,7 +9,7 @@ export default () => {
 
   const expandRow = (id) => {
     if (expanded.value.includes(id)) {
-      expanded.value = expanded.value.filter((el) => el !== id)
+      expanded.value = expanded.value.filter((el) => el !== id);
     } else {
       expanded.value.push(id);
     }
@@ -19,5 +19,5 @@ export default () => {
     expanded,
     expandRow,
     isExpanded
-  }
-}
+  };
+};

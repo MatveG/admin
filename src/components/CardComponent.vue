@@ -1,5 +1,8 @@
 <template>
-  <div class="card" :class="{'has-height-medium':isScrollable, 'has-card-header-background':hasCardHeaderBackground}">
+  <div class="card" :class="{
+    'has-height-medium':isScrollable,
+    'has-card-header-background':hasCardHeaderBackground
+  }">
     <header v-if="title || hasTitleSlot" class="card-header">
       <p class="card-header-title">
         <b-icon v-if="icon" :icon="icon" custom-size="default"/>
@@ -7,7 +10,8 @@
         <span v-else-if="title">{{ title }}</span>
       </p>
       <slot v-if="hasButtonSlot" name="button"/>
-      <a v-else-if="headerIcon" href="#" class="card-header-icon" aria-label="more options" @click.prevent="headerIconClick">
+      <a v-else-if="headerIcon" href="#" class="card-header-icon"
+         aria-label="more options" @click.prevent="headerIconClick">
         <b-icon :icon="headerIcon" custom-size="default"/>
       </a>
     </header>
@@ -22,7 +26,7 @@
 </template>
 
 <script>
-import PerfectScrollbar from 'perfect-scrollbar'
+import PerfectScrollbar from 'perfect-scrollbar';
 
 export default {
   name: 'CardComponent',
@@ -62,14 +66,14 @@ export default {
   },
   methods: {
     headerIconClick () {
-      this.$emit('header-icon-click')
+      this.$emit('header-icon-click');
     }
   },
   mounted () {
     if (this.isScrollable) {
-      this.ps = new PerfectScrollbar(this.$refs.cardContent)
-      this.$emit('ps-ready', this.ps)
+      this.ps = new PerfectScrollbar(this.$refs.cardContent);
+      this.$emit('ps-ready', this.ps);
     }
   }
-}
+};
 </script>

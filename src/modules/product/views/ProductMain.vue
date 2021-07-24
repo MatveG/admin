@@ -68,11 +68,11 @@
 
 <script>
 import CardComponent from '@/components/CardComponent';
-import EditButton from '@/components/buttons/EditButton'
-import RemoveButton from '@/components/buttons/RemoveButton'
-import ProductsToolbar from '../components/ProductsToolbar'
-import useTableFilters from '@/compositions/useTableFilters'
-import useProductState from '../compositions/useProductState'
+import EditButton from '@/components/buttons/EditButton';
+import RemoveButton from '@/components/buttons/RemoveButton';
+import ProductsToolbar from '../components/ProductsToolbar';
+import useTableFilters from '@/compositions/useTableFilters';
+import useProductState from '../compositions/useProductState';
 
 export default {
   name: 'ProductMain',
@@ -85,7 +85,7 @@ export default {
   data () {
     return {
       checked: []
-    }
+    };
   },
   async mounted () {
     await this.fetchProducts();
@@ -96,7 +96,7 @@ export default {
       ...useTableFilters(props, context)
     };
   }
-}
+};
 </script>
 
 <style scoped>

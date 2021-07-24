@@ -49,22 +49,22 @@
 </template>
 
 <script>
-import { required, minLength, maxLength } from 'vuelidate/lib/validators'
-import EditForm from '@/containers/EditForm'
-import CardComponent from '@/components/CardComponent'
-import ButtonsToolbar from '@/components/ButtonsToolbar'
-import BackButton from '@/components/buttons/BackButton'
-import SaveButton from '@/components/buttons/SaveButton'
-import ImagesUploader from '@/containers/ImagesUploader'
+import { required, minLength, maxLength } from 'vuelidate/lib/validators';
+import AutoSaveForm from '@/containers/AutoSaveForm';
+import CardComponent from '@/components/CardComponent';
+import ButtonsToolbar from '@/components/ButtonsToolbar';
+import BackButton from '@/components/buttons/BackButton';
+import SaveButton from '@/components/buttons/SaveButton';
+import ImagesUploader from '@/containers/ImagesUploader';
 import CategoryFeatures from '@/modules/feature/containers/CategoryFeatures';
 import CategoryParameters from '@/modules/parameter/containers/CategoryParameters';
-import CategoryParent from '../components/CategoryParent'
-import CategoryGeneral from '../components/CategoryGeneral'
-import useCategoriesApi from '../compositions/useCategoryState'
+import CategoryParent from '../components/CategoryParent';
+import CategoryGeneral from '../components/CategoryGeneral';
+import useCategoriesApi from '../compositions/useCategoryState';
 
 export default {
   name: 'CategoryEdit',
-  extends: EditForm,
+  extends: AutoSaveForm,
   components: {
     SaveButton,
     BackButton,
@@ -122,7 +122,7 @@ export default {
       ...useCategoriesApi()
     };
   }
-}
+};
 </script>
 
 <style scoped>

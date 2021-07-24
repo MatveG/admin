@@ -1,43 +1,28 @@
-import Vue from 'vue'
-import Router from 'vue-router'
-import category from '@/modules/category/router'
-import order from '@/modules/order/router'
-import product from '@/modules/product/router'
+import Vue from 'vue';
+import Router from 'vue-router';
+import category from '@/modules/category/router';
+import document from '@/modules/document/router';
+import order from '@/modules/order/router';
+import product from '@/modules/product/router';
+import setting from '@/modules/setting/router';
+import user from '@/modules/user/router';
 
-Vue.use(Router)
+Vue.use(Router);
 
 export default new Router({
   base: process.env.BASE_URL,
   routes: [
     ...category,
+    ...document,
     ...order,
     ...product,
+    ...setting,
+    ...user,
     {
       path: '/',
       name: 'home',
-      component: () => import('./views/Home.vue')
+      component: () => import('./views/Dashboard.vue')
     },
-    {
-      path: '/tables',
-      name: 'tables',
-      component: () => import('./views/Tables.vue')
-    },
-    {
-      path: '/forms',
-      name: 'forms',
-      component: () => import('./views/Forms.vue')
-    },
-    {
-      path: '/profile',
-      name: 'profile',
-      component: () => import('./views/Profile.vue')
-    },
-    {
-      path: '/client/new',
-      name: 'client.new',
-      component: () => import('./views/ClientForm.vue')
-    },
-
     {
       path: '/login',
       name: 'login',
@@ -48,34 +33,6 @@ export default new Router({
       name: 'login-recovery',
       component: () => import('./views/Recovery.vue')
     }
-
-    // {
-    //   path: '/page',
-    //   component: () => import('./views/Wrapper.vue'),
-    //   children: [
-    //     {
-    //       path: '/login-recovery',
-    //       name: 'login-recovery',
-    //       component: () => import('./views/Recovery.vue')
-    //     },
-    //     {
-    //       path: '/error-in-card',
-    //       name: 'error-in-card',
-    //       component: () => import('./views/Error.vue')
-    //     },
-    //     {
-    //       path: '/error-simple',
-    //       name: 'error-simple',
-    //       component: () => import('./views/Error.vue'),
-    //       props: { isInCard: false }
-    //     },
-    //     {
-    //       path: '/lock-screen',
-    //       name: 'lock-screen',
-    //       component: () => import('./views/LockScreen.vue')
-    //     }
-    //   ]
-    // }
   ],
   scrollBehavior: (to, from, savedPosition) => savedPosition || { x: 0, y: 0 }
-})
+});

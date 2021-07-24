@@ -45,7 +45,7 @@ export default {
       this.item.is_filter = false;
     }
   }
-}
+};
 </script>
 
 <style scoped>

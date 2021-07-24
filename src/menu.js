@@ -12,7 +12,7 @@ export default [
     {
       to: '/documents',
       label: 'Документы',
-      icon: 'shopping-outline'
+      icon: 'file-document-outline'
     },
     {
       to: '/settings',
@@ -46,22 +46,4 @@ export default [
       icon: 'basket-outline'
     }
   ]
-  // 'Misc',
-  // [
-  //   {
-  //     to: '/tables',
-  //     label: 'Tables',
-  //     icon: 'table'
-  //   },
-  //   {
-  //     to: '/forms',
-  //     label: 'Forms',
-  //     icon: 'square-edit-outline'
-  //   },
-  //   {
-  //     to: '/profile',
-  //     label: 'Profile',
-  //     icon: 'account-circle'
-  //   }
-  // ]
 ];

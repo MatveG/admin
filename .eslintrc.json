@@ -12,9 +12,9 @@
         "parser": "babel-eslint"
     },
     "rules": {
-        "linebreak-style": "off",
-        "semi": "off",
         "require-jsdoc": "off",
-        "max-len": "off"
+        "linebreak-style": "off",
+        "semi": [2, "always"],
+        "max-len": ["error", 100]
     }
 }

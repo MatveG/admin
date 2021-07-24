@@ -19,16 +19,16 @@ export default {
   data () {
     return {
       isDismissed: false
-    }
+    };
   },
   methods: {
     dismiss () {
-      this.isDismissed = true
+      this.isDismissed = true;
       this.$buefy.snackbar.open({
         message: 'Dismissed',
         queue: false
-      })
+      });
     }
   }
-}
+};
 </script>

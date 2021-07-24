@@ -1,7 +1,7 @@
 <template>
   <button
       @click.prevent="$emit('click')"
-      :class="{'is-loading':isLoading}"
+      :class="{'is-loading': isLoading}"
       class="button is-small"
       type="button">
     <b-icon :icon="icon" custom-size="default"/>
@@ -26,5 +26,5 @@ export default {
       default: false
     }
   }
-}
+};
 </script>

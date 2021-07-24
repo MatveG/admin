@@ -32,25 +32,25 @@ export default {
   data () {
     return {
       isModalActive: false
-    }
+    };
   },
   methods: {
     cancel () {
-      this.$emit('cancel')
+      this.$emit('cancel');
     },
     confirm () {
-      this.$emit('confirm')
+      this.$emit('confirm');
     }
   },
   watch: {
     isActive (newValue) {
-      this.isModalActive = newValue
+      this.isModalActive = newValue;
     },
     isModalActive (newValue) {
       if (!newValue) {
-        this.cancel()
+        this.cancel();
       }
     }
   }
-}
+};
 </script>

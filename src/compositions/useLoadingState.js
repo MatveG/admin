@@ -1,4 +1,4 @@
-import { ref, onMounted } from '@vue/composition-api'
+import { ref, onMounted } from '@vue/composition-api';
 
 export default () => {
   const mounted = ref(false);
@@ -20,5 +20,5 @@ export default () => {
     isLoading,
     loadingState,
     readyState
-  }
-}
+  };
+};

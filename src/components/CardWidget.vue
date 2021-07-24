@@ -21,8 +21,8 @@
 </template>
 
 <script>
-import CardComponent from '@/components/CardComponent'
-import GrowingNumber from '@/components/GrowingNumber'
+import CardComponent from '@/components/CardComponent';
+import GrowingNumber from '@/components/GrowingNumber';
 
 export default {
   name: 'CardWidget',
@@ -56,5 +56,5 @@ export default {
       default: null
     }
   }
-}
+};
 </script>

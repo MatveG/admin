@@ -25,10 +25,10 @@
 </template>
 
 <script>
-import draggable from 'vuedraggable'
-import axios from '@/loaders/axios'
+import draggable from 'vuedraggable';
+import axios from '@/loaders/axios';
 import useModelBinding from '@/compositions/useModelBinding';
-import useLoadingState from '@/compositions/useLoadingState'
+import useLoadingState from '@/compositions/useLoadingState';
 import useDialogs from '@/compositions/useDialogs';
 
 export default {
@@ -61,7 +61,7 @@ export default {
   data () {
     return {
       upload: []
-    }
+    };
   },
   watch: {
     'upload': function () {
@@ -119,7 +119,8 @@ export default {
 
       loadingState();
       try {
-        const { data } = await axios.post(`/images/upload/${props.module}/${props.id}`, request, settings);
+        const { data } = await axios
+          .post(`/images/upload/${props.module}/${props.id}`, request, settings);
         model.value = data;
       } catch (error) {
         fireToast('Error uploading images', 'is-error');
@@ -147,9 +148,9 @@ export default {
       filesValid,
       handleUpload,
       handleUpdate
-    }
+    };
   }
-}
+};
 </script>
 
 <style scoped>

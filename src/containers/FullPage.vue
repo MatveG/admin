@@ -16,11 +16,11 @@
 export default {
   name: 'Page',
   mounted () {
-    this.$store.commit('fullPage', true)
-    this.$store.commit('asideRightToggle', false)
+    this.$store.commit('fullPage', true);
+    this.$store.commit('asideRightToggle', false);
   },
   beforeDestroy () {
-    this.$store.commit('fullPage', false)
+    this.$store.commit('fullPage', false);
   }
-}
+};
 </script>
