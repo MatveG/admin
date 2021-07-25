@@ -24,10 +24,6 @@ export default {
   methods: {
     dismiss () {
       this.isDismissed = true;
-      this.$buefy.snackbar.open({
-        message: 'Dismissed',
-        queue: false
-      });
     }
   }
 };

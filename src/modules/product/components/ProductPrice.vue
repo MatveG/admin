@@ -54,7 +54,7 @@
 </template>
 
 <script>
-import CardComponent from '@/components/CardComponent'
+import CardComponent from '@/components/CardComponent';
 
 export default {
   name: 'ProductPrice',
@@ -75,7 +75,7 @@ export default {
     return {
       percent: null,
       tab: 0
-    }
+    };
   },
   methods: {
     toggleDiscount () {
@@ -93,7 +93,7 @@ export default {
       this.percent = null;
     }
   }
-}
+};
 </script>
 
 <style scoped>

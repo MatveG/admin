@@ -39,7 +39,7 @@
 </template>
 
 <script>
-import CardComponent from '@/components/CardComponent'
+import CardComponent from '@/components/CardComponent';
 
 export default {
   name: 'CategoryParent',
@@ -67,7 +67,7 @@ export default {
       }
     }
   }
-}
+};
 </script>
 
 <style scoped>

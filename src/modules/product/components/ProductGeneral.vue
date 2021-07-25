@@ -46,7 +46,7 @@
 </template>
 
 <script>
-import CardComponent from '@/components/CardComponent'
+import CardComponent from '@/components/CardComponent';
 
 export default {
   name: 'ProductGeneral',
@@ -66,9 +66,9 @@ export default {
   data () {
     return {
       tab: 0
-    }
+    };
   }
-}
+};
 </script>
 
 <style scoped>

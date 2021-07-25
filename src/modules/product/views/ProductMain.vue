@@ -1,7 +1,8 @@
 <template>
   <section class="section is-main-section">
-    <card-component class="has-table has-mobile-sort-spaced" title="Товары" icon="basket">
-      <products-toolbar @toggle="toggleFilter"/>
+    <access-denied v-if="!canRead"/>
+    <card-component v-else class="has-table has-mobile-sort-spaced" title="Товары" icon="basket">
+      <products-toolbar :can-create="canCreate" @toggle="toggleFilter"/>
 
       <b-table
           :data="products"
@@ -57,8 +58,12 @@
 
         <b-table-column label="*" custom-key="actions" width="13%" centered v-slot="props">
           <div class="buttons is-flex-wrap-nowrap">
-            <edit-button :to="{ name: 'product.edit', params: { propId: props.row.id } }"/>
-            <remove-button @click="removeProductsRow(props.row)"/>
+            <edit-button
+                v-if="canUpdate"
+                :to="{ name: 'product.edit', params: { propId: props.row.id } }"/>
+            <remove-button
+                v-if="canDelete"
+                @click="removeProductsRow(props.row)"/>
           </div>
         </b-table-column>
       </b-table>
@@ -67,16 +72,19 @@
 </template>
 
 <script>
+import AccessDenied from '@/components/AccessDenied';
 import CardComponent from '@/components/CardComponent';
 import EditButton from '@/components/buttons/EditButton';
 import RemoveButton from '@/components/buttons/RemoveButton';
 import ProductsToolbar from '../components/ProductsToolbar';
 import useTableFilters from '@/compositions/useTableFilters';
 import useProductState from '../compositions/useProductState';
+import useAccessRights from '@/compositions/useAccessRights';
 
 export default {
   name: 'ProductMain',
   components: {
+    AccessDenied,
     CardComponent,
     EditButton,
     RemoveButton,
@@ -93,7 +101,8 @@ export default {
   setup (props, context) {
     return {
       ...useProductState(),
-      ...useTableFilters(props, context)
+      ...useTableFilters(props, context),
+      ...useAccessRights('products')
     };
   }
 };

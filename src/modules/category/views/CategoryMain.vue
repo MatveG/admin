@@ -7,9 +7,9 @@
 </template>
 
 <script>
-import CardComponent from '@/components/CardComponent'
-import CategoriesTable from '../containers/CategoriesTable'
-import useCategoryState from '@/modules/category/compositions/useCategoryState'
+import CardComponent from '@/components/CardComponent';
+import CategoriesTable from '../containers/CategoriesTable';
+import useCategoryState from '@/modules/category/compositions/useCategoryState';
 
 export default {
   name: 'CategoryMain',
@@ -24,9 +24,9 @@ export default {
     const { fetchCategories } = useCategoryState();
     return {
       fetchCategories
-    }
+    };
   }
-}
+};
 </script>
 
 <style scoped>

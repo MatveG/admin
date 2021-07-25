@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import CardComponent from '@/components/CardComponent'
+import CardComponent from '@/components/CardComponent';
 
 export default {
   name: 'OrderClient',
@@ -37,7 +37,7 @@ export default {
       required: true
     }
   }
-}
+};
 </script>
 
 <style scoped>

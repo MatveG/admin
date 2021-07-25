@@ -16,13 +16,15 @@
              :data="product.variants"
              :loading="loading"
              hoverable>
-      <b-table-column field="images" label="Фото" width="5%" sortable centered v-slot="props">
+      <b-table-column field="images" label="Фото" width="5%"
+                      sortable centered v-slot="props">
           <span v-if="props.row.images.length" class="icon has-text-dark">
               <i class="fas fa-check-square"></i>
           </span>
       </b-table-column>
 
-      <b-table-column field="code" label="Артикул" width="10%" sortable centered class="is-italic" v-slot="props">
+      <b-table-column field="code" label="Артикул" width="10%"
+                      sortable centered class="is-italic" v-slot="props">
           <span :class="!props.row.code ? 'has-text-grey-light' : ''">
             {{ (props.row.code) ? props.row.code : '[empty]' }}
           </span>
@@ -31,14 +33,16 @@
       <b-table-column field="parameters" label="Параметры" width="30%" centered v-slot="props">
         <div class="buttons is-centered">
           <div v-for="(parameter, idx) in product.category.parameters" :key="idx">
-            <span v-if="props.row.parameters[parameter.id]" :title="parameter.title" class="tag ml-1">
+            <span v-if="props.row.parameters[parameter.id]"
+                  :title="parameter.title" class="tag ml-1">
                 {{ props.row.parameters[parameter.id] }}
             </span>
           </div>
         </div>
       </b-table-column>
 
-      <b-table-column field="stock" label="Остаток" width="15%" sortable centered v-slot="props">
+      <b-table-column field="stock" label="Остаток"
+                      width="15%" sortable centered v-slot="props">
         <b-field>
           <b-input v-model.number="props.row.stock" type="number"
                    @keypress.native="forceInteger($event)" @change.native="update(props.row)" />
@@ -46,7 +50,8 @@
         </b-field>
       </b-table-column>
 
-      <b-table-column field="surcharge" label="Цена/наценка" width="20%" sortable centered v-slot="props">
+      <b-table-column field="surcharge" label="Цена/наценка"
+                      width="20%" sortable centered v-slot="props">
         <b-field>
           <div class="control has-icons-right">
             <b-input v-model.number="props.row.price" disabled />
@@ -79,15 +84,14 @@
 <script>
 import { mapGetters } from 'vuex';
 import { forceInteger } from '@/mixins/forceInteger';
-import CardComponent from '@/components/CardComponent'
+import CardComponent from '@/components/CardComponent';
 import VariantEdit from './VariantEdit';
 import Variant from '../classes/Variant';
-import CardToolbar from '@/components/CardToolbar'
+import CardToolbar from '@/components/CardToolbar';
 
 export default {
   name: 'ProductVariants',
   mixins: [
-    states,
     forceInteger
   ],
   components: {
@@ -103,7 +107,7 @@ export default {
       modal: false,
       variant: {},
       timer: {}
-    }
+    };
   },
   computed: mapGetters(['product']),
   watch: {
@@ -168,7 +172,7 @@ export default {
       }
     }
   }
-}
+};
 </script>
 
 <style scoped>

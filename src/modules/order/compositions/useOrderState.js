@@ -1,7 +1,7 @@
-import { ref, computed } from '@vue/composition-api'
-import '@/loaders/composition'
-import axios from '@/loaders/axios'
-import api from '@/api'
+import { ref, computed } from '@vue/composition-api';
+import '@/loaders/composition';
+import axios from '@/loaders/axios';
+import api from '@/api';
 
 const order = ref({
   address: {}
@@ -92,7 +92,7 @@ export default function () {
     fetchOrders,
     updateOrdersRow,
     removeOrdersRow
-  }
+  };
 }
 
 function setLoading (value) {

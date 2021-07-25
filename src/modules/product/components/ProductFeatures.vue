@@ -17,7 +17,8 @@
       <div v-else :key="feature.id" class="column is-half">
         <b-field
             :label="feature.title"
-            :type="{ 'is-danger': $v.product.features[feature.key] && $v.product.features[feature.key].$error }"
+            :type="{ 'is-danger': $v.product.features[feature.key]
+            && $v.product.features[feature.key].$error }"
             label-position="on-border">
           <component
               :is="`feature-${feature.type}`"
@@ -30,12 +31,12 @@
 </template>
 
 <script>
-import FeatureBoolean from './FeatureBoolean'
-import FeatureMultiple from './FeatureMultiple'
-import FeatureNumber from './FeatureNumber'
-import FeatureSelect from './FeatureSelect'
-import FeatureString from './FeatureString'
-import FeatureText from './FeatureText'
+import FeatureBoolean from './FeatureBoolean';
+import FeatureMultiple from './FeatureMultiple';
+import FeatureNumber from './FeatureNumber';
+import FeatureSelect from './FeatureSelect';
+import FeatureString from './FeatureString';
+import FeatureText from './FeatureText';
 
 export default {
   name: 'ProductFeatures',
@@ -61,7 +62,7 @@ export default {
       default: () => {}
     }
   }
-}
+};
 </script>
 
 <style scoped>

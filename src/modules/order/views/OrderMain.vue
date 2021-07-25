@@ -1,7 +1,13 @@
 <template>
   <section class="section is-main-section">
-    <card-component class="has-table has-mobile-sort-spaced" title="Заказы" icon="basket-outline">
-      <orders-toolbar :settings="settings" @toggle="toggleFilter" @reset="resetFilters"/>
+    <access-denied v-if="!canRead"/>
+    <card-component v-else class="has-table has-mobile-sort-spaced"
+                    title="Заказы" icon="basket-outline">
+      <orders-toolbar
+          :can-create="canCreate"
+          :settings="settings"
+          @toggle="toggleFilter"
+          @reset="resetFilters"/>
 
       <b-table
           :data="orders"
@@ -42,7 +48,11 @@
             <b-select class="order-status-1"
                 v-model="props.row.status"
                 @input="updateOrdersRow(props.row)">
-              <option v-for="(status, idx) in statuses" :key="idx" :value="status[0]" :class="`order-status-${status[0]}`">
+              <option
+                  v-for="(status, idx) in statuses"
+                  :key="idx"
+                  :value="status[0]"
+                  :class="`order-status-${status[0]}`">
                 {{status[1]}}
               </option>
             </b-select>
@@ -51,8 +61,12 @@
 
         <b-table-column v-slot="props" centered custom-key="actions"
             cell-class="is-centered buttons is-flex-wrap-nowrap" label="*" width="15%">
-          <edit-button :to="{ name: 'order.edit', params: { propId: props.row.id } }"/>
-          <remove-button @click="removeOrdersRow(props.row)"/>
+          <edit-button
+              v-if="canUpdate"
+              :to="{ name: 'order.edit', params: { propId: props.row.id } }"/>
+          <remove-button
+              v-if="canDelete"
+              @click="removeOrdersRow(props.row)"/>
         </b-table-column>
 
         <template slot="detail" slot-scope="props">
@@ -65,18 +79,21 @@
 </template>
 
 <script>
-import CardComponent from '@/components/CardComponent'
-import EditButton from '@/components/buttons/EditButton'
-import RemoveButton from '@/components/buttons/RemoveButton'
-import OrdersToolbar from '../components/OrdersToolbar'
-import OrdersDetails from '../components/OrdersDetails'
-import OrdersProducts from '../containers/OrderProducts'
-import useTableFilters from '@/compositions/useTableFilters'
-import useOrderState from '../compositions/useOrderState'
+import AccessDenied from '@/components/AccessDenied';
+import CardComponent from '@/components/CardComponent';
+import EditButton from '@/components/buttons/EditButton';
+import RemoveButton from '@/components/buttons/RemoveButton';
+import OrdersToolbar from '../components/OrdersToolbar';
+import OrdersDetails from '../components/OrdersDetails';
+import OrdersProducts from '../containers/OrderProducts';
+import useTableFilters from '@/compositions/useTableFilters';
+import useOrderState from '../compositions/useOrderState';
+import useAccessRights from '@/compositions/useAccessRights';
 
 export default {
   name: 'Orders',
   components: {
+    AccessDenied,
     CardComponent,
     EditButton,
     RemoveButton,
@@ -95,38 +112,13 @@ export default {
       settings,
       statuses,
       ...useOrderState(),
-      ...useTableFilters(props, context)
+      ...useTableFilters(props, context),
+      ...useAccessRights('orders')
     };
   }
-}
+};
 </script>
 
-<style>
-tr.order-status-1 td:first-child {
-  border-left: solid 7px #1abc9c;
-}
-tr.order-status-2 td:first-child {
-  border-left: solid 7px #f1c40f;
-}
-tr.order-status-3 td:first-child {
-  border-left: solid 7px #9b59b6;
-}
-tr.order-status-4 td:first-child {
-  border-left: solid 7px #e67e22;
-}
-tr.order-status-5 td:first-child {
-  border-left: solid 7px #3498db;
-}
-tr.order-status-6 td:first-child {
-  border-left: solid 7px #e74c3c;
-}
-tr.order-status-7 td:first-child {
-  border-left: solid 7px #2ecc71;
-}
-tr.order-status-8 td:first-child {
-  border-left: solid 7px #7f8c8d;
-}
-tr.order-status-9 td:first-child {
-  border-left: solid 7px #2c3e50;
-}
+<style scoped>
+
 </style>

@@ -11,7 +11,7 @@ const asideRightAsideClass = 'has-aside-right';
 const htmlDarkModeClass = 'is-dark-mode-active';
 
 export default new Vuex.Store({
-  strict: true,
+  strict: process.env.NODE_ENV === 'development',
   state: {
     asideActiveForcedKey: null,
     isAsideVisible: true,

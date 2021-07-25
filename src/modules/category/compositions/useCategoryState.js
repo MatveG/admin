@@ -1,7 +1,7 @@
-import { ref, computed } from '@vue/composition-api'
-import '@/loaders/composition'
-import axios from '@/loaders/axios'
-import api from '@/api'
+import { ref, computed } from '@vue/composition-api';
+import '@/loaders/composition';
+import axios from '@/loaders/axios';
+import api from '@/api';
 
 const category = ref({
   images: []
@@ -15,7 +15,7 @@ export default function () {
   const parentCategories = computed(() => [
     { 'id': 0, 'title': '[root]' },
     ...categories.value.filter((el) => el.is_parent)
-  ])
+  ]);
 
   async function fetchCategory (id) {
     setLoading(true);
@@ -105,7 +105,7 @@ export default function () {
     fetchCategories,
     updateCategoriesRow,
     removeCategoriesRow
-  }
+  };
 }
 
 function setLoading (value) {

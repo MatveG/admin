@@ -7,7 +7,7 @@
         </b-field>
         <hr>
         <b-field class="buttons" grouped>
-          <b-button type="is-primary" native-type="submit" :loading="isLoading">
+          <b-button type="is-primary" :loading="isLoading" @click="authRemind(form)">
             Восстановить
           </b-button>
           <router-link :to="{name: 'login'}" class="button is-primary is-outlined">
@@ -22,8 +22,7 @@
 <script>
 import FullPage from '@/containers/FullPage';
 import CardComponent from '@/components/CardComponent';
-
-// todo: recovery logic?
+import useAuth from '@/compositions/useAuth';
 
 export default {
   name: 'Recovery',
@@ -35,6 +34,14 @@ export default {
     return {
       isLoading: false,
       form: {}
+    };
+  },
+  setup () {
+    const { isLoading, authRemind } = useAuth();
+
+    return {
+      isLoading,
+      authRemind
     };
   }
 };

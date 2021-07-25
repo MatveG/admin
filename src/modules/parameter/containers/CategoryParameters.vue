@@ -11,8 +11,8 @@
 </template>
 
 <script>
-import CategoryProperties from '@/components/CategoryProperties'
-import useParameterState from '../compositions/useParameterState'
+import CategoryProperties from '@/containers/CategoryProperties';
+import useParameterState from '../compositions/useParameterState';
 
 export default {
   name: 'CategoryParameters',
@@ -31,7 +31,7 @@ export default {
       ...useParameterState()
     };
   }
-}
+};
 </script>
 
 <style scoped>

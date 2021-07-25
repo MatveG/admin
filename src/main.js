@@ -1,6 +1,3 @@
-// todo: env settings
-// todo: user rights
-// todo: images upload
 import '@/scss/main.scss';
 import '@mdi/font/css/materialdesignicons.css';
 import Vue from 'vue';

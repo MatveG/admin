@@ -1,0 +1,37 @@
+$status-1: #1abc9c;
+$status-2: #f1c40f;
+$status-3: #9b59b6;
+$status-4: #e67e22;
+$status-5: #3498db;
+$status-6: #e74c3c;
+$status-7: #2ecc71;
+$status-8: #7f8c8d;
+$status-9: #2c3e50;
+
+tr.order-status-1 td:first-child {
+  border-left: solid 7px $status-1;
+}
+tr.order-status-2 td:first-child {
+  border-left: solid 7px $status-2;
+}
+tr.order-status-3 td:first-child {
+  border-left: solid 7px $status-3;
+}
+tr.order-status-4 td:first-child {
+  border-left: solid 7px $status-4;
+}
+tr.order-status-5 td:first-child {
+  border-left: solid 7px $status-5;
+}
+tr.order-status-6 td:first-child {
+  border-left: solid 7px $status-6;
+}
+tr.order-status-7 td:first-child {
+  border-left: solid 7px $status-7;
+}
+tr.order-status-8 td:first-child {
+  border-left: solid 7px $status-8;
+}
+tr.order-status-9 td:first-child {
+  border-left: solid 7px $status-9;
+}

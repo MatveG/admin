@@ -6,7 +6,7 @@
       </b-button>
     </div>
     <div slot="right">
-      <b-button :to="{ name: 'user.create' }" tag="router-link"
+      <b-button v-if="canCreate" :to="{ name: 'user.create' }" tag="router-link"
                 type="is-primary" icon-right="plus-circle" target="_blank"/>
     </div>
   </card-toolbar>
@@ -19,6 +19,12 @@ export default {
   name: 'UsersToolbar',
   components: {
     CardToolbar
+  },
+  props: {
+    canCreate: {
+      type: Boolean,
+      default: false
+    }
   },
   data () {
     return {

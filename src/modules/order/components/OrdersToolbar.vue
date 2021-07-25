@@ -7,7 +7,10 @@
             @input="$emit('toggle', key, $event)"
             :placeholder="titles[key]">
           <option :value="null">Все</option>
-          <option v-for="(value, idx) in Object.entries(settings[key])" :key="idx" :value="value[0]">
+          <option
+              v-for="(value, idx) in Object.entries(settings[key])"
+              :key="idx"
+              :value="value[0]">
             {{value[1]}}
           </option>
         </b-select>
@@ -22,6 +25,7 @@
     </b-field>
     <div slot="right">
       <b-button
+          v-if="canCreate"
           :to="{ name: 'order.create' }"
           tag="router-link"
           target="_blank"
@@ -32,7 +36,7 @@
 </template>
 
 <script>
-import CardToolbar from '@/components/CardToolbar'
+import CardToolbar from '@/components/CardToolbar';
 
 export default {
   name: 'ProductsToolbar',
@@ -42,6 +46,10 @@ export default {
   props: {
     settings: {
       type: Object,
+      required: true
+    },
+    canCreate: {
+      type: Boolean,
       required: true
     }
   },
@@ -57,7 +65,7 @@ export default {
         delivery: 'Доставка',
         status: 'Статус'
       }
-    }
+    };
   },
   methods: {
     reset () {
@@ -67,7 +75,7 @@ export default {
       this.$emit('reset');
     }
   }
-}
+};
 </script>
 
 <style scoped>

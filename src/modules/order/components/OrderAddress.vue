@@ -12,7 +12,7 @@
 </template>
 
 <script>
-import CardComponent from '@/components/CardComponent'
+import CardComponent from '@/components/CardComponent';
 
 export default {
   name: 'OrderAddress',
@@ -25,7 +25,7 @@ export default {
       required: true
     }
   }
-}
+};
 </script>
 
 <style scoped>

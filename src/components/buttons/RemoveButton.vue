@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import useDialogs from '@/compositions/useDialogs'
+import useDialogs from '@/compositions/useDialogs';
 
 export default {
   name: 'RemoveButton',
@@ -30,7 +30,7 @@ export default {
       confirmDialog
     };
   }
-}
+};
 </script>
 
 <style scoped>

@@ -6,8 +6,13 @@
       </b-button>
     </div>
     <div slot="right">
-      <b-button :to="{ name: 'document.create' }" tag="router-link"
-                type="is-primary" icon-right="plus-circle" target="_blank"/>
+      <b-button
+          v-if="canCreate"
+          :to="{ name: 'document.create' }"
+          tag="router-link"
+          type="is-primary"
+          icon-right="plus-circle"
+          target="_blank"/>
     </div>
   </card-toolbar>
 </template>
@@ -19,6 +24,12 @@ export default {
   name: 'DocumentsToolbar',
   components: {
     CardToolbar
+  },
+  props: {
+    canCreate: {
+      type: Boolean,
+      required: true
+    }
   },
   data () {
     return {

@@ -12,7 +12,8 @@
       </b-select>
     </b-field>
 
-    <b-field :type="{ 'is-danger': $v.order.delivery.$error }" label="Доставка" label-position="on-border">
+    <b-field :type="{ 'is-danger': $v.order.delivery.$error }"
+             label="Доставка" label-position="on-border">
       <b-select v-model="order.delivery" expanded>
         <option
             v-for="(value, idx) in Object.entries(settings.delivery)"
@@ -26,7 +27,7 @@
 </template>
 
 <script>
-import CardComponent from '@/components/CardComponent'
+import CardComponent from '@/components/CardComponent';
 
 export default {
   name: 'OrderPayment',
@@ -47,7 +48,7 @@ export default {
       required: true
     }
   }
-}
+};
 </script>
 
 <style scoped>

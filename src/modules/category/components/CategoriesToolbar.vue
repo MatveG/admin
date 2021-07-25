@@ -9,19 +9,30 @@
       </b-button>
     </div>
     <div slot="right">
-      <b-button type="is-primary" icon-right="plus-circle"
-                tag="router-link" :to="{ name: 'category.create' }" target="_blank"/>
+      <b-button
+          v-if="canCreate"
+          :to="{ name: 'category.create' }"
+          tag="router-link"
+          type="is-primary"
+          icon-right="plus-circle"
+          target="_blank"/>
     </div>
   </card-toolbar>
 </template>
 
 <script>
-import CardToolbar from '@/components/CardToolbar'
+import CardToolbar from '@/components/CardToolbar';
 
 export default {
   name: 'ProductsToolbar',
   components: {
     CardToolbar
+  },
+  props: {
+    canCreate: {
+      type: Boolean,
+      required: true
+    }
   },
   data () {
     return {
@@ -29,7 +40,7 @@ export default {
         is_active: false,
         is_parent: false
       }
-    }
+    };
   },
   methods: {
     toggle (name) {
@@ -37,7 +48,7 @@ export default {
       this.$emit('toggle', name);
     }
   }
-}
+};
 </script>
 
 <style scoped>

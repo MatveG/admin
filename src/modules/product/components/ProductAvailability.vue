@@ -47,7 +47,7 @@
 </template>
 
 <script>
-import CardComponent from '@/components/CardComponent'
+import CardComponent from '@/components/CardComponent';
 
 export default {
   name: 'ProductAvailability',
@@ -68,12 +68,12 @@ export default {
     changeIsStock (value) {
       if (!value) {
         Object.keys(this.product.stocks).forEach((el) => {
-          this.product.stocks[el] = 0
-        })
+          this.product.stocks[el] = 0;
+        });
       }
     }
   }
-}
+};
 </script>
 
 <style scoped>

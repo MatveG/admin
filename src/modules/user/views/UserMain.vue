@@ -1,8 +1,12 @@
 <template>
   <section class="section is-main-section">
-    <card-component class="has-table has-mobile-sort-spaced"
-                    title="Документы" icon="account-cog-outline">
-      <users-toolbar @toggle="toggleFilter"/>
+    <access-denied v-if="!canRead"/>
+    <card-component
+        v-else
+        class="has-table has-mobile-sort-spaced"
+        title="Документы"
+        icon="account-cog-outline">
+      <users-toolbar :can-create="canCreate" @toggle="toggleFilter"/>
 
       <b-table
           :data="users"
@@ -41,8 +45,12 @@
 
         <b-table-column cell-class="is-centered buttons is-flex-wrap-nowrap"
                         label="*" custom-key="actions" width="15%" centered v-slot="props">
-          <edit-button :to="{ name: 'user.edit', params: { propId: props.row.id } }"/>
-          <remove-button @click="removeUsersRow(props.row)"/>
+          <edit-button
+              v-if="canUpdate"
+              :to="{ name: 'user.edit', params: { propId: props.row.id } }"/>
+          <remove-button
+              v-if="canDelete"
+              @click="removeUsersRow(props.row)"/>
         </b-table-column>
       </b-table>
     </card-component>
@@ -50,16 +58,19 @@
 </template>
 
 <script>
+import AccessDenied from '@/components/AccessDenied';
 import CardComponent from '@/components/CardComponent';
 import EditButton from '@/components/buttons/EditButton';
 import RemoveButton from '@/components/buttons/RemoveButton';
 import UsersToolbar from '../components/UsersToolbar';
 import useTableFilters from '@/compositions/useTableFilters';
 import useUserState from '../compositions/useUserState';
+import useAccessRights from '@/compositions/useAccessRights';
 
 export default {
   name: 'DocumentMain',
   components: {
+    AccessDenied,
     UsersToolbar,
     CardComponent,
     EditButton,
@@ -71,7 +82,8 @@ export default {
   setup (props, context) {
     return {
       ...useUserState(),
-      ...useTableFilters(props, context)
+      ...useTableFilters(props, context),
+      ...useAccessRights('users')
     };
   }
 };

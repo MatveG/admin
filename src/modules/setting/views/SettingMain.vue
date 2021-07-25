@@ -1,6 +1,8 @@
 <template>
   <section class="section is-main-section">
-    <card-component class="has-table has-mobile-sort-spaced" title="Настройки" icon="cog-outline">
+    <access-denied v-if="!canRead"/>
+    <card-component v-else class="has-table has-mobile-sort-spaced"
+                    title="Настройки" icon="cog-outline">
       <div class="m-5 p-5">
         <b-table
             :data="settings"
@@ -32,6 +34,7 @@
                 <b-field :key="key" :label="key" label-position="on-border">
                   <b-input
                       v-model="props.row.value[key]"
+                      :disabled="!canUpdate"
                       @input="touchRow(props.row)"
                       size="is-small"/>
                   <p class="control">
@@ -44,11 +47,18 @@
             </template>
 
             <b-field v-else-if="props.row.type === 'boolean'" :message="props.row.hint">
-              <b-switch v-model="props.row.value" @input="touchRow(props.row)" outlined/>
+              <b-switch
+                  v-model="props.row.value"
+                  :disabled="!canUpdate"
+                  @input="touchRow(props.row)"
+                  outlined/>
             </b-field>
 
             <b-field v-else :message="props.row.hint">
-              <b-input v-model="props.row.value" @input="touchRow(props.row)"/>
+              <b-input
+                  v-model="props.row.value"
+                  :disabled="!canUpdate"
+                  @input="touchRow(props.row)"/>
             </b-field>
           </b-table-column>
 
@@ -65,14 +75,17 @@
 </template>
 
 <script>
+import AccessDenied from '@/components/AccessDenied';
 import CardComponent from '@/components/CardComponent';
 import SaveButton from '@/components/buttons/SaveButton';
 import RemoveButton from '@/components/buttons/RemoveButton';
 import useSettingState from '../compositions/useSettingState';
+import useAccessRights from '@/compositions/useAccessRights';
 
 export default {
   name: 'SettingMain',
   components: {
+    AccessDenied,
     CardComponent,
     RemoveButton,
     SaveButton
@@ -112,7 +125,8 @@ export default {
   },
   setup () {
     return {
-      ...useSettingState()
+      ...useSettingState(),
+      ...useAccessRights('settings')
     };
   }
 };

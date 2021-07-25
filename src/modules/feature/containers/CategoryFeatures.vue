@@ -11,8 +11,8 @@
 </template>
 
 <script>
-import CategoryProperties from '@/components/CategoryProperties'
-import useFeatureState from '../compositions/useFeatureState'
+import CategoryProperties from '@/containers/CategoryProperties';
+import useFeatureState from '../compositions/useFeatureState';
 
 export default {
   name: 'CategoryFeatures',
@@ -31,7 +31,7 @@ export default {
       ...useFeatureState()
     };
   }
-}
+};
 </script>
 
 <style scoped>

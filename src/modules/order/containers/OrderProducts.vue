@@ -33,10 +33,10 @@
 </template>
 
 <script>
-import CardComponent from '@/components/CardComponent'
-import RemoveButton from '@/components/buttons/RemoveButton'
-import useProductState from '@/modules/product/compositions/useProductState'
-import { ref, computed, onMounted } from '@vue/composition-api'
+import CardComponent from '@/components/CardComponent';
+import RemoveButton from '@/components/buttons/RemoveButton';
+import useProductState from '@/modules/product/compositions/useProductState';
+import { ref, computed, onMounted } from '@vue/composition-api';
 
 export default {
   name: 'OrdersProducts',
@@ -110,9 +110,9 @@ export default {
           centered: true
         }
       ]
-    }
+    };
   }
-}
+};
 </script>
 
 <style scoped>

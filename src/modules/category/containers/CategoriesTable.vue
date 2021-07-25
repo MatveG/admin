@@ -1,6 +1,10 @@
 <template>
-  <div>
-    <categories-toolbar v-if="!nested" @toggle="toggleFilter"/>
+  <access-denied v-if="!canRead"/>
+  <div v-else>
+    <categories-toolbar
+        :can-create="canCreate"
+        v-if="!nested"
+        @toggle="toggleFilter"/>
 
     <b-table
         :data="categories.filter((el) => el.parent_id === parentId)"
@@ -41,7 +45,8 @@
         {{ props.row.title }}
       </b-table-column>
 
-      <b-table-column field="is_active" label="Активна" width="15%" sortable centered v-slot="props">
+      <b-table-column field="is_active" label="Активна" width="15%"
+                      sortable centered v-slot="props">
         <b-switch
             v-model="props.row.is_active"
             :size="nested ? 'is-small' : ''"
@@ -52,9 +57,13 @@
       <b-table-column custom-key="actions" width="15%" centered v-slot="props">
         <div class="buttons">
           <edit-button
+              v-if="canUpdate"
               :size="nested ? 'is-small' : ''"
               :to="{ name: 'category.edit', params: { propId: props.row.id } }"/>
-          <remove-button :size="nested ? 'is-small' : ''" @click="removeCategoriesRow(props.row)"/>
+          <remove-button
+              v-if="canDelete"
+              :size="nested ? 'is-small' : ''"
+              @click="removeCategoriesRow(props.row)"/>
         </div>
       </b-table-column>
 
@@ -66,17 +75,20 @@
 </template>
 
 <script>
-import EditButton from '@/components/buttons/EditButton'
-import RemoveButton from '@/components/buttons/RemoveButton'
-import CategoriesToolbar from '../components/CategoriesToolbar'
-import useExpandRow from '@/compositions/useExpandRow'
-import useDraggingRows from '@/compositions/useDraggingRows'
-import useTableFilters from '@/compositions/useTableFilters'
-import useCategoryState from '../compositions/useCategoryState'
+import AccessDenied from '@/components/AccessDenied';
+import EditButton from '@/components/buttons/EditButton';
+import RemoveButton from '@/components/buttons/RemoveButton';
+import CategoriesToolbar from '../components/CategoriesToolbar';
+import useExpandRow from '@/compositions/useExpandRow';
+import useDraggingRows from '@/compositions/useDraggingRows';
+import useTableFilters from '@/compositions/useTableFilters';
+import useCategoryState from '../compositions/useCategoryState';
+import useAccessRights from '@/compositions/useAccessRights';
 
 export default {
   name: 'CategoryTable',
   components: {
+    AccessDenied,
     CategoriesToolbar,
     EditButton,
     RemoveButton
@@ -90,7 +102,7 @@ export default {
   data () {
     return {
       nested: this.parentId !== 0
-    }
+    };
   },
   methods: {
     async swapOrd (payload) {
@@ -110,10 +122,11 @@ export default {
       ...useCategoryState(),
       ...useDraggingRows(),
       ...useExpandRow(),
-      ...useTableFilters(props, context)
+      ...useTableFilters(props, context),
+      ...useAccessRights('categories')
     };
   }
-}
+};
 </script>
 
 <style>

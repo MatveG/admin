@@ -1,10 +1,12 @@
 <template>
   <ul :class="{'menu-list':!isSubmenuList}">
-    <aside-menu-item v-for="(item,index) in menu"
-      @menu-click="menuClick"
-      :is-secondary="isSecondary"
-      :item="item"
-      :key="index"/>
+    <template v-for="(item,index) in menu">
+      <aside-menu-item
+          @menu-click="menuClick"
+          :is-secondary="isSecondary"
+          :item="item"
+          :key="index"/>
+    </template>
   </ul>
 </template>
 

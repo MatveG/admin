@@ -28,10 +28,9 @@
 </template>
 
 <script>
-// todo: extract login logic
-import axios from '@/loaders/axios';
 import FullPage from '@/containers/FullPage';
 import CardComponent from '@/components/CardComponent';
+import useAuth from '@/compositions/useAuth';
 
 export default {
   name: 'Login',
@@ -41,34 +40,26 @@ export default {
   },
   data () {
     return {
-      isLoading: false,
       formData: {}
     };
   },
   methods: {
     async submit () {
-      this.isLoading = true;
-
-      await axios.get('/csrf-cookie');
-      const response = await axios.post('/login', this.formData);
-
-      if (response.status === 200) {
-        const token = `${response.data.type} ${response.data.token}`;
-
-        localStorage.setItem('_utoken', token);
-
-        if (this.formData.remember) {
-          // remember user
-        }
-
+      if (await this.authLogin(this.formData)) {
         await this.$router.push({ name: 'home' });
         this.$buefy.snackbar.open({ message: 'Welcome back' });
       } else {
-        alert('Wrong credentials!');
+        this.$buefy.toast.open({ message: 'Wrong credentials!' });
       }
-
-      this.isLoading = false;
     }
+  },
+  setup () {
+    const { isLoading, authLogin } = useAuth();
+
+    return {
+      isLoading,
+      authLogin
+    };
   }
 };
 </script>

@@ -2,7 +2,7 @@
   <nav v-show="isNavbarVisible" class="navbar is-fixed-top">
     <div class="navbar-brand">
       <a
-          @click.prevent="asideStateToggle"
+          @click.prevent="asideStateToggle()"
           :title="isAsideExpanded ? 'Collapse' : 'Expand'"
           class="navbar-item is-desktop-icon-only is-hidden-touch">
         <b-icon :icon="isAsideExpanded ? 'backburger' : 'forwardburger'"/>
@@ -18,11 +18,11 @@
     </div>
 
     <div class="navbar-brand is-right">
-      <a @click.prevent="asideRightToggle"
+      <a @click.prevent="asideRightToggle()"
          class="navbar-item navbar-item-menu-toggle is-hidden-desktop">
         <b-icon icon="bell" custom-size="default"/>
       </a>
-      <a @click.prevent="menuNavBarToggle"
+      <a @click.prevent="menuNavBarToggle()"
          class="navbar-item navbar-item-menu-toggle is-hidden-desktop">
         <b-icon :icon="isMenuNavBarActive ? 'close' : 'dots-vertical'" custom-size="default"/>
       </a>
@@ -30,7 +30,7 @@
 
     <div class="navbar-menu fadeIn animated faster" :class="{'is-active':isMenuNavBarActive}">
       <div class="navbar-end">
-        <a @click="darkModeToggle"
+        <a @click="darkModeToggle()"
            class="navbar-item has-divider is-desktop-icon-only" title="Темная тема">
           <b-icon :icon="isDarkModeActive ? 'white-balance-sunny' : 'weather-night'"
                   custom-size="default"/>
@@ -51,8 +51,7 @@
 
 <script>
 import { mapState, mapMutations } from 'vuex';
-
-// todo: extract logout logic
+import useAuth from '@/compositions/useAuth';
 
 export default {
   name: 'HeaderBar',
@@ -70,11 +69,9 @@ export default {
   ]),
   methods: {
     logout () {
-      localStorage.removeItem('_utoken');
+      this.authLogout();
       this.$router.push({ name: 'login' });
-      this.$buefy.snackbar.open({
-        message: 'Logged out'
-      });
+      this.$buefy.snackbar.open({ message: 'Logged out' });
     },
 
     menuNavBarToggle () {
@@ -87,6 +84,13 @@ export default {
       'asideRightToggle',
       'darkModeToggle'
     ])
+  },
+  setup () {
+    const { authLogout } = useAuth();
+
+    return {
+      authLogout
+    };
   }
 };
 </script>

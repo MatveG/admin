@@ -41,7 +41,7 @@
 </template>
 
 <script>
-import CardComponent from '@/components/CardComponent'
+import CardComponent from '@/components/CardComponent';
 
 export default {
   name: 'ProductCategory',
@@ -62,7 +62,7 @@ export default {
       default: () => {}
     }
   }
-}
+};
 </script>
 
 <style scoped>

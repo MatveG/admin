@@ -1,7 +1,7 @@
-import { ref, computed } from '@vue/composition-api'
-import '@/loaders/composition'
-import axios from '@/loaders/axios'
-import api from '@/api'
+import { ref, computed } from '@vue/composition-api';
+import '@/loaders/composition';
+import axios from '@/loaders/axios';
+import api from '@/api';
 
 const features = ref([]);
 const error = ref(null);
@@ -71,7 +71,7 @@ export default function () {
     storeFeaturesRow,
     updateFeaturesRow,
     removeFeaturesRow
-  }
+  };
 }
 
 function setLoading (value) {

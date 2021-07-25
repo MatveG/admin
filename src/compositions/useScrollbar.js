@@ -10,7 +10,7 @@ export default () => {
 
   function scrollUpdate () {
     if (ps) {
-      ps.update();
+      ps.value.update();
     }
   }
 

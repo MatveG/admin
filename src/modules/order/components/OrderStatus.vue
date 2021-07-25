@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import CardComponent from '@/components/CardComponent'
+import CardComponent from '@/components/CardComponent';
 
 export default {
   name: 'OrderStatus',
@@ -53,7 +53,7 @@ export default {
       required: true
     }
   }
-}
+};
 </script>
 
 <style scoped>

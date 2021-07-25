@@ -27,6 +27,7 @@
 <script>
 import draggable from 'vuedraggable';
 import axios from '@/loaders/axios';
+import api from '@/api';
 import useModelBinding from '@/compositions/useModelBinding';
 import useLoadingState from '@/compositions/useLoadingState';
 import useDialogs from '@/compositions/useDialogs';
@@ -119,8 +120,7 @@ export default {
 
       loadingState();
       try {
-        const { data } = await axios
-          .post(`/images/upload/${props.module}/${props.id}`, request, settings);
+        const { data } = await axios(api.uploadImages(props.module, props.id, request, settings));
         model.value = data;
       } catch (error) {
         fireToast('Error uploading images', 'is-error');
@@ -133,7 +133,7 @@ export default {
       loadingState();
 
       try {
-        const { data } = await axios.post(`/images/update/${props.module}/${props.id}`, { images });
+        const { data } = await axios(api.updateImages(props.module, props.id, { images }));
         model.value = data;
       } catch (error) {
         fireToast('Error updating images', 'is-error');

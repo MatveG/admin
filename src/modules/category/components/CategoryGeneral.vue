@@ -33,7 +33,7 @@
 </template>
 
 <script>
-import CardComponent from '@/components/CardComponent'
+import CardComponent from '@/components/CardComponent';
 
 export default {
   name: 'CategoryGeneral',
@@ -50,7 +50,7 @@ export default {
       default: () => {}
     }
   }
-}
+};
 </script>
 
 <style scoped>
